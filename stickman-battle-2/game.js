@@ -17,7 +17,7 @@ const easeIn = t => t * t;
 const I18N = {
   en: {
     weapon: 'Weapon', skin: 'Skin', color: 'Color', boss: 'Boss', soccer: 'SOCCER', survival: 'SURVIVAL', free: 'Free',
-    lvlBtn: 'Level ', best: 'Best: ', settings: 'Settings', backMenu: 'Back to menu', language: 'Language', home: '🏠 Home', online: 'Online Duel', lobbyTitle: 'Online Duel', quick: '⚡ Quick match', createRoom: 'Create room', join: 'Join', codePh: 'CODE', connecting: 'Connecting…', connFail: 'Cannot reach the server', searching: 'Looking for an opponent…', shareCode: 'Share this code with a friend:', copyLink: 'Copy invite link', copied: 'Copied!', cancel: 'Cancel', errNotFound: 'Room not found', errFull: 'Room is full', opponent: 'RIVAL', round: 'ROUND ', ko: 'K.O.!', drawRound: 'DRAW', duelWin: 'You won the duel!', duelLose: 'You lost the duel', oppLeft: 'Rival left — you win!', lostConn: 'Connection lost', duelAgain: 'Rematch', waitRematch: 'Waiting…', leaveDuel: 'Leave the match? Your rival wins.', duelRule: '1v1 · first to win 2 rounds · uses your own weapon',
+    lvlBtn: 'Level ', best: 'Best: ', settings: 'Settings', backMenu: 'Back to menu', language: 'Language', home: '🏠 Home', fullscreen: 'Fullscreen', online: 'Online Duel', lobbyTitle: 'Online Duel', quick: '⚡ Quick match', createRoom: 'Create room', join: 'Join', codePh: 'CODE', connecting: 'Connecting…', connFail: 'Cannot reach the server', searching: 'Looking for an opponent…', shareCode: 'Share this code with a friend:', copyLink: 'Copy invite link', copied: 'Copied!', cancel: 'Cancel', errNotFound: 'Room not found', errFull: 'Room is full', opponent: 'RIVAL', round: 'ROUND ', ko: 'K.O.!', drawRound: 'DRAW', duelWin: 'You won the duel!', duelLose: 'You lost the duel', oppLeft: 'Rival left — you win!', lostConn: 'Connection lost', duelAgain: 'Rematch', waitRematch: 'Waiting…', leaveDuel: 'Leave the match? Your rival wins.', duelRule: '1v1 · first to win 2 rounds · uses your own weapon',
     needKey: 'You need a 🔑 key – clear 5 levels to earn one',
     gameOver: 'Game Over', waves: 'Waves: ', newBest: '🏆 New best!', menu: 'Menu', retry: 'Retry',
     keyPlus: '🔑 +1 Key', bossDefeated: 'Boss Defeated!', victory: 'Victory!', nobody: 'Nobody can stop you!',
@@ -37,7 +37,7 @@ const I18N = {
   },
   vi: {
     weapon: 'Vũ khí', skin: 'Mũ', color: 'Màu', boss: 'Trùm', soccer: 'BÓNG ĐÁ', survival: 'SINH TỒN', free: 'Miễn phí',
-    lvlBtn: 'Màn ', best: 'Cao nhất: ', settings: 'Cài đặt', backMenu: 'Về menu', language: 'Ngôn ngữ', home: '🏠 Trang chủ', online: 'Đấu online', lobbyTitle: 'Đấu online', quick: '⚡ Tìm trận nhanh', createRoom: 'Tạo phòng', join: 'Vào', codePh: 'MÃ', connecting: 'Đang kết nối…', connFail: 'Không kết nối được máy chủ', searching: 'Đang tìm đối thủ…', shareCode: 'Gửi mã này cho bạn bè:', copyLink: 'Sao chép liên kết mời', copied: 'Đã sao chép!', cancel: 'Hủy', errNotFound: 'Không tìm thấy phòng', errFull: 'Phòng đã đủ người', opponent: 'ĐỐI THỦ', round: 'VÒNG ', ko: 'HẠ GỤC!', drawRound: 'HÒA VÒNG NÀY', duelWin: 'Bạn thắng trận đấu!', duelLose: 'Bạn thua trận đấu', oppLeft: 'Đối thủ đã thoát — bạn thắng!', lostConn: 'Mất kết nối', duelAgain: 'Đấu lại', waitRematch: 'Đang chờ…', leaveDuel: 'Rời trận? Đối thủ sẽ thắng.', duelRule: 'Đấu tay đôi 1v1 · ai thắng 2 vòng trước thì thắng · dùng vũ khí của bạn',
+    lvlBtn: 'Màn ', best: 'Cao nhất: ', settings: 'Cài đặt', backMenu: 'Về menu', language: 'Ngôn ngữ', home: '🏠 Trang chủ', fullscreen: 'Toàn màn hình', online: 'Đấu online', lobbyTitle: 'Đấu online', quick: '⚡ Tìm trận nhanh', createRoom: 'Tạo phòng', join: 'Vào', codePh: 'MÃ', connecting: 'Đang kết nối…', connFail: 'Không kết nối được máy chủ', searching: 'Đang tìm đối thủ…', shareCode: 'Gửi mã này cho bạn bè:', copyLink: 'Sao chép liên kết mời', copied: 'Đã sao chép!', cancel: 'Hủy', errNotFound: 'Không tìm thấy phòng', errFull: 'Phòng đã đủ người', opponent: 'ĐỐI THỦ', round: 'VÒNG ', ko: 'HẠ GỤC!', drawRound: 'HÒA VÒNG NÀY', duelWin: 'Bạn thắng trận đấu!', duelLose: 'Bạn thua trận đấu', oppLeft: 'Đối thủ đã thoát — bạn thắng!', lostConn: 'Mất kết nối', duelAgain: 'Đấu lại', waitRematch: 'Đang chờ…', leaveDuel: 'Rời trận? Đối thủ sẽ thắng.', duelRule: 'Đấu tay đôi 1v1 · ai thắng 2 vòng trước thì thắng · dùng vũ khí của bạn',
     needKey: 'Bạn cần 🔑 chìa khóa – qua 5 màn để nhận một chiếc',
     gameOver: 'Thua rồi', waves: 'Số đợt: ', newBest: '🏆 Kỷ lục mới!', menu: 'Menu', retry: 'Chơi lại',
     keyPlus: '🔑 +1 Chìa khóa', bossDefeated: 'Hạ gục trùm!', victory: 'Chiến thắng!', nobody: 'Không ai cản nổi bạn!',
@@ -122,6 +122,7 @@ function tone(f, d, type = 'square', vol = 0.06, slide = 0) {
   if (!save.sound) return;
   try {
     AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
     const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime;
     o.type = type; o.frequency.setValueAtTime(f, t);
     if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, f + slide), t + d);
@@ -855,12 +856,47 @@ function frame(t) {
 const cv = $('#game'), ctx = cv.getContext('2d');
 const stage = $('#stage');
 
+const IS_TOUCH = (window.matchMedia && matchMedia('(pointer:coarse)').matches) || 'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0;
+const probe = document.createElement('div'); probe.id = 'fsProbe'; document.body.appendChild(probe);
+let rotated = false;
 function fit() {
-  const s = Math.min(innerWidth / W, innerHeight / H);
-  stage.style.transform = `translate(-50%,-50%) scale(${s})`;
+  const vv = window.visualViewport;
+  const vw = Math.round((vv && vv.width) || innerWidth), vh = Math.round((vv && vv.height) || innerHeight);
+  document.documentElement.style.height = document.body.style.height = vh + 'px';
+  document.documentElement.style.width = document.body.style.width = vw + 'px';
+  const cs = getComputedStyle(probe);
+  const it = parseFloat(cs.paddingTop) || 0, ir = parseFloat(cs.paddingRight) || 0, ib = parseFloat(cs.paddingBottom) || 0, il = parseFloat(cs.paddingLeft) || 0;
+  const aw = Math.max(50, vw - il - ir), ah = Math.max(50, vh - it - ib);
+  // a phone held upright: turn the whole stage 90° so the game fills the screen instead of a thin strip
+  rotated = IS_TOUCH && ah > aw * 1.1;
+  const s = rotated ? Math.min(ah / W, aw / H) : Math.min(aw / W, ah / H);
+  const cx = il + aw / 2, cy = it + ah / 2;
+  stage.style.transform = 'translate(' + (cx - W / 2) + 'px,' + (cy - H / 2) + 'px) ' + (rotated ? 'rotate(90deg) ' : '') + 'scale(' + s + ')';
+  document.body.classList.toggle('rotated', rotated);
 }
-addEventListener('resize', fit); fit();
-if (matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window) document.body.classList.add('touch');
+addEventListener('resize', fit);
+addEventListener('orientationchange', () => { fit(); setTimeout(fit, 120); setTimeout(fit, 450); });
+addEventListener('pageshow', fit);
+if (window.visualViewport) visualViewport.addEventListener('resize', fit);
+['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, () => { fit(); setTimeout(fit, 200); }));
+fit();
+if (IS_TOUCH) document.body.classList.add('touch');
+const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+const fsCan = () => !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+function toggleFullscreen() {
+  try {
+    if (fsEl()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+    const el = document.documentElement, req = el.requestFullscreen || el.webkitRequestFullscreen;
+    const p = req.call(el);
+    const lock = () => { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} };
+    if (p && p.then) p.then(lock, () => {}); else lock();
+  } catch (e) {}
+}
+// iOS / Android only start audio after a touch: wake it on the first one
+function wakeAudio() { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) {} }
+['pointerdown', 'touchend', 'keydown'].forEach(ev => addEventListener(ev, wakeAudio, { passive: true }));
+document.addEventListener('visibilitychange', () => { if (document.hidden) keys.left = keys.right = keys.jump = keys.atk = 0; });
+document.addEventListener('contextmenu', e => e.preventDefault());
 
 function showScreen(name) {
   $('#menu').classList.toggle('on', name === 'menu');
@@ -1015,6 +1051,11 @@ function openSettings() {
   const lg = document.createElement('button'); lg.className = 'tog'; lg.textContent = LANG === 'vi' ? 'Tiếng Việt' : 'English';
   lg.onclick = () => { setLang(LANG === 'vi' ? 'en' : 'vi'); openSettings(); };
   r3.appendChild(lg); body.appendChild(r3);
+  if (fsCan()) {
+    const r4 = document.createElement('div'); r4.className = 'row'; r4.innerHTML = '<span>' + T('fullscreen') + '</span>';
+    const fb = document.createElement('button'); fb.className = 'tog'; fb.textContent = '⛶'; fb.onclick = () => { toggleFullscreen(); closeModal(); };
+    r4.appendChild(fb); body.appendChild(r4);
+  }
   const help = document.createElement('div'); help.className = 'sub'; help.style.marginTop = '8px';
   help.innerHTML = T('help');
   body.appendChild(help);
@@ -1067,7 +1108,9 @@ function openLobby() { NET.lobbyOpen = true; NET.err = ''; renderLobby(); netOpe
 function closeLobby() { NET.lobbyOpen = false; netLeave(); closeModal(); }
 function copyInvite() {
   const link = location.origin + location.pathname + '?room=' + NET.code;
-  try { navigator.clipboard.writeText(link); } catch (e) {}
+  let ok = false;
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(link).catch(() => {}); ok = true; } } catch (e) {}
+  if (!ok) { try { const ta = document.createElement('textarea'); ta.value = link; ta.style.cssText = 'position:fixed;left:0;top:0;opacity:0;font-size:16px'; document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0, 99); document.execCommand('copy'); ta.remove(); } catch (e) {} }
   NET.copied = true; renderLobby();
   setTimeout(() => { NET.copied = false; if (NET.state === 'waiting') renderLobby(); }, 1600);
 }
@@ -1275,6 +1318,7 @@ addEventListener('keyup', e => { const k = KEYMAP[e.code]; if (k) keys[k] = 0; }
 addEventListener('blur', () => { keys.left = keys.right = keys.jump = keys.atk = 0; });
 stage.addEventListener('pointerdown', e => { if (G.mode !== 'menu' && !e.target.closest('button') && !$('#modal').classList.contains('on')) keys.atk = 1; });
 addEventListener('pointerup', () => { keys.atk = 0; });
+addEventListener('pointercancel', () => { keys.atk = 0; });
 document.querySelectorAll('#touch button').forEach(b => {
   const k = b.dataset.k;
   b.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); keys[k] = 1; });
