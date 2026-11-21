@@ -24,8 +24,34 @@ function sendPage(res, file) {
     res.end(data);
   });
 }
+const MIME = {
+  '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.wav': 'audio/wav', '.woff2': 'font/woff2'
+};
+/* Serves a small static game that lives in its own folder, e.g. /stickman-battle-2/  ->  ./stickman-battle-2/ */
+function sendStatic(res, dir, rel) {
+  let name;
+  try { name = decodeURIComponent(rel || ''); } catch (e) { res.writeHead(400); return res.end('Bad request'); }
+  if (!name || name.endsWith('/')) name += 'index.html';
+  const base = path.join(__dirname, dir) + path.sep;
+  const file = path.normalize(path.join(base, name));
+  if (!file.startsWith(base)) { res.writeHead(403); return res.end('Forbidden'); }
+  fs.readFile(file, (err, data) => {
+    if (err) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); return res.end('Không tìm thấy trang này'); }
+    res.writeHead(200, { 'Content-Type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
+    res.end(data);
+  });
+}
+const STATIC_GAMES = ['stickman-battle-2'];
+
 const server = http.createServer((req, res) => {
   const [url, query = ''] = req.url.split('?');
+  const sg = STATIC_GAMES.find(g => url === '/' + g || url.startsWith('/' + g + '/'));
+  if (sg) {
+    if (url === '/' + sg) { res.writeHead(301, { Location: '/' + sg + '/' }); return res.end(); }   // relative asset links need the trailing slash
+    return sendStatic(res, sg, url.slice(sg.length + 2));
+  }
   if (url === '/') {
     // old invite links looked like /?room=ABCD - keep them working by opening the game
     sendPage(res, /(^|&)room=/.test(query) ? 'index.html' : 'home.html');
