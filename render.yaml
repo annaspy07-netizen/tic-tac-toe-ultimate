@@ -1,0 +1,9 @@
+# Render "Blueprint": lets Render set the service up automatically from this repo.
+services:
+  - type: web
+    name: tic-tac-toe-ultimate
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health

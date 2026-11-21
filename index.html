@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tic Tac Toe Ultimate</title>
+<style>
+:root{
+  --bg1:#0a0320;--bg2:#2b0b4e;--glow1:rgba(244,63,224,.28);--glow2:rgba(34,140,255,.25);
+  --panel:rgba(16,7,38,.82);--panel-b:rgba(255,255,255,.12);
+  --line:#8b5cf6;--x:#ff3dcb;--o:#22e5ff;--accent:#f43fe0;--accent2:#a23cff;
+  --text:#fff;--muted:#b9a9ea;
+}
+
+:root[data-theme="tet"]{--bg1:#ffd84a;--bg2:#f6a623;--glow1:rgba(255,255,255,.3);--glow2:rgba(255,160,40,.3);--panel:rgba(88,10,18,.9);--panel-b:rgba(255,215,120,.32);--line:#ffcf5a;--x:#ffd24a;--o:#ff9db0;--accent:#ff4a3d;--accent2:#c9182a;--muted:#ffdcb3}
+:root[data-theme="noel"]{--bg1:#0a1a12;--bg2:#4a0f16;--glow1:rgba(255,70,80,.28);--glow2:rgba(60,210,130,.22);--line:#f0c05a;--x:#ff5560;--o:#6df0a0;--accent:#e8383f;--accent2:#1f9d5a;--muted:#ffd9cf}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--text);
+  background:
+    radial-gradient(900px 600px at 8% 0%,var(--glow1),transparent 60%),
+    radial-gradient(900px 700px at 100% 100%,var(--glow2),transparent 60%),
+    linear-gradient(160deg,var(--bg1),var(--bg2));
+  background-attachment:fixed;overflow:hidden;
+}
+body::after{ /* retro floor grid */
+  content:"";position:fixed;left:-20%;right:-20%;bottom:-30%;height:60%;pointer-events:none;opacity:.18;
+  background:
+    repeating-linear-gradient(90deg,var(--line) 0 2px,transparent 2px 70px),
+    repeating-linear-gradient(0deg,var(--line) 0 2px,transparent 2px 50px);
+  transform:perspective(500px) rotateX(62deg);transform-origin:top;
+  mask-image:linear-gradient(to bottom,#000,transparent);-webkit-mask-image:linear-gradient(to bottom,#000,transparent);
+}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+
+.app{position:relative;z-index:1;display:grid;grid-template-columns:clamp(205px,23vw,320px) minmax(0,1fr) clamp(190px,21vw,300px);gap:clamp(12px,2vw,26px);height:100vh;padding:18px clamp(12px,2vw,24px);align-items:center}
+.left,.right{display:flex;flex-direction:column;gap:14px;min-width:0}
+.center{display:flex;align-items:center;justify-content:center;height:100%;min-height:0}
+
+/* ---------- Left ---------- */
+.logo{text-align:center}
+.logo h1{font-size:30px;font-weight:900;letter-spacing:.04em;line-height:1;text-shadow:0 0 14px var(--accent),0 0 32px var(--accent);font-family:"Trebuchet MS","Segoe UI",sans-serif}
+.logo .badge{display:inline-block;margin-top:8px;padding:2px 18px;border-radius:999px;border:2px solid var(--o);color:var(--o);font-size:12px;font-weight:800;letter-spacing:.35em;text-shadow:0 0 8px var(--o);box-shadow:0 0 12px -2px var(--o),inset 0 0 10px -4px var(--o)}
+.toolbar{display:flex;gap:8px;justify-content:space-between}
+.ibtn{flex:1;height:44px;max-width:56px;border-radius:12px;background:var(--panel);border:1.5px solid var(--panel-b);display:grid;place-items:center;transition:.15s;position:relative}
+.ibtn:hover{transform:translateY(-2px);border-color:var(--accent)}
+.ibtn svg{width:22px;height:22px}
+.ibtn.dice{color:#7dffd0}
+.ibtn.flag svg{width:26px;height:18px;border-radius:2px}
+.ibtn.off{opacity:.55}
+.stylebox{position:relative}
+.stylebtn{width:100%;height:48px;border-radius:14px;background:var(--panel);border:2px solid #f2c038;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 0 14px -4px #f2c038}
+.stylebtn svg{width:20px;height:20px}
+.pop{position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:20;background:rgba(18,8,42,.97);border:1.5px solid var(--panel-b);border-radius:14px;padding:8px;display:none;flex-direction:column;gap:4px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.pop.open{display:flex}
+.swatch{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;font-weight:700;text-align:left}
+.swatch:hover,.swatch.on{background:rgba(255,255,255,.1)}
+.swatch i{width:30px;height:20px;border-radius:6px;display:block;border:1px solid rgba(255,255,255,.3)}
+
+.scores{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.score{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:16px;background:var(--panel);border:2px solid var(--panel-b);transition:.2s}
+.score .mark{width:30px;height:30px;flex:none}
+.score .name{font-weight:800;font-size:18px;display:flex;align-items:center;gap:6px}
+.score .swap{font-size:16px;opacity:.7;padding:2px 6px;border-radius:6px}
+.score .swap:hover{opacity:1;background:rgba(255,255,255,.12)}
+.score b{margin-left:auto;font-size:34px;font-weight:900;font-variant-numeric:tabular-nums}
+.score.active.m1{border-color:var(--x);box-shadow:0 0 18px -3px var(--x)}
+.score.active.m2{border-color:var(--o);box-shadow:0 0 18px -3px var(--o)}
+.draws{text-align:center;font-weight:800;color:var(--muted);font-size:14px}
+.draws b{color:#fff}
+.status{text-align:center;font-size:23px;font-weight:900;min-height:34px;text-shadow:0 0 14px rgba(255,255,255,.35);margin-top:4px}
+.status.win{color:#ffe66b;text-shadow:0 0 16px #ffb300}
+.status.lose{color:#ff8fa6}
+.actions{display:flex;gap:12px}
+.act{flex:1;height:48px;border-radius:12px;font-weight:800;color:#2a1a00;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(#ffe685,#f5c43a);box-shadow:0 4px 0 #b78512,0 6px 14px rgba(0,0,0,.35);transition:.1s}
+.act:hover{filter:brightness(1.08)}
+.act:active{transform:translateY(3px);box-shadow:0 1px 0 #b78512}
+.act.undo{background:linear-gradient(#c9b27a,#a38a4f);box-shadow:0 4px 0 #6d5a2c,0 6px 14px rgba(0,0,0,.35)}
+.act svg{width:18px;height:18px}
+.act:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4)}
+.rule{text-align:center;color:var(--muted);font-size:13px;line-height:1.35;min-height:36px}
+
+/* ---------- Board ---------- */
+.boardwrap{position:relative;width:min(100%,calc(100vh - 36px));aspect-ratio:1}
+.board{
+  --pad:clamp(16px,3.4vmin,34px);
+  position:absolute;inset:0;padding:var(--pad);border-radius:34px;
+  background:linear-gradient(160deg,rgba(32,12,70,.85),rgba(14,6,34,.9));
+  border:2px solid rgba(139,92,246,.5);box-shadow:0 0 40px -6px rgba(139,92,246,.55),inset 0 0 60px rgba(60,20,120,.35);
+}
+.grid{display:grid;width:100%;height:100%}
+.cell{position:relative;display:grid;place-items:center;padding:0;outline:none;min-width:0;min-height:0;transition:background .2s}
+.cell.br::after{content:"";position:absolute;top:0;bottom:0;right:-1.5px;width:3px;border-radius:3px;background:var(--line);box-shadow:0 0 10px var(--line),0 0 3px #fff8;z-index:1;pointer-events:none}
+.cell.bb::before{content:"";position:absolute;left:0;right:0;bottom:-1.5px;height:3px;border-radius:3px;background:var(--line);box-shadow:0 0 10px var(--line),0 0 3px #fff8;z-index:1;pointer-events:none}
+.cell.br.t::after{top:calc(var(--pad)*-.85)}
+.cell.br.bt::after{bottom:calc(var(--pad)*-.85)}
+.cell.bb.l::before{left:calc(var(--pad)*-.85)}
+.cell.bb.rt::before{right:calc(var(--pad)*-.85)}
+.cell:not(.locked):hover{background:radial-gradient(circle,rgba(255,255,255,.09),transparent 70%)}
+.cell.locked{cursor:default}
+.mk{width:62%;height:62%;overflow:visible;pointer-events:none}
+.mk path,.mk circle{fill:none;stroke-width:11;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:0;animation:draw .3s ease-out both;animation-delay:var(--d,0s)}
+.mk.x{color:var(--x)}.mk.o{color:var(--o)}
+.mk.x path{stroke:var(--x)}.mk.o circle{stroke:var(--o)}
+.mk.big{filter:drop-shadow(0 0 7px currentColor)}
+.mk.static path,.mk.static circle{animation:none}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.ghost{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .15s}
+.ghost .mk{filter:none}
+.cell:not(.locked):hover .ghost{opacity:.28}
+.cell.hint .ghost{opacity:.7;animation:blink .6s infinite alternate}
+@keyframes blink{from{opacity:.25}to{opacity:.85}}
+.cell.last .mk{filter:drop-shadow(0 0 12px currentColor)}
+.cell.fading .mk{animation:fadeout 1s infinite alternate}
+.cell.fading .mk path,.cell.fading .mk circle{animation:none}
+@keyframes fadeout{from{opacity:.9}to{opacity:.3}}
+.cell.win{background:radial-gradient(circle,rgba(255,255,255,.2),transparent 72%)}
+.cell.win .mk{animation:pulse .6s ease-in-out infinite alternate;filter:drop-shadow(0 0 14px currentColor)}
+.cell.win.bad{background:radial-gradient(circle,rgba(255,60,60,.28),transparent 72%)}
+@keyframes pulse{from{transform:scale(.95)}to{transform:scale(1.14)}}
+
+.overlay{position:absolute;inset:0;border-radius:34px;display:none;place-items:center;background:rgba(6,2,18,.5);backdrop-filter:blur(2px);z-index:5;cursor:pointer;animation:fadein .35s}
+.overlay.show{display:grid}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.result{text-align:center;padding:22px 34px;border-radius:22px;background:rgba(18,8,42,.95);border:2px solid var(--accent);box-shadow:0 0 36px -4px var(--accent);animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.result h2{font-size:clamp(22px,5vmin,36px);font-weight:900;margin-bottom:14px;text-shadow:0 0 16px var(--accent)}
+.again{padding:12px 28px;border-radius:14px;font-weight:900;font-size:17px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 0 rgba(0,0,0,.35),0 0 18px -2px var(--accent)}
+.again:hover{filter:brightness(1.12)}
+
+/* ---------- Right ---------- */
+.sec{font-size:12px;letter-spacing:.16em;font-weight:800;color:var(--muted);margin:6px 4px -6px}
+.opt{width:100%;height:clamp(44px,7.2vh,58px);border-radius:16px;font-size:clamp(16px,1.9vw,20px);font-weight:800;background:var(--panel);border:2px solid var(--panel-b);transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.opt:hover{border-color:var(--accent);transform:translateY(-1px)}
+.opt.on{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:rgba(255,255,255,.55);box-shadow:0 0 22px -2px var(--accent)}
+.opt svg{width:14px;height:14px;transition:.2s}
+.opt.open svg{transform:rotate(180deg)}
+.modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.modegrid .opt{height:clamp(38px,5.6vh,46px);font-size:clamp(14px,1.5vw,17px);border-radius:14px;padding:0 4px}
+.modegrid .opt.wide{grid-column:1/-1}
+.seg{display:flex;padding:5px;border-radius:16px;background:var(--panel);border:2px solid var(--panel-b);gap:4px}
+.seg button{flex:1;height:46px;border-radius:12px;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}
+.seg button:hover{background:rgba(255,255,255,.08)}
+.seg.opp button.on{background:linear-gradient(#35e1ff,#13a9e6);color:#032a3a;box-shadow:0 0 16px -2px #35e1ff}
+.seg.lvl button.on{background:linear-gradient(#ffc04d,#ff8a1f);color:#3a1d00;box-shadow:0 0 16px -2px #ff9a2e}
+.seg svg{width:16px;height:16px}
+.dim{opacity:.4;pointer-events:none}
+
+.board.dense .cell.br::after{width:2px;right:-1px;box-shadow:0 0 6px var(--line)}
+.board.dense .cell.bb::before{height:2px;bottom:-1px;box-shadow:0 0 6px var(--line)}
+.board.dense .mk{width:66%;height:66%}
+
+/* ---------- Capybara mascot ---------- */
+.capy{position:fixed;left:0;top:0;z-index:40;pointer-events:none;transform-origin:0 0;will-change:transform;display:none}
+.capy.on{display:block}
+.capy svg{width:100%;height:100%;overflow:visible;display:block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+.capy .ks,.capy .kd,.capy .kt,.capy .kq,.capy .ko,.capy .kr{display:none}
+.capy.c-santa .ks,.capy.c-deer .kd,.capy.c-tree .kt,.capy.c-quan .kq,.capy.c-quyt .ko,.capy.c-rong .kr{display:inline}
+.capy .cb{fill:var(--cb,#d9a45f)}
+body.tet .capy{--cb:#c79b68}
+.capy .spark{transform-box:fill-box;transform-origin:center;animation:sparkle .32s ease-in-out infinite alternate}
+@keyframes sparkle{from{transform:scale(.8) rotate(-8deg);opacity:.75}to{transform:scale(1.15) rotate(10deg);opacity:1}}
+.capy .waddle{transform-origin:60px 130px;animation:waddle .5s ease-in-out infinite}
+.capy .foot{animation:footup .5s ease-in-out infinite}
+.capy .foot.r{animation-delay:-.25s}
+.capy .sway{transform-origin:92px 98px;animation:sway .5s ease-in-out infinite alternate}
+.capy.idle .waddle{animation:capybreathe 1.8s ease-in-out infinite}
+.capy.idle .foot,.capy.idle .sway{animation:none}
+.capy.hop svg{animation:capyhop .6s ease-out 3}
+@keyframes waddle{0%,100%{transform:rotate(-5deg) translateY(0)}25%,75%{transform:rotate(0) translateY(-6px)}50%{transform:rotate(5deg) translateY(0)}}
+@keyframes footup{0%,50%,100%{transform:translateY(0)}25%{transform:translateY(-6px)}}
+@keyframes sway{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
+@keyframes capybreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.02,1.04)}}
+@keyframes capyhop{0%,100%{transform:translateY(0)}45%{transform:translateY(-22px)}}
+.swatch .tog{width:30px;height:18px;border-radius:999px;background:rgba(255,255,255,.2);position:relative;flex:none;transition:.2s}
+.swatch .tog::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.2s}
+.swatch .tog.on{background:#25e08a}.swatch .tog.on::after{left:14px}
+.petrow{border-top:1px solid var(--panel-b);margin-top:2px;border-radius:0 0 10px 10px}
+
+/* ---------- Christmas decorations ---------- */
+#snow{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#xmas{position:fixed;inset:0;pointer-events:none;z-index:2}
+#xmas[hidden],#snow[hidden]{display:none}
+#xLights{position:fixed;top:0;left:0;width:100%;height:40px;z-index:32;overflow:visible}
+.bulb ellipse{animation:twinkle 1.8s ease-in-out infinite;filter:drop-shadow(0 0 5px var(--c))}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.3}}
+.xground{position:fixed;left:0;right:0;bottom:0;height:clamp(34px,6vh,60px);z-index:0;filter:drop-shadow(0 -2px 10px rgba(180,210,255,.35))}
+.xdeco{position:fixed;bottom:clamp(14px,3.2vh,32px);display:flex;align-items:flex-end;gap:4px;z-index:2}
+.xdeco.xl{left:clamp(6px,1.4vw,26px);flex-direction:row}.xdeco.xr{right:clamp(6px,1.4vw,26px);flex-direction:row}
+.xdeco svg{display:block;overflow:visible;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
+.xtree{height:clamp(86px,15vh,150px);width:auto;aspect-ratio:100/140}
+.xtree.sm{height:clamp(66px,11vh,110px)}
+.xgift{height:clamp(24px,4.4vh,44px);width:auto;aspect-ratio:1}
+.xgift.lg{height:clamp(32px,5.8vh,56px)}
+.twinkle-star{animation:twinkle 1.4s ease-in-out infinite}
+.ttl{position:relative;display:inline-block}
+.hat{display:none;position:absolute;right:-14px;top:-18px;width:34px;height:auto;transform:rotate(16deg);filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
+body.xmas.noel .hat-noel,body.xmas.tet .hat-tet{display:block}
+.hat-tet{right:-12px;top:-17px;width:32px}
+body.tet .noelonly,body:not(.tet) .tetonly{display:none!important}
+body.tet .xground path{fill:url(#goldg)}
+.xenv{height:clamp(30px,5.6vh,54px);width:auto;aspect-ratio:50/66}
+.xchung{height:clamp(26px,4.8vh,46px);width:auto;aspect-ratio:1}
+.lantern .swing{transform-box:fill-box;transform-origin:50% 0;animation:lanternswing 3.2s ease-in-out infinite alternate}
+.lantern:nth-child(even) .swing{animation-delay:-1.6s}
+@keyframes lanternswing{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+.seasonrow{display:flex;gap:6px;padding:4px 4px 6px}
+.sbtn{flex:1;height:32px;border-radius:9px;background:rgba(255,255,255,.08);font-weight:800;font-size:13px;transition:.15s}
+.sbtn:hover{background:rgba(255,255,255,.16)}
+.sbtn.on{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 12px -3px var(--accent)}
+.merry{display:none;margin-top:6px;font-weight:900;font-size:12px;letter-spacing:.06em;background:linear-gradient(90deg,#ff7a7a,#ffd166,#7dffb0);-webkit-background-clip:text;background-clip:text;color:transparent}
+body.xmas .merry{display:block}
+@media (max-height:620px),(max-width:900px){.xdeco,#xLights,.xground{display:none}}
+
+/* ---------- Tet theme: bright golden background, readable text, red panels ---------- */
+:root[data-theme="tet"] body{
+  background:linear-gradient(to top,#ffd84a 0%,#f6a623 12%,#d2601f 27%,#7c1521 46%,#3b0a19 68%,#17040e 100%);
+  background-attachment:fixed;
+}
+:root[data-theme="tet"] body::before{      /* sunrise rays fanning up from the horizon, fading into the night sky */
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-conic-gradient(from -90deg at 50% 108%,rgba(255,236,160,.38) 0 4deg,rgba(255,236,160,0) 4deg 8deg);
+  -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 58%);mask-image:linear-gradient(to top,#000 0%,transparent 58%);
+}
+:root[data-theme="tet"] body::after{display:none}
+:root[data-theme="tet"] .logo .badge{border-color:#ffd24a;color:#ffd24a;text-shadow:0 0 8px #ffb02e;box-shadow:0 0 12px -2px #ffb02e,inset 0 0 10px -4px #ffb02e}
+:root[data-theme="tet"] .merry{background:linear-gradient(90deg,#ffd24a,#fff4c2,#ffd24a);-webkit-background-clip:text;background-clip:text}
+:root[data-theme="tet"] .score .swap{color:#fff}
+:root[data-theme="tet"] .board{background:linear-gradient(160deg,rgba(118,14,26,.97),rgba(64,6,14,.98));border-color:rgba(255,207,90,.7);box-shadow:0 0 40px -6px rgba(255,170,40,.75),0 12px 30px rgba(120,20,10,.35),inset 0 0 60px rgba(170,34,22,.35)}
+:root[data-theme="tet"] .overlay{background:rgba(60,6,12,.55)}
+:root[data-theme="tet"] .result,:root[data-theme="tet"] .card,:root[data-theme="tet"] .pop{background:rgba(76,9,18,.98)}
+:root[data-theme="tet"] .seg.opp button.on{background:linear-gradient(#ffe066,#f2a81a);color:#4a1004;box-shadow:0 0 16px -2px #ffd24a}
+:root[data-theme="tet"] .seg.lvl button.on{background:linear-gradient(#ff7a4a,#d92b1f);color:#fff;box-shadow:0 0 16px -2px #ff5a3a}
+:root[data-theme="tet"] .act{background:linear-gradient(#ff7a4a,#d8322f);color:#fff;box-shadow:0 4px 0 #8c1a16,0 6px 14px rgba(120,20,10,.4)}
+:root[data-theme="tet"] .act svg{filter:brightness(0) invert(1)}
+:root[data-theme="tet"] .act.undo{background:linear-gradient(#c8793e,#8a4620);box-shadow:0 4px 0 #5a2a10,0 6px 14px rgba(120,20,10,.4)}
+:root[data-theme="tet"] .stylebtn{border-color:#ffd24a}
+:root[data-theme="tet"] .xground{filter:drop-shadow(0 -2px 10px rgba(255,255,255,.5))}
+#fwc{position:fixed;inset:0;width:100%;height:100%;z-index:31;pointer-events:none}
+#fwc[hidden]{display:none}
+
+/* ---------- Big board (50×50) ---------- */
+.boardwrap.big{width:min(100%,calc(100vh - 24px));aspect-ratio:1}
+.app:has(.boardwrap.big){grid-template-columns:clamp(222px,21vw,290px) minmax(0,1fr) clamp(214px,20vw,270px);padding:12px clamp(10px,1.4vw,20px);gap:clamp(10px,1.4vw,20px)}
+.seg button{white-space:nowrap;font-size:clamp(13px,1.4vw,16px);padding:0 4px}
+.seg button svg{flex:none}
+.status{font-size:clamp(18px,2vw,23px)}
+@media (max-width:900px){.boardwrap.big{width:min(100%,94vw)}}
+.board.big{overflow:auto;padding:14px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;cursor:grab;overscroll-behavior:contain}
+.board.big.panning{cursor:grabbing}
+.board.big{display:flex}
+.board.big .grid{margin:auto}
+.board.big .grid{width:calc(var(--n)*var(--cs));height:calc(var(--n)*var(--cs));flex:none;
+  background-image:linear-gradient(var(--line) 1.5px,transparent 1.5px),linear-gradient(90deg,var(--line) 1.5px,transparent 1.5px);
+  background-size:var(--cs) var(--cs);box-shadow:inset -1.5px -1.5px 0 var(--line)}
+.board.big .cell::before,.board.big .cell::after{display:none}
+.board.big .cell{cursor:pointer}
+.board.big .cell.locked{cursor:inherit}
+.board.big .mk{width:74%;height:74%}
+.board.big .mk.big{filter:none}
+.board.big .cell.last .mk,.board.big .cell.win .mk{filter:drop-shadow(0 0 6px currentColor)}
+.board.big .cell:not(.locked):hover{background:rgba(255,255,255,.16)}
+.zoombox{position:absolute;right:16px;bottom:16px;z-index:6;display:flex;flex-direction:column;gap:6px}
+.zoombox[hidden]{display:none}
+.zoombox button{width:38px;height:38px;border-radius:10px;font-size:20px;font-weight:900;background:rgba(18,8,42,.92);border:1.5px solid var(--panel-b);display:grid;place-items:center;transition:.12s}
+.zoombox button:hover{border-color:var(--accent);transform:scale(1.07)}
+.zoombox svg{width:18px;height:18px}
+
+/* ---------- Online ---------- */
+.onlinebtn{height:clamp(42px,6.4vh,52px);font-size:clamp(15px,1.7vw,18px)}
+.onlinebtn svg{width:20px!important;height:20px!important}
+.onlinebtn.on{background:linear-gradient(135deg,#25e08a,#0aa6c9);border-color:rgba(255,255,255,.55);box-shadow:0 0 22px -2px #25e08a;color:#02291f}
+.onpanel{display:none;flex-direction:column;gap:9px;padding:12px;border-radius:16px;background:var(--panel);border:2px solid rgba(37,224,138,.45)}
+.onpanel.show{display:flex}
+.oncount{font-size:12px;font-weight:800;letter-spacing:.06em;color:#7dffc0;display:flex;align-items:center;gap:6px}
+.oncount i{width:8px;height:8px;border-radius:50%;background:#25e08a;box-shadow:0 0 8px #25e08a;display:block}
+.oncount.off i{background:#ff5d6c;box-shadow:0 0 8px #ff5d6c}
+.onbody{display:flex;flex-direction:column;gap:8px}
+.onbody .sub{font-size:14px;font-weight:700;text-align:center;line-height:1.35}
+.onbody .err{color:#ff8fa6;font-size:13px;text-align:center;font-weight:700}
+.obtn{height:42px;border-radius:12px;font-weight:800;font-size:15px;background:rgba(255,255,255,.1);border:1.5px solid var(--panel-b);transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.obtn:hover{border-color:#25e08a;transform:translateY(-1px)}
+.obtn.pri{background:linear-gradient(135deg,#25e08a,#0aa6c9);color:#02291f;border-color:transparent}
+.obtn.danger{background:rgba(255,93,108,.18);border-color:rgba(255,93,108,.5)}
+.joinrow{display:flex;gap:8px}
+.joinrow input{flex:1;min-width:0;height:42px;border-radius:12px;border:1.5px solid var(--panel-b);background:rgba(0,0,0,.3);color:#fff;font:800 17px "Segoe UI",sans-serif;text-align:center;letter-spacing:.3em;text-transform:uppercase;outline:none}
+.joinrow input:focus{border-color:#25e08a}
+.joinrow .obtn{padding:0 14px}
+.code{font-size:34px;font-weight:900;letter-spacing:.3em;text-align:center;color:#7dffc0;text-shadow:0 0 14px #25e08a;padding-left:.3em}
+.spin{width:26px;height:26px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:#25e08a;animation:spin .9s linear infinite;margin:2px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.emotes{display:flex;gap:6px;justify-content:center}
+.emotes button{font-size:22px;width:42px;height:38px;border-radius:10px;background:rgba(255,255,255,.08);transition:.1s}
+.emotes button:hover{background:rgba(255,255,255,.18);transform:scale(1.12)}
+.emote{position:absolute;z-index:8;font-size:clamp(36px,8vmin,64px);pointer-events:none;animation:rise 1.8s ease-out forwards;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
+.emote.mine{left:8%;bottom:6%}.emote.theirs{right:8%;top:6%}
+@keyframes rise{0%{opacity:0;transform:translateY(20px) scale(.5)}15%{opacity:1;transform:scale(1.15)}70%{opacity:1}100%{opacity:0;transform:translateY(-70px) scale(1)}}
+.resbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.again.ghostbtn{background:rgba(255,255,255,.12);box-shadow:none}
+.again:disabled{opacity:.55;cursor:default;filter:none}
+.ressub{min-height:20px;margin:-6px 0 12px;font-size:14px;font-weight:700;color:var(--muted)}
+
+/* ---------- Modal ---------- */
+.modal{position:fixed;inset:0;z-index:50;display:none;place-items:center;background:rgba(4,1,14,.7);backdrop-filter:blur(4px);padding:16px}
+.modal.show{display:grid}
+.card{width:min(460px,100%);max-height:90vh;overflow:auto;background:rgba(20,9,46,.98);border:2px solid var(--accent);border-radius:20px;padding:22px;box-shadow:0 0 40px -6px var(--accent)}
+.card h3{font-size:22px;margin-bottom:14px;text-align:center}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:8px 6px;text-align:center}
+th{color:var(--muted);font-size:12px;letter-spacing:.08em;border-bottom:1px solid var(--panel-b)}
+td:first-child,th:first-child{text-align:left;font-weight:800}
+tr:nth-child(even) td{background:rgba(255,255,255,.04)}
+.card .row{display:flex;gap:10px;margin-top:16px}
+.card .row button{flex:1;height:42px;border-radius:12px;font-weight:800;background:rgba(255,255,255,.1)}
+.card .row button.pri{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60}
+
+/* ---------- Responsive ---------- */
+@media (max-width:900px){
+  body{overflow:auto}
+  .app{display:flex;flex-direction:column;height:auto;min-height:100vh;padding:14px 14px 40px;gap:14px;align-items:stretch}
+  .left{display:contents}
+  .logo{order:1}.toolbar{order:2}.stylebox{order:3}.scores{order:4}
+  .center{order:5;height:auto}
+  .status{order:6}.actions{order:7}.rule{order:8}
+  .right{order:9}
+  .boardwrap{width:min(100%,92vw)}
+  .logo h1{font-size:26px}
+  .ibtn{max-width:none}
+  .score{padding:10px 14px}.score b{font-size:28px}
+  .opt{height:50px;font-size:18px}
+}
+/* ---------- Compact menus on desktop: leave the room to the board ---------- */
+@media (min-width:901px){
+  .app,.app:has(.boardwrap.big){grid-template-columns:clamp(168px,16vw,225px) minmax(0,1fr) clamp(172px,17vw,225px);gap:clamp(8px,1.1vw,16px);padding:10px clamp(8px,1.1vw,16px)}
+  .left,.right{gap:8px}
+  .logo h1{font-size:clamp(19px,1.9vw,26px)}
+  .logo .badge{font-size:10px;padding:1px 12px;margin-top:5px}
+  .toolbar{gap:5px}
+  .ibtn{height:36px;border-radius:10px}.ibtn svg{width:18px;height:18px}.ibtn.flag svg{width:22px;height:15px}
+  .stylebtn{height:38px;font-size:14px;border-radius:12px}
+  .scores{margin-top:2px;gap:4px}
+  .score{padding:8px 12px;border-radius:14px;gap:8px}.score .mark{width:24px;height:24px}.score .name{font-size:15px}.score b{font-size:26px}
+  .draws{font-size:12px}
+  .status{font-size:clamp(15px,1.5vw,19px);min-height:24px;margin-top:0}
+  .act{height:38px;font-size:14px;border-radius:10px}
+  .rule{font-size:11.5px;min-height:0}
+  .sec{font-size:10.5px;margin:2px 4px -4px}
+  .opt{height:40px;font-size:15px;border-radius:12px}
+  .modegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .modegrid .opt{height:38px;font-size:13px;padding:0;letter-spacing:-.2px}
+  .seg{padding:4px;border-radius:12px}.seg button{height:34px;font-size:13px;border-radius:9px;gap:0;min-width:0}.seg button svg{display:none}
+  .onlinebtn{height:40px;font-size:15px}
+  .onpanel{padding:9px;gap:7px}.obtn{height:36px;font-size:13px}.code{font-size:28px}
+}
+@media (max-height:640px) and (min-width:901px){
+  .logo h1{font-size:24px}.score{padding:9px 14px}.score b{font-size:28px}.opt{height:48px;font-size:18px}
+  .app{gap:18px;padding:10px 18px}.left,.right{gap:9px}.status{font-size:19px}.rule{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="left">
+    <div class="logo"><h1><span class="ttl">TIC TAC TOE<svg class="hat hat-tet" viewBox="0 0 60 46" aria-hidden="true"><path d="M13 20L5 15M47 20L55 15" stroke="#3b1a14" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="4" cy="14" r="4.6" fill="#f5c33b" stroke="#3b1a14" stroke-width="2.4"/><circle cx="56" cy="14" r="4.6" fill="#f5c33b" stroke="#3b1a14" stroke-width="2.4"/><path d="M16 21C16 5 44 5 44 21Z" fill="#e24a3b" stroke="#3b1a14" stroke-width="2.8" stroke-linejoin="round"/><rect x="12" y="19" width="36" height="9" rx="4.5" fill="#fdf6e6" stroke="#3b1a14" stroke-width="2.8"/><circle cx="30" cy="20" r="2.6" fill="#4caf50" stroke="#3b1a14" stroke-width="1.6"/><circle cx="30" cy="3.5" r="3.4" fill="#f5c33b" stroke="#3b1a14" stroke-width="2.2"/></svg><svg class="hat hat-noel" viewBox="0 0 60 50" aria-hidden="true"><path d="M8 40C8 18 28 4 50 12C40 14 36 24 38 38Z" fill="#e23b36" stroke="#3b1a14" stroke-width="3" stroke-linejoin="round"/><rect x="3" y="34" width="44" height="13" rx="6.5" fill="#fdf6e6" stroke="#3b1a14" stroke-width="3"/><circle cx="52" cy="12" r="7" fill="#fdf6e6" stroke="#3b1a14" stroke-width="3"/></svg></span></h1><div class="badge">ULTIMATE</div><div class="merry" data-i="merry">Giáng sinh vui vẻ!</div></div>
+    <div class="toolbar">
+      <button class="ibtn" id="bStats" data-tip="stats"><svg viewBox="0 0 24 24" fill="#fff"><rect x="3" y="12" width="4.5" height="9" rx="1"/><rect x="9.8" y="4" width="4.5" height="17" rx="1"/><rect x="16.5" y="9" width="4.5" height="12" rx="1"/></svg></button>
+      <button class="ibtn" id="bSound" data-tip="sound"></button>
+      <button class="ibtn dice" id="bDice" data-tip="dice"><svg viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="4.5" fill="currentColor"/><g fill="#0b2a22"><circle cx="8" cy="8" r="1.8"/><circle cx="16" cy="8" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="8" cy="16" r="1.8"/><circle cx="16" cy="16" r="1.8"/></g></svg></button>
+      <button class="ibtn" id="bNew" data-tip="new"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></button>
+      <button class="ibtn flag" id="bLang" data-tip="lang"></button>
+    </div>
+    <div class="stylebox">
+      <button class="stylebtn" id="bStyle"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 1 0 0 20c1.4 0 2-1 2-2 0-.8-.5-1.3-.5-2 0-1 .8-1.7 1.8-1.7H17a5 5 0 0 0 5-5C22 6 17.5 2 12 2zM6.8 12a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4.2a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5.2 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4.2a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg><span data-i="style">Phong cách</span></button>
+      <div class="pop" id="themePop"></div>
+    </div>
+
+    <div class="scores">
+      <div class="score" id="sYou"><svg class="mark" viewBox="0 0 100 100"></svg><span class="name"><span id="nYou">Bạn</span><button class="swap" id="bSwap" title="⇄">⇄</button></span><b id="vYou">0</b></div>
+      <div class="draws"><span data-i="draw">Hòa</span> <b id="vDraw">0</b></div>
+      <div class="score" id="sOpp"><svg class="mark" viewBox="0 0 100 100"></svg><span class="name"><span id="nOpp">Máy</span></span><b id="vOpp">0</b></div>
+    </div>
+
+    <div class="status" id="status"></div>
+    <div class="actions">
+      <button class="act" id="bHint"><svg viewBox="0 0 24 24" fill="#2a1a00"><path d="M9 21h6v-1.5H9V21zm3-19a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg><span data-i="hint">Gợi ý</span></button>
+      <button class="act undo" id="bUndo"><svg viewBox="0 0 24 24" fill="none" stroke="#2a1a00" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span data-i="undo">Đi lại</span></button>
+    </div>
+    <div class="rule" id="rule"></div>
+  </aside>
+
+  <main class="center">
+    <div class="boardwrap">
+      <div class="board" id="board"><div class="grid" id="grid"></div></div>
+      <div class="zoombox" id="zoomBox" hidden>
+        <button id="zIn" title="+">+</button><button id="zOut" title="−">−</button>
+        <button id="zLast" title="⌖"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
+      </div>
+      <div class="overlay" id="overlay"><div class="result"><h2 id="resTitle"></h2><p class="ressub" id="resSub"></p><div class="resbtns"><button class="again" id="bAgain">Chơi tiếp</button><button class="again ghostbtn" id="bExit" hidden>Thoát</button></div></div></div>
+    </div>
+  </main>
+
+  <aside class="right">
+    <div class="sec" data-i="mode">CHẾ ĐỘ</div>
+    <div class="modegrid">
+      <button class="opt" data-mode="m20">20×20</button>
+      <button class="opt" data-mode="m10">10×10</button>
+      <button class="opt" data-mode="m7">7×7</button>
+    </div>
+
+    <div class="sec" data-i="opponent">ĐỐI THỦ</div>
+    <div class="seg opp" id="segOpp">
+      <button data-opp="ai"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="8" width="16" height="12" rx="3"/><rect x="11" y="3" width="2" height="5"/><circle cx="12" cy="3" r="1.6"/><circle cx="9" cy="14" r="1.6" fill="#fff"/><circle cx="15" cy="14" r="1.6" fill="#fff"/></svg><span data-i="ai">Đấu máy</span></button>
+      <button data-opp="pvp"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.6"/><path d="M2 20c0-3.6 2.7-6 6-6s6 2.4 6 6zM14.5 14.3c3.4-.6 7.5 1 7.5 5.7h-5.3c0-2.3-.8-4.2-2.2-5.7z"/></svg><span data-i="pvp">2 người</span></button>
+    </div>
+
+    <button class="opt onlinebtn" data-opp="online"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><span data-i="online">Online</span></button>
+    <div class="onpanel" id="onPanel">
+      <div class="oncount" id="onCountRow"><i></i><span><b id="onCount">0</b> <span data-i="onlineCount">đang online</span></span></div>
+      <div class="onbody" id="onBody"></div>
+    </div>
+
+    <div class="sec" data-i="level" id="lvlTitle">CẤP ĐỘ</div>
+    <div class="seg lvl" id="segLvl">
+      <button data-lvl="0" data-i="easy">Dễ</button>
+      <button data-lvl="1" data-i="medium">Vừa</button>
+      <button data-lvl="2" data-i="hard">Khó</button>
+    </div>
+  </aside>
+</div>
+
+<div class="modal" id="modal"><div class="card">
+  <h3 data-i="stats">Thống kê</h3>
+  <div id="statsBody"></div>
+  <div class="row"><button id="bResetStats" data-i="resetStats">Xóa dữ liệu</button><button class="pri" id="bCloseStats" data-i="close">Đóng</button></div>
+</div></div>
+<canvas id="snow"></canvas>
+<canvas id="fwc"></canvas>
+
+<!-- Christmas decorations -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="xtreeS" viewBox="0 0 100 140">
+    <rect x="42" y="116" width="16" height="20" rx="3" fill="#7a4a28" stroke="#1f3a2a" stroke-width="2.6"/>
+    <path d="M8 122 L50 66 L92 122Z" fill="#2e9b57" stroke="#1f3a2a" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M17 94 L50 40 L83 94Z" fill="#3bb065" stroke="#1f3a2a" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M27 66 L50 16 L73 66Z" fill="#4cc678" stroke="#1f3a2a" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M50 16 L40 38 Q45 42 48 38 Q51 44 54 38 Q58 42 60 38Z" fill="#fff"/>
+    <path d="M50 40 L38 64 Q44 69 48 64 Q52 71 56 64 Q61 69 63 64Z" fill="#fff"/>
+    <path d="M50 66 L34 92 Q41 98 46 92 Q50 100 55 92 Q61 98 66 92Z" fill="#fff"/>
+    <g stroke="#1f3a2a" stroke-width="1.8"><circle cx="30" cy="108" r="5" fill="#e8454a"/><circle cx="52" cy="104" r="4.6" fill="#ffd84d"/><circle cx="72" cy="110" r="5" fill="#4aa8ff"/><circle cx="42" cy="82" r="4.2" fill="#ffd84d"/><circle cx="62" cy="80" r="4.4" fill="#e8454a"/><circle cx="50" cy="52" r="3.8" fill="#e8454a"/></g>
+    <path class="twinkle-star" d="M50 -2 l3.6 7.4 8 1.1 -5.8 5.6 1.4 8 -7.2 -3.8 -7.2 3.8 1.4 -8 -5.8 -5.6 8 -1.1z" fill="#ffd84d" stroke="#8a5a00" stroke-width="1.6" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="xgiftS" viewBox="0 0 60 60">
+    <rect x="6" y="24" width="48" height="33" rx="4" style="fill:var(--g,#e8454a)" stroke="#2a1a24" stroke-width="2.6"/>
+    <rect x="2" y="14" width="56" height="13" rx="4" style="fill:var(--g,#e8454a)" stroke="#2a1a24" stroke-width="2.6"/>
+    <rect x="26" y="14" width="8" height="43" style="fill:var(--r,#ffd84d)" stroke="#2a1a24" stroke-width="2"/>
+    <path d="M30 14 C20 0 8 6 14 13 C18 16 26 15 30 14 C34 15 42 16 46 13 C52 6 40 0 30 14Z" style="fill:var(--r,#ffd84d)" stroke="#2a1a24" stroke-width="2.2" stroke-linejoin="round"/>
+  </symbol>
+  <!-- Tet: kumquat tree, plum-blossom vase, red envelope, banh chung -->
+  <symbol id="xquatS" viewBox="0 0 100 140">
+    <path d="M27 106H73L67 136H33Z" fill="#d93a30" stroke="#4a1a12" stroke-width="3" stroke-linejoin="round"/>
+    <rect x="24" y="100" width="52" height="9" rx="3" fill="#f5c33b" stroke="#4a1a12" stroke-width="3"/>
+    <rect x="46" y="84" width="8" height="18" fill="#7a4a28" stroke="#4a1a12" stroke-width="2.4"/>
+    <g stroke="#1f4a2a" stroke-width="3">
+      <circle cx="50" cy="54" r="36" fill="#3da45a"/><circle cx="28" cy="68" r="22" fill="#47b063"/><circle cx="72" cy="68" r="22" fill="#47b063"/><circle cx="50" cy="32" r="22" fill="#56c373"/>
+    </g>
+    <g stroke="#8a4a10" stroke-width="2"><circle cx="30" cy="54" r="5.6" fill="#ff9a2a"/><circle cx="50" cy="34" r="5.4" fill="#ff9a2a"/><circle cx="68" cy="50" r="5.6" fill="#ff9a2a"/><circle cx="40" cy="70" r="5.4" fill="#ff9a2a"/><circle cx="62" cy="72" r="5.6" fill="#ff9a2a"/><circle cx="82" cy="68" r="5" fill="#ff9a2a"/><circle cx="20" cy="72" r="5" fill="#ff9a2a"/><circle cx="52" cy="56" r="5.4" fill="#ff9a2a"/><circle cx="38" cy="40" r="4.6" fill="#ff9a2a"/></g>
+    <path class="twinkle-star" d="M50 -2l3.6 7.4 8 1.1-5.8 5.6 1.4 8-7.2-3.8-7.2 3.8 1.4-8-5.8-5.6 8-1.1z" fill="#ffd84d" stroke="#8a5a00" stroke-width="1.6" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="xflS" viewBox="-9 -9 18 18">
+    <g fill="#ffd23c" stroke="#a8740a" stroke-width="1.1"><circle cx="0" cy="-5" r="3.6"/><circle cx="4.8" cy="-1.5" r="3.6"/><circle cx="3" cy="4" r="3.6"/><circle cx="-3" cy="4" r="3.6"/><circle cx="-4.8" cy="-1.5" r="3.6"/></g>
+    <circle r="2" fill="#e8742a"/>
+  </symbol>
+  <symbol id="xmaiS" viewBox="0 0 100 140">
+    <path d="M50 104C48 84 40 62 28 40M47 84C58 68 68 54 80 40M45 70C36 64 28 64 18 68M53 62C64 56 74 58 86 62M41 54C45 40 47 30 44 14" fill="none" stroke="#5a3418" stroke-width="5" stroke-linecap="round"/>
+    <path d="M34 106C34 94 66 94 66 106L71 136H29Z" fill="#fdf6e6" stroke="#4a1a12" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M32 114H68M31 124H69" stroke="#d93a30" stroke-width="3.5" fill="none"/>
+    <use href="#xflS" x="20" y="30" width="16" height="16"/><use href="#xflS" x="72" y="30" width="16" height="16"/><use href="#xflS" x="36" y="6" width="15" height="15"/>
+    <use href="#xflS" x="8" y="58" width="15" height="15"/><use href="#xflS" x="80" y="52" width="15" height="15"/><use href="#xflS" x="30" y="44" width="13" height="13"/>
+    <use href="#xflS" x="62" y="44" width="13" height="13"/><use href="#xflS" x="46" y="26" width="13" height="13"/><use href="#xflS" x="20" y="64" width="12" height="12"/>
+    <use href="#xflS" x="58" y="62" width="12" height="12"/><use href="#xflS" x="74" y="64" width="11" height="11"/><use href="#xflS" x="40" y="66" width="11" height="11"/>
+  </symbol>
+  <symbol id="xenvS" viewBox="0 0 50 66">
+    <rect x="4" y="4" width="42" height="58" rx="4" fill="#e03a30" stroke="#4a1a12" stroke-width="3"/>
+    <path d="M4 6L25 30L46 6" fill="#c92a22" stroke="#4a1a12" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="25" cy="38" r="8" fill="#f5c33b" stroke="#4a1a12" stroke-width="2.4"/>
+    <text x="25" y="42.5" text-anchor="middle" font-size="11" font-weight="700" fill="#b3181f" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif">福</text>
+  </symbol>
+  <symbol id="xchungS" viewBox="0 0 60 60">
+    <path d="M30 4L56 30L30 56L4 30Z" fill="#3f9a50" stroke="#1d4a28" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M17 17L43 43M43 17L17 43" stroke="#cfe3a0" stroke-width="2.8" stroke-linecap="round"/>
+    <path d="M30 4L30 56M4 30L56 30" stroke="#2c7a3c" stroke-width="1.6" opacity=".6"/>
+  </symbol>
+</defs></svg>
+<div id="xmas" aria-hidden="true">
+  <div class="xdeco xl tetonly">
+    <svg class="xtree"><use href="#xquatS"/></svg>
+    <svg class="xenv"><use href="#xenvS"/></svg>
+    <svg class="xchung"><use href="#xchungS"/></svg>
+  </div>
+  <div class="xdeco xr tetonly">
+    <svg class="xenv"><use href="#xenvS"/></svg>
+    <svg class="xchung"><use href="#xchungS"/></svg>
+    <svg class="xtree sm"><use href="#xquatS"/></svg>
+    <svg class="xtree"><use href="#xmaiS"/></svg>
+  </div>
+  <svg class="xground" viewBox="0 0 1440 60" preserveAspectRatio="none"><defs><linearGradient id="snowg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#bcd2f5"/></linearGradient><linearGradient id="goldg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0392f"/><stop offset="1" stop-color="#8f1119"/></linearGradient></defs><path d="M0 30C110 8 230 46 380 26S690 6 850 28 1170 48 1300 22 1410 14 1440 22V60H0Z" fill="url(#snowg)"/></svg>
+  <div class="xdeco xl noelonly">
+    <svg class="xtree"><use href="#xtreeS"/></svg>
+    <svg class="xgift" style="--g:#e8454a;--r:#ffd84d"><use href="#xgiftS"/></svg>
+    <svg class="xgift lg" style="--g:#3f8cff;--r:#fdf6e6"><use href="#xgiftS"/></svg>
+  </div>
+  <div class="xdeco xr noelonly">
+    <svg class="xgift lg" style="--g:#2fae62;--r:#fdf6e6"><use href="#xgiftS"/></svg>
+    <svg class="xgift" style="--g:#a860e6;--r:#ffd84d"><use href="#xgiftS"/></svg>
+    <svg class="xtree sm"><use href="#xtreeS"/></svg>
+    <svg class="xtree"><use href="#xtreeS"/></svg>
+  </div>
+</div>
+<svg id="xLights" aria-hidden="true"></svg>
+
+<canvas id="fx"></canvas>
+
+<!-- Capybara mascot: runs around the board (positioned by JS) -->
+<div class="capy" id="capy" aria-hidden="true">
+<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round">
+<g transform="translate(0 20)">
+<g class="waddle">
+  <!-- feet -->
+  <ellipse class="foot l" cx="34" cy="123" rx="12" ry="7" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+  <ellipse class="foot r" cx="86" cy="123" rx="12" ry="7" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+
+  <!-- REINDEER: antlers + fluffy hood (behind the face) -->
+  <g class="kd" fill="none">
+    <path d="M44 18C36 4 40 -6 32 -14M40 2C32 2 27 -3 25 -9" stroke="#3a2416" stroke-width="15"/>
+    <path d="M76 18C84 4 80 -6 88 -14M80 2C88 2 93 -3 95 -9" stroke="#3a2416" stroke-width="15"/>
+    <path d="M44 18C36 4 40 -6 32 -14M40 2C32 2 27 -3 25 -9" stroke="#f4b53c" stroke-width="9.5"/>
+    <path d="M76 18C84 4 80 -6 88 -14M80 2C88 2 93 -3 95 -9" stroke="#f4b53c" stroke-width="9.5"/>
+    <path d="M42 12C38 4 40 -2 36 -8M78 12C82 4 80 -2 84 -8" stroke="#ffe39a" stroke-width="2.6"/>
+  </g>
+  <g class="kd">
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="#3a2416"/>
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="none" stroke="#3a2416" stroke-width="13" stroke-dasharray="0.1 9"/>
+    <ellipse cx="60" cy="52" rx="49" ry="42" fill="#8b5a3c"/>
+    <ellipse cx="60" cy="52" rx="49" ry="42" fill="none" stroke="#8b5a3c" stroke-width="9.5" stroke-dasharray="0.1 9"/>
+    <ellipse cx="13" cy="36" rx="9" ry="14" fill="#8b5a3c" stroke="#3a2416" stroke-width="3" transform="rotate(-35 13 36)"/>
+    <ellipse cx="14" cy="37" rx="4.5" ry="9" fill="#f3c9a8" transform="rotate(-35 14 37)"/>
+    <ellipse cx="107" cy="36" rx="9" ry="14" fill="#8b5a3c" stroke="#3a2416" stroke-width="3" transform="rotate(35 107 36)"/>
+    <ellipse cx="106" cy="37" rx="4.5" ry="9" fill="#f3c9a8" transform="rotate(35 106 37)"/>
+  </g>
+
+  <!-- DRAGON hood (Tet): horns, red mane, ears (behind the face) -->
+  <g class="kr">
+    <path d="M34 22Q24 4 38 -6Q37 10 47 17Z" fill="#ffe3a8" stroke="#3a2416" stroke-width="3"/>
+    <path d="M86 22Q96 4 82 -6Q83 10 73 17Z" fill="#ffe3a8" stroke="#3a2416" stroke-width="3"/>
+    <path d="M12 40L0 32L10 50ZM9 62L-3 64L10 74ZM108 40L120 32L110 50ZM111 62L123 64L110 74ZM28 15L24 3L40 11ZM92 15L96 3L80 11Z" fill="#d8322f" stroke="#3a2416" stroke-width="2.8"/>
+    <ellipse cx="15" cy="30" rx="8" ry="12.5" fill="#d8322f" stroke="#3a2416" stroke-width="3" transform="rotate(-28 15 30)"/>
+    <ellipse cx="16" cy="31" rx="4" ry="8" fill="#ffb3b9" transform="rotate(-28 16 31)"/>
+    <ellipse cx="105" cy="30" rx="8" ry="12.5" fill="#d8322f" stroke="#3a2416" stroke-width="3" transform="rotate(28 105 30)"/>
+    <ellipse cx="104" cy="31" rx="4" ry="8" fill="#ffb3b9" transform="rotate(28 104 31)"/>
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="#e0402f" stroke="#3a2416" stroke-width="3"/>
+    <ellipse cx="60" cy="52" rx="46" ry="39" fill="none" stroke="#f5c33b" stroke-width="2.4" stroke-dasharray="5 5"/>
+  </g>
+
+  <!-- body: Santa, reindeer, and the bare Tet ones -->
+  <g class="ks kd kq ko kr"><ellipse class="cb" cx="60" cy="96" rx="39" ry="28" fill="#d9a45f" stroke="#3a2416" stroke-width="3"/></g>
+
+  <!-- TET: red jacket (orange-on-head capybara) -->
+  <g class="ko">
+    <path d="M22 94C22 78 42 82 60 82C78 82 98 78 98 94L102 124C82 130 38 130 18 124Z" fill="#c8392d" stroke="#3a2416" stroke-width="3"/>
+    <path d="M60 104V128" stroke="#3a2416" stroke-width="2.4" fill="none"/>
+    <path d="M60 110l5.5 5.5-5.5 5.5-5.5-5.5z" fill="#f0c060" stroke="#3a2416" stroke-width="2"/>
+  </g>
+
+  <!-- TREE: tiers instead of a body -->
+  <g class="kt">
+    <path d="M10 124C4 108 14 98 28 98L92 98C106 98 116 108 110 124C88 131 32 131 10 124Z" fill="#78c76c" stroke="#3a2416" stroke-width="3"/>
+    <path d="M20 102C16 88 26 80 40 80L80 80C94 80 104 88 100 102C80 108 40 108 20 102Z" fill="#69b95f" stroke="#3a2416" stroke-width="3"/>
+    <path d="M30 84C30 72 42 68 60 68C78 68 90 72 90 84C76 90 44 90 30 84Z" fill="#5eae58" stroke="#3a2416" stroke-width="3"/>
+    <g stroke="#3a2416" stroke-width="2"><circle cx="24" cy="113" r="5" fill="#e8454a"/><circle cx="46" cy="119" r="4.6" fill="#ffd84d"/><circle cx="74" cy="118" r="5" fill="#e8454a"/><circle cx="96" cy="111" r="4.6" fill="#ffd84d"/><circle cx="34" cy="93" r="4.4" fill="#ffd84d"/><circle cx="60" cy="100" r="4.8" fill="#e8454a"/><circle cx="86" cy="94" r="4.4" fill="#e8454a"/></g>
+  </g>
+
+  <!-- ears (Santa, tree, and the Tet ones without a hood) -->
+  <g class="ks kt kq ko">
+    <circle cx="26" cy="30" r="8.5" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="94" cy="30" r="8.5" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+  </g>
+
+  <!-- head + snout -->
+  <ellipse class="cb" cx="60" cy="56" rx="41" ry="34" fill="#d9a45f" stroke="#3a2416" stroke-width="3"/>
+  <ellipse class="ks kd kt" cx="30" cy="64" rx="7.5" ry="4.2" fill="#f28b8b" opacity=".7"/>
+  <ellipse class="ks kd kt" cx="90" cy="64" rx="7.5" ry="4.2" fill="#f28b8b" opacity=".7"/>
+  <path d="M44 58C44 49 51 45 60 45C69 45 76 49 76 58L78 70C78 79 70 84 60 84C50 84 42 79 42 70Z" fill="#8d6238" stroke="#3a2416" stroke-width="2.6"/>
+  <ellipse class="ks kd kt" cx="60" cy="52" rx="7" ry="4.2" fill="#3a2416"/>
+
+  <!-- SANTA face + scarf + hat + gift -->
+  <g class="ks" fill="none" stroke="#3a2416" stroke-width="3.2">
+    <path d="M26 53Q33 46 40 53M80 53Q87 46 94 53"/>
+    <path d="M51 69Q55.5 75 60 69Q64.5 75 69 69" stroke-width="2.4"/>
+  </g>
+  <g class="ks">
+    <g class="sway"><path d="M84 98L98 94L104 120L90 124Z" fill="#d93a35" stroke="#3a2416" stroke-width="2.8"/><path d="M92 97L98 121M97 95.5L103 119" stroke="#fdf6e6" stroke-width="3.4" fill="none"/></g>
+    <path d="M22 86Q60 108 98 86L102 100Q60 124 18 100Z" fill="#d93a35" stroke="#3a2416" stroke-width="3"/>
+    <path d="M30 91V103M54 97V109M78 95V107" stroke="#fdf6e6" stroke-width="4.6" fill="none"/>
+    <path d="M42 94.5V106.5M66 97V109M90 90V102" stroke="#2f9a54" stroke-width="4.6" fill="none"/>
+    <rect x="40" y="106" width="40" height="20" rx="3" fill="#6a5fd6" stroke="#3a2416" stroke-width="2.8"/>
+    <rect x="36" y="99" width="48" height="10" rx="3" fill="#7d72e6" stroke="#3a2416" stroke-width="2.8"/>
+    <rect x="56" y="99" width="8" height="27" fill="#ffd84d" stroke="#3a2416" stroke-width="2"/>
+    <path d="M60 99C50 86 40 94 48 100ZM60 99C70 86 80 94 72 100Z" fill="#ffd84d" stroke="#3a2416" stroke-width="2.2"/>
+    <ellipse cx="37" cy="113" rx="7" ry="6" fill="#7a5230" stroke="#3a2416" stroke-width="2.6"/>
+    <ellipse cx="83" cy="113" rx="7" ry="6" fill="#7a5230" stroke="#3a2416" stroke-width="2.6"/>
+    <path d="M26 34C28 6 66 -10 100 6C88 6 84 16 86 28Q56 18 26 34Z" fill="#d93a35" stroke="#3a2416" stroke-width="3"/>
+    <path d="M18 38Q60 8 102 34Q104 46 94 45Q60 26 28 46Q16 46 18 38Z" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="102" cy="8" r="9" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+  </g>
+
+  <!-- REINDEER face -->
+  <g class="kd">
+    <path d="M27 55L40 50M80 50L93 55" fill="none" stroke="#3a2416" stroke-width="3.2"/>
+    <path d="M51 69Q55.5 75 60 69Q64.5 75 69 69" fill="none" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M62 72Q62 84 70 80Q74 73 68 70Z" fill="#f08a96" stroke="#3a2416" stroke-width="2"/>
+    <circle cx="60" cy="14" r="5.6" fill="#e8353b" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M48 93Q43 104 45 114M72 93Q77 104 75 114" fill="none" stroke="#e03a3a" stroke-width="3.2"/>
+    <circle cx="45" cy="116" r="3.8" fill="#e03a3a" stroke="#3a2416" stroke-width="2"/><circle cx="75" cy="116" r="3.8" fill="#e03a3a" stroke="#3a2416" stroke-width="2"/>
+  </g>
+
+  <!-- TREE face + cap + bow + star -->
+  <g class="kt">
+    <path d="M31 53H40M80 53H89" fill="none" stroke="#3a2416" stroke-width="3.2"/>
+    <path d="M52 73Q60 67 68 73" fill="none" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M30 37C30 12 90 12 90 37Q60 28 30 37Z" fill="#78c76c" stroke="#3a2416" stroke-width="3"/>
+    <path d="M60 19L40 7L38 25Z" fill="#e8454a" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M60 19L80 7L82 25Z" fill="#e8454a" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M47 10L45.5 22M73 10L74.5 22" stroke="#fdf6e6" stroke-width="2.8" fill="none"/>
+    <circle cx="60" cy="19" r="4.2" fill="#d03a40" stroke="#3a2416" stroke-width="2"/>
+    <path d="M60 -9l3.6 7.4 8 1.1-5.8 5.6 1.4 8-7.2-3.8-7.2 3.8 1.4-8-5.8-5.6 8-1.1z" fill="#ffd84d" stroke="#3a2416" stroke-width="2.4" transform="translate(0 4)"/>
+  </g>
+
+  <!-- TET: shared face (dash eyes, "I" nose, whisker marks) -->
+  <g class="kq ko kr" fill="none" stroke="#3a2416" stroke-width="3">
+    <path d="M30 52H40M80 52H90"/>
+    <path d="M53 48H67M60 48V62M54 65Q60 68.5 66 65" stroke-width="2.7"/>
+    <path d="M17 55H25M16 61H24.5M95 55H103M95.5 61H104" stroke-width="2.2"/>
+  </g>
+
+  <!-- TET 1: quan hat, "tien den" sign, red envelopes (li xi) -->
+  <g class="kq">
+    <path d="M36 27L22 19M84 27L98 19" stroke="#3a2416" stroke-width="3" fill="none"/>
+    <circle cx="19" cy="17" r="6.5" fill="#f5c33b" stroke="#3a2416" stroke-width="2.6"/>
+    <circle cx="101" cy="17" r="6.5" fill="#f5c33b" stroke="#3a2416" stroke-width="2.6"/>
+    <path d="M38 26C38 5 82 5 82 26Z" fill="#e24a3b" stroke="#3a2416" stroke-width="3"/>
+    <rect x="34" y="23" width="52" height="10" rx="5" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="24" r="3.4" fill="#4caf50" stroke="#3a2416" stroke-width="1.8"/>
+    <path d="M60 7V3" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="1" r="4" fill="#f5c33b" stroke="#3a2416" stroke-width="2.4"/>
+    <g transform="rotate(-8 18 92)">
+      <rect x="2" y="68" width="32" height="46" rx="4" fill="#f2b844" stroke="#3a2416" stroke-width="3"/>
+      <text x="18" y="92" text-anchor="middle" font-size="17" font-weight="700" fill="#d9761f" stroke="none" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif">钱</text>
+      <text x="18" y="110" text-anchor="middle" font-size="17" font-weight="700" fill="#d9761f" stroke="none" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif">来</text>
+    </g>
+    <ellipse cx="16" cy="66" rx="8" ry="6" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+    <g transform="translate(100 92)">
+      <rect x="-8" y="-16" width="16" height="30" rx="2" transform="rotate(-24)" fill="#c92f28" stroke="#3a2416" stroke-width="2.6"/>
+      <rect x="-8" y="-16" width="16" height="30" rx="2" transform="rotate(24)" fill="#e8453a" stroke="#3a2416" stroke-width="2.6"/>
+      <rect x="-8" y="-16" width="16" height="30" rx="2" fill="#f05a45" stroke="#3a2416" stroke-width="2.6"/>
+      <circle cx="0" cy="-3" r="3" fill="#f5c33b" stroke="#3a2416" stroke-width="1.6"/>
+    </g>
+    <ellipse cx="101" cy="112" rx="7" ry="6" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+
+  <!-- TET 2: tangerine on the head, white collar, sparkler -->
+  <g class="ko">
+    <path d="M28 88Q60 108 92 88L96 100Q60 120 24 100Z" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="16" r="9.5" fill="#ff9a2a" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="56.5" cy="12.5" r="2.4" fill="#ffd28a" stroke="none"/>
+    <path d="M61 7Q65 -3 75 0Q72 8 61 7Z" fill="#4caf50" stroke="#3a2416" stroke-width="2.2"/>
+    <path d="M17 90L25 56" stroke="#3a2416" stroke-width="3.4" fill="none"/>
+    <g transform="translate(26 50)"><g class="spark">
+      <path d="M0-14V14M-14 0H14M-10-10L10 10M10-10L-10 10" stroke="#ffe36b" stroke-width="2.8" fill="none"/>
+      <circle r="4.4" fill="#fff7c2" stroke="none"/>
+    </g></g>
+    <ellipse cx="14" cy="91" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+
+  <!-- TET 3: dragon paws -->
+  <g class="kr">
+    <ellipse cx="22" cy="106" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+    <ellipse cx="98" cy="106" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+</g>
+</g>
+</svg>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+/* ===================== Config ===================== */
+const MODES = {
+  classic:{n:3,k:3}, endless:{n:3,k:3,endless:1},
+  m5:{n:5,k:4}, m6:{n:6,k:4}, m4:{n:4,k:4}, m7:{n:7,k:5}, m10:{n:10,k:5}, m20:{n:20,k:5}, misere:{n:3,k:3,misere:1}
+};
+const EXTRA = ['m4','m7','m20','misere'];
+const BIG = 12;   // boards larger than this use the scrollable view + local-pattern AI
+const THEMES = {
+  noel: ['#ff5560','#6df0a0','#f0c05a'],
+  tet:  ['#ffd24a','#ff6b6b','#ffcf5a']
+};
+const DIRS = [[0,1],[1,0],[1,1],[1,-1]];
+
+const I18N = {
+ vi:{style:'Phong cách',draw:'Hòa',hint:'Gợi ý',undo:'Đi lại',mode:'CHẾ ĐỘ',classic:'Cổ điển',endless:'Vô tận',more:'Thêm',misere:'Đảo ngược',
+  opponent:'ĐỐI THỦ',ai:'Đấu máy',pvp:'2 người',level:'CẤP ĐỘ',easy:'Dễ',medium:'Vừa',hard:'Khó',you:'Bạn',cpu:'Máy',p1:'Người 1',p2:'Người 2',
+  tap:'Chạm vào một ô!',yourTurn:'Lượt của bạn',thinking:'Máy đang nghĩ…',turnOf:'Lượt của {m}',youWin:'Bạn thắng! 🎉',youLose:'Bạn thua rồi 😢',tie:'Hòa nhau!',pWin:'{m} thắng! 🎉',
+  again:'Chơi tiếp',stats:'Thống kê',winS:'Thắng',loseS:'Thua',resetStats:'Xóa dữ liệu',close:'Đóng',noData:'Chưa có dữ liệu — hãy chơi vài ván!',
+  tip_stats:'Thống kê',tip_sound:'Âm thanh',tip_dice:'Tung xúc xắc chọn quân',tip_new:'Ván mới',tip_lang:'Ngôn ngữ',
+  
+  r_classic:'Xếp 3 quân thẳng hàng để thắng.',r_endless:'Mỗi người chỉ giữ 3 quân — quân cũ nhất sẽ biến mất khi bạn đặt quân mới.',
+  r_m20:'Bàn 20×20: xếp 5 quân thẳng hàng. Dùng + / − để thu phóng, kéo để di chuyển.',
+  r_m10:'Bàn 10×10: xếp 5 quân thẳng hàng.',
+  r_m5:'Bàn 5×5: xếp 4 quân thẳng hàng.',r_m6:'Bàn 6×6: xếp 4 quân thẳng hàng.',r_m4:'Bàn 4×4: xếp 4 quân thẳng hàng.',r_m7:'Bàn 7×7: xếp 5 quân thẳng hàng.',
+  r_misere:'Đảo ngược: ai xếp đủ 3 quân thẳng hàng sẽ THUA!',total:'Tổng',
+  online:'Online',opp:'Đối thủ',oppTurn:'Lượt của đối thủ',onlineCount:'đang online',quick:'⚡ Tìm trận nhanh',create:'Tạo phòng riêng',joinPh:'MÃ',join:'Vào',cancel:'Hủy',
+  connecting:'Đang kết nối…',connFail:'Không kết nối được máy chủ',retry:'Thử lại',searching:'Đang tìm đối thủ…',waitFriend:'Gửi mã cho bạn bè để vào phòng',roomCode:'Mã phòng',
+  copyLink:'Sao chép liên kết',copied:'Đã sao chép!',playingAs:'Bạn chơi quân {m}',leave:'Rời trận',pickWay:'Chọn cách tìm đối thủ',
+  oppLeft:'Đối thủ đã thoát — bạn thắng! 🎉',oppLeftIdle:'Đối thủ đã thoát',lostConn:'Mất kết nối máy chủ',rematch:'Đấu lại',waitRematch:'Đang chờ đối thủ…',oppWantsRematch:'Đối thủ muốn đấu lại!',
+  newMatch:'Tìm trận mới',exit:'Thoát',errNotFound:'Không tìm thấy phòng này',errFull:'Phòng đã đủ người',matched:'Đã ghép trận! Bạn chơi quân {m}',pet:'Capybara chạy quanh',xmas:'Trang trí lễ hội',merry:'Giáng sinh vui vẻ!',merryTet:'Chúc mừng năm mới!',th_noel:'Giáng sinh',th_tet:'Tết Nguyên Đán',seasonNoel:'🎄 Noel',seasonTet:'🧧 Tết'},
+ en:{style:'Style',draw:'Draw',hint:'Hint',undo:'Undo',mode:'MODE',classic:'Classic',endless:'Endless',more:'More',misere:'Misère',
+  opponent:'OPPONENT',ai:'vs CPU',pvp:'2 players',level:'LEVEL',easy:'Easy',medium:'Medium',hard:'Hard',you:'You',cpu:'CPU',p1:'Player 1',p2:'Player 2',
+  tap:'Tap a square!',yourTurn:'Your turn',thinking:'CPU is thinking…',turnOf:"{m}'s turn",youWin:'You win! 🎉',youLose:'You lost 😢',tie:"It's a draw!",pWin:'{m} wins! 🎉',
+  again:'Play on',stats:'Statistics',winS:'Won',loseS:'Lost',resetStats:'Clear data',close:'Close',noData:'No data yet — play a few games!',
+  tip_stats:'Statistics',tip_sound:'Sound',tip_dice:'Roll for your side',tip_new:'New game',tip_lang:'Language',
+  
+  r_classic:'Get 3 in a row to win.',r_endless:'Each player keeps only 3 marks — your oldest one vanishes when you place a new one.',
+  r_m20:'20×20 board: get 5 in a row. Use + / − to zoom, drag to pan.',
+  r_m10:'10×10 board: get 5 in a row.',
+  r_m5:'5×5 board: get 4 in a row.',r_m6:'6×6 board: get 4 in a row.',r_m4:'4×4 board: get 4 in a row.',r_m7:'7×7 board: get 5 in a row.',
+  r_misere:'Misère: whoever makes 3 in a row LOSES!',total:'Total',
+  online:'Online',opp:'Opponent',oppTurn:"Opponent's turn",onlineCount:'online',quick:'⚡ Quick match',create:'Create private room',joinPh:'CODE',join:'Join',cancel:'Cancel',
+  connecting:'Connecting…',connFail:'Cannot reach the server',retry:'Retry',searching:'Looking for an opponent…',waitFriend:'Send the code to a friend to join',roomCode:'Room code',
+  copyLink:'Copy link',copied:'Copied!',playingAs:'You play {m}',leave:'Leave match',pickWay:'Choose how to find an opponent',
+  oppLeft:'Opponent left — you win! 🎉',oppLeftIdle:'Opponent left',lostConn:'Lost connection to the server',rematch:'Rematch',waitRematch:'Waiting for opponent…',oppWantsRematch:'Opponent wants a rematch!',
+  newMatch:'New match',exit:'Exit',errNotFound:'Room not found',errFull:'Room is full',matched:'Matched! You play {m}',pet:'Running capybara',xmas:'Festive decorations',merry:'Merry Christmas!',merryTet:'Happy New Year!',th_noel:'Christmas',th_tet:'Lunar New Year',seasonNoel:'🎄 Christmas',seasonTet:'🧧 Tết'}
+};
+
+const DEF = {mode:'m20',opp:'ai',level:1,theme:'tet',sound:true,lang:'vi',youX:true,pet:true,xmas:true,season:'tet',stats:{},v:3};
+let S = {...DEF};
+try { Object.assign(S, JSON.parse(localStorage.getItem('ttt-ultimate-v1')||'{}')); } catch(e) {}
+if (S.v !== 3) { S.v = 3; S.mode = 'm20'; }        // new default for everyone, including saved settings
+if (!MODES[S.mode]) S.mode = 'm20';
+
+try { if (!/"season"/.test(localStorage.getItem('ttt-ultimate-v1') || '')) { S.season = 'tet'; S.theme = 'tet'; } } catch (e) { S.season = 'tet'; S.theme = 'tet'; }
+if (S.season !== 'noel' && S.season !== 'tet') S.season = 'tet';
+S.theme = S.season === 'tet' ? 'tet' : 'noel';      // the only two styles: Noel and Tet
+S.xmas = true; S.pet = true;                          // decorations + capybaras are always shown
+const save = () => { try { localStorage.setItem('ttt-ultimate-v1', JSON.stringify(S)); } catch(e) {} };
+const t = (k, v) => { let s = (I18N[S.lang]||I18N.vi)[k] ?? k; if (v) for (const x in v) s = s.replace('{'+x+'}', v[x]); return s; };
+
+/* ===================== Game engine ===================== */
+const cfgCache = {};
+function cfgOf(mode) {
+  if (cfgCache[mode]) return cfgCache[mode];
+  const m = MODES[mode];
+  return cfgCache[mode] = {...m, mode, windows: m.n <= BIG ? buildWindows(m.n, m.k) : null};
+}
+function buildWindows(n, k) {
+  const w = [];
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) for (const [dr, dc] of DIRS) {
+    const er = r + dr*(k-1), ec = c + dc*(k-1);
+    if (er < 0 || er >= n || ec < 0 || ec >= n) continue;
+    const a = []; for (let i = 0; i < k; i++) a.push((r+dr*i)*n + c+dc*i);
+    w.push(a);
+  }
+  return w;
+}
+function lineAt(b, n, k, idx, p) {
+  const r = (idx/n)|0, c = idx % n;
+  for (const [dr, dc] of DIRS) {
+    const cells = [idx];
+    let rr = r+dr, cc = c+dc;
+    while (rr >= 0 && rr < n && cc >= 0 && cc < n && b[rr*n+cc] === p) { cells.push(rr*n+cc); rr += dr; cc += dc; }
+    rr = r-dr; cc = c-dc;
+    while (rr >= 0 && rr < n && cc >= 0 && cc < n && b[rr*n+cc] === p) { cells.unshift(rr*n+cc); rr -= dr; cc -= dc; }
+    if (cells.length >= k) return cells;
+  }
+  return null;
+}
+function applyMove(st, idx, p, cfg) {
+  const b = st.b.slice();
+  const q = [st.q[0].slice(), st.q[1].slice()];
+  b[idx] = p;
+  const qq = q[p-1]; qq.push(idx);
+  let removed = -1;
+  if (cfg.endless && qq.length > 3) { removed = qq.shift(); b[removed] = 0; }
+  return {b, q, removed};
+}
+
+/* ===================== AI ===================== */
+const WIN = 1e6;
+const PW = [0, 1, 8, 70, 600, 5000, 40000, 300000];
+function evalB(b, cfg, me) {
+  let s = 0;
+  for (const w of cfg.windows) {
+    let a = 0, c = 0;
+    for (let i = 0; i < w.length; i++) { const v = b[w[i]]; if (v === me) a++; else if (v) c++; }
+    if (a && c) continue;
+    if (a) s += PW[a]; else if (c) s -= PW[c] * 1.15;
+  }
+  return cfg.misere ? -s : s;
+}
+function genMoves(st, cfg, p, limit) {
+  const n = cfg.n, b = st.b, cand = [];
+  if (n === 3) { for (let i = 0; i < 9; i++) if (!b[i]) cand.push(i); return cand; }
+  let any = false; const near = new Array(n*n).fill(false);
+  for (let i = 0; i < b.length; i++) if (b[i]) {
+    any = true; const r = (i/n)|0, c = i % n;
+    for (let dr = -2; dr <= 2; dr++) for (let dc = -2; dc <= 2; dc++) {
+      const rr = r+dr, cc = c+dc;
+      if (rr >= 0 && rr < n && cc >= 0 && cc < n) near[rr*n+cc] = true;
+    }
+  }
+  for (let i = 0; i < b.length; i++) if (!b[i] && (!any || near[i])) cand.push(i);
+  const sc = cand.map(i => [i, evalB(applyMove(st, i, p, cfg).b, cfg, p)]);
+  sc.sort((a, c) => c[1] - a[1]);
+  return sc.slice(0, limit).map(x => x[0]);
+}
+function minimax(st, cfg, p, depth, alpha, beta, ai, width) {
+  const moves = genMoves(st, cfg, p, width);
+  if (!moves.length) return 0;
+  const maxing = p === ai;
+  let best = maxing ? -Infinity : Infinity;
+  for (const m of moves) {
+    const r = applyMove(st, m, p, cfg);
+    let v;
+    if (lineAt(r.b, cfg.n, cfg.k, m, p)) {
+      const winner = cfg.misere ? 3-p : p;
+      v = (winner === ai ? 1 : -1) * (WIN + depth);
+    } else if (!cfg.endless && r.b.every(x => x)) v = 0;
+    else if (depth <= 1) v = evalB(r.b, cfg, ai);
+    else v = minimax(r, cfg, 3-p, depth-1, alpha, beta, ai, width);
+    if (maxing) { if (v > best) best = v; if (v > alpha) alpha = v; }
+    else        { if (v < best) best = v; if (v < beta) beta = v; }
+    if (beta <= alpha) break;
+  }
+  return best;
+}
+const pick = a => a[(Math.random() * a.length) | 0];
+function searchDepth(cfg, level) {
+  const n = cfg.n;
+  if (n === 3) return cfg.endless ? [1,4,7][level] : [1,3,9][level];
+  if (n === 4) return [1,2,4][level];
+  if (n === 5) return [1,2,4][level];
+  return [1,2,3][level];
+}
+/* Large boards (e.g. 50×50): score only the windows touching each candidate cell. */
+const ATT = [0, 1, 8, 70, 700, 1e6];
+function cellScore(b, n, k, idx, me) {
+  const r0 = (idx / n) | 0, c0 = idx % n, o = 3 - me;
+  let s = 0;
+  for (const [dr, dc] of DIRS) {
+    for (let off = -(k - 1); off <= 0; off++) {
+      const er = r0 + dr * (off + k - 1), ec = c0 + dc * (off + k - 1);
+      const sr = r0 + dr * off, sc = c0 + dc * off;
+      if (sr < 0 || sr >= n || sc < 0 || sc >= n || er < 0 || er >= n || ec < 0 || ec >= n) continue;
+      let a = 0, bad = false;
+      for (let j = 0; j < k; j++) {
+        const v = b[(sr + dr * j) * n + sc + dc * j];
+        if (v === o) { bad = true; break; }
+        if (v === me) a++;
+      }
+      if (!bad) s += ATT[a + 1];
+    }
+  }
+  return s;
+}
+function bigMove(st, cfg, p, level, exact) {
+  const b = st.b, n = cfg.n, k = cfg.k, o = 3 - p;
+  const cand = new Set(); let any = false;
+  for (let i = 0; i < b.length; i++) if (b[i]) {
+    any = true; const r = (i / n) | 0, c = i % n;
+    for (let dr = -2; dr <= 2; dr++) for (let dc = -2; dc <= 2; dc++) {
+      const rr = r + dr, cc = c + dc;
+      if (rr >= 0 && rr < n && cc >= 0 && cc < n && !b[rr * n + cc]) cand.add(rr * n + cc);
+    }
+  }
+  const mid = (n >> 1) * n + (n >> 1);
+  if (!any) return mid + ((Math.random() * 3) | 0) - 1;
+  const list = [...cand];
+  if (!list.length) { const e = []; for (let i = 0; i < b.length; i++) if (!b[i]) e.push(i); return e.length ? pick(e) : -1; }
+  if (level === 0 && !exact && Math.random() < 0.45) return pick(list);
+  let sc = list.map(i => [i, cellScore(b, n, k, i, p) + 0.95 * cellScore(b, n, k, i, o)]);
+  sc.sort((x, y) => y[1] - x[1]);
+  if (level === 2 || exact) {                    // 2-ply: subtract the opponent's best reply
+    const top = sc.slice(0, 8);
+    for (const t2 of top) {
+      const i = t2[0]; b[i] = p;
+      const r = (i / n) | 0, c = i % n; let worst = 0;
+      const seen = new Set(list); seen.delete(i);
+      for (let dr = -2; dr <= 2; dr++) for (let dc = -2; dc <= 2; dc++) {
+        const rr = r + dr, cc = c + dc;
+        if (rr >= 0 && rr < n && cc >= 0 && cc < n && !b[rr * n + cc]) seen.add(rr * n + cc);
+      }
+      for (const j of seen) {
+        const v = cellScore(b, n, k, j, o) + 0.95 * cellScore(b, n, k, j, p);
+        if (v > worst) worst = v;
+      }
+      b[i] = 0;
+      t2[1] = t2[1] >= 1e6 ? t2[1] : t2[1] - 0.8 * worst;
+    }
+    top.sort((x, y) => y[1] - x[1]);
+    const best = top[0][1];
+    return pick(top.filter(x => x[1] >= best - 1e-9))[0];
+  }
+  if (level === 0) return pick(sc.slice(0, Math.min(5, sc.length)))[0];
+  if (Math.random() < 0.15) return pick(sc.slice(0, Math.min(3, sc.length)))[0];
+  return sc[0][0];
+}
+function aiMove(st, cfg, p, level, exact) {
+  if (cfg.n > BIG) return bigMove(st, cfg, p, level, exact);
+  const b = st.b, n = cfg.n;
+  const empties = []; for (let i = 0; i < b.length; i++) if (!b[i]) empties.push(i);
+  if (!empties.length) return -1;
+  if (empties.length === b.length) {          // opening move
+    const mid = (n >> 1) * n + (n >> 1);
+    if (n === 3) return level === 2 || exact ? pick([4,0,2,6,8]) : pick(empties);
+    return level === 0 && !exact ? pick(empties) : mid;
+  }
+  if (level === 0 && !exact && Math.random() < 0.45) return pick(empties);
+  const depth = searchDepth(cfg, level);
+  const width = level === 2 ? 8 : 6;
+  const roots = n === 3 ? empties : genMoves(st, cfg, p, 14);
+  const res = [];
+  for (const m of roots) {
+    const r = applyMove(st, m, p, cfg);
+    let v;
+    if (lineAt(r.b, n, cfg.k, m, p)) v = (cfg.misere ? -1 : 1) * (WIN + depth);
+    else if (!cfg.endless && r.b.every(x => x)) v = 0;
+    else if (depth <= 1) v = evalB(r.b, cfg, p);
+    else v = minimax(r, cfg, 3-p, depth-1, -Infinity, Infinity, p, width);
+    res.push([m, v]);
+  }
+  res.sort((a, c) => c[1] - a[1]);
+  if (!exact && level === 0) return pick(res.slice(0, Math.min(3, res.length)))[0];
+  if (!exact && level === 1 && Math.random() < 0.12) return pick(res.slice(0, Math.min(4, res.length)))[0];
+  const top = res.filter(x => x[1] >= res[0][1] - 1e-9);
+  return pick(top)[0];
+}
+
+/* ===================== State ===================== */
+let G = null, scores = {you:0, draw:0, opp:0};
+let aiTimer = 0, overTimer = 0, hintTimer = 0, hintIdx = -1;
+const net = {ws:null, state:'off', mark:0, code:'', count:0, inMatch:false, rematchReq:false, wantRematch:false, error:'', copied:false, joinText:''};
+const online = () => S.opp === 'online';
+const youMark = () => online() && net.mark ? net.mark : (S.youX ? 1 : 2);
+const isHumanTurn = () => G && !G.over && (online() ? net.state === 'playing' && G.turn === net.mark : (S.opp === 'pvp' || G.turn === youMark()));
+
+function newRound() {
+  clearTimeout(aiTimer); clearTimeout(overTimer); clearTimeout(hintTimer); hintIdx = -1;
+  $('#overlay').classList.remove('show');
+  const c = cfgOf(S.mode);
+  G = {cfg:c, n:c.n, b:new Array(c.n*c.n).fill(0), q:[[],[]], turn:1, over:false, hist:[], last:-1, win:null, moves:0, thinking:false, result:null, started:false};
+  buildBoard(); render(); maybeAI();
+}
+function resetScores() { scores = {you:0, draw:0, opp:0}; }
+
+let cellsEl = [], zoomPx = 30, lastScrolled = -1;
+const isBig = () => G && G.n > BIG;
+function buildBoard() {
+  const g = $('#grid'), n = G.n, big = n > BIG, board = $('#board');
+  board.classList.toggle('big', big);
+  board.classList.toggle('dense', n >= 7 && !big);
+  $('.boardwrap').classList.toggle('big', big);
+  $('#zoomBox').hidden = !big;
+  if (big) { userZoom = false; zoomPx = n <= 30 ? fitZoom(n) : 30; }   // small-ish big boards fit the frame exactly
+  board.style.setProperty('--n', n);
+  board.style.setProperty('--cs', zoomPx + 'px');
+  g.style.gridTemplateColumns = big ? `repeat(${n},${zoomPx}px)` : `repeat(${n},1fr)`;
+  g.style.gridTemplateRows = big ? `repeat(${n},${zoomPx}px)` : `repeat(${n},1fr)`;
+  const parts = [];
+  for (let i = 0; i < n*n; i++) {
+    const r = (i/n)|0, col = i % n;
+    let cls = 'cell';
+    if (!big) {
+      if (col < n-1) cls += ' br';
+      if (r < n-1) cls += ' bb';
+      if (r === 0) cls += ' t';
+      if (r === n-1) cls += ' bt';
+      if (col === 0) cls += ' l';
+      if (col === n-1) cls += ' rt';
+    }
+    parts.push(`<button class="${cls}" data-cell="${i}" aria-label="${r+1},${col+1}"></button>`);
+  }
+  g.innerHTML = parts.join('');
+  cellsEl = [...g.children];
+  lastScrolled = -1;
+  board.scrollLeft = board.scrollTop = 0;
+  if (big) requestAnimationFrame(() => centerOn(((n >> 1) * n + (n >> 1)), false));
+}
+function centerOn(idx, smooth) {
+  const board = $('#board'), n = G.n, r = (idx/n)|0, c = idx % n;
+  board.scrollTo({left: (c + .5) * zoomPx + 14 - board.clientWidth/2, top: (r + .5) * zoomPx + 14 - board.clientHeight/2, behavior: smooth ? 'smooth' : 'auto'});
+}
+function keepVisible(idx) {
+  const board = $('#board'), n = G.n, x = ((idx % n) + .5) * zoomPx + 14, y = (((idx/n)|0) + .5) * zoomPx + 14, m = 70;
+  if (x < board.scrollLeft + m || x > board.scrollLeft + board.clientWidth - m || y < board.scrollTop + m || y > board.scrollTop + board.clientHeight - m) centerOn(idx, true);
+}
+let userZoom = false;
+const fitZoom = n => Math.max(14, Math.min(60, Math.floor(($('#board').clientWidth - 30) / n)));
+window.addEventListener('resize', () => { if (isBig() && G.n <= 30 && !userZoom) setZoom(fitZoom(G.n), true); });
+function setZoom(px, auto) {
+  px = Math.max(14, Math.min(60, px));
+  if (!isBig() || px === zoomPx) return;
+  if (!auto) userZoom = true;
+  const board = $('#board'), old = G.n * zoomPx + 28;
+  const fx = (board.scrollLeft + board.clientWidth/2) / old, fy = (board.scrollTop + board.clientHeight/2) / old;
+  zoomPx = px;
+  board.style.setProperty('--cs', px + 'px');
+  $('#grid').style.gridTemplateColumns = $('#grid').style.gridTemplateRows = `repeat(${G.n},${px}px)`;
+  const nw = G.n * px + 28;
+  board.scrollLeft = fx * nw - board.clientWidth/2; board.scrollTop = fy * nw - board.clientHeight/2;
+}
+
+const mk = (v, cls = '') => v === 1
+  ? `<svg class="mk x ${cls}" viewBox="0 0 100 100"><path d="M27 27L73 73" pathLength="1"/><path d="M73 27L27 73" pathLength="1" style="--d:.12s"/></svg>`
+  : `<svg class="mk o ${cls}" viewBox="0 0 100 100"><circle cx="50" cy="50" r="26" pathLength="1"/></svg>`;
+
+function render() {
+  const human = isHumanTurn() && !G.thinking;
+  const cells = cellsEl, big = G.n > BIG;
+  const fadeIdx = (G.cfg.endless && !G.over && G.q[G.turn-1].length >= 3) ? G.q[G.turn-1][0] : -1;
+  cells.forEach((c, i) => {
+    const v = G.b[i];
+    const ghost = human && !big;
+    const key = v ? 'm'+v : 'g' + (ghost ? G.turn : 0);
+    if (c.dataset.key !== key) {
+      c.dataset.key = key;
+      c.innerHTML = v ? mk(v, 'big') : (ghost ? `<span class="ghost">${mk(G.turn, 'static')}</span>` : '');
+    }
+    c.classList.toggle('locked', !!v || !human);
+    c.classList.toggle('last', i === G.last && !G.over);
+    c.classList.toggle('win', !!G.win && G.win.includes(i));
+    c.classList.toggle('bad', !!G.win && !!G.cfg.misere);
+    c.classList.toggle('fading', i === fadeIdx);
+    c.classList.toggle('hint', i === hintIdx && !v);
+  });
+  if (big && G.last >= 0 && G.last !== lastScrolled) { lastScrolled = G.last; keepVisible(G.last); }
+  renderScores(); renderStatus();
+  $('#bUndo').disabled = !canUndo();
+  $('#bHint').disabled = !human || G.thinking || online();
+}
+function renderScores() {
+  const ym = youMark(), om = 3 - ym;
+  $('#sYou .mark').innerHTML = markIcon(ym);
+  $('#sOpp .mark').innerHTML = markIcon(om);
+  $('#nYou').textContent = S.opp === 'pvp' ? t('p1') : t('you');
+  $('#nOpp').textContent = S.opp === 'ai' ? t('cpu') : S.opp === 'online' ? t('opp') : t('p2');
+  $('#vYou').textContent = scores.you; $('#vDraw').textContent = scores.draw; $('#vOpp').textContent = scores.opp;
+  const a = $('#sYou'), o = $('#sOpp');
+  a.className = 'score m' + ym; o.className = 'score m' + om;
+  if (G && !G.over) (G.turn === ym ? a : o).classList.add('active');
+}
+const markIcon = v => v === 1
+  ? '<path d="M24 24L76 76M76 24L24 76" fill="none" stroke="var(--x)" stroke-width="13" stroke-linecap="round"/>'
+  : '<circle cx="50" cy="50" r="28" fill="none" stroke="var(--o)" stroke-width="13"/>';
+
+function nameOf(mark) {
+  const ym = youMark();
+  if (S.opp === 'ai') return mark === ym ? t('you') : t('cpu');
+  if (S.opp === 'online') return mark === ym ? t('you') : t('opp');
+  return mark === ym ? t('p1') : t('p2');
+}
+function renderStatus() {
+  const el = $('#status'); el.className = 'status';
+  let s;
+  if (G.over) {
+    const r = G.result;
+    if (G.forfeit === 'lost') { s = t('lostConn'); el.classList.add('lose'); }
+    else if (G.forfeit) { s = t('oppLeft'); el.classList.add('win'); }
+    else if (r === 'draw') s = t('tie');
+    else if (S.opp !== 'pvp') { s = r === 'you' ? t('youWin') : t('youLose'); el.classList.add(r === 'you' ? 'win' : 'lose'); }
+    else { s = t('pWin', {m: r === 'you' ? t('p1') : t('p2')}); el.classList.add('win'); }
+  } else if (online()) {
+    if (net.state === 'playing') s = G.turn === net.mark ? t('yourTurn') : t('oppTurn');
+    else s = net.state === 'searching' ? t('searching') : net.state === 'waiting' ? t('roomCode') + ' ' + net.code
+           : net.state === 'idle' ? t('pickWay') : net.state === 'connecting' ? t('connecting') : t('connFail');
+  } else if (!G.moves && S.opp === 'ai' && G.turn === youMark()) s = t('tap');
+  else if (S.opp === 'ai') s = G.turn === youMark() ? t('yourTurn') : t('thinking');
+  else s = t('turnOf', {m: nameOf(G.turn)});
+  el.textContent = s;
+  $('#rule').textContent = t('r_' + S.mode);
+}
+
+function doMove(idx, remote) {
+  const p = G.turn;
+  if (online() && !remote) netSend({t:'move', i:idx});
+  G.hist.push({b:G.b.slice(), q:[G.q[0].slice(), G.q[1].slice()], turn:G.turn, last:G.last, moves:G.moves});
+  const r = applyMove(G, idx, p, G.cfg);
+  G.b = r.b; G.q = r.q; G.last = idx; G.moves++; hintIdx = -1; clearTimeout(hintTimer);
+  const line = lineAt(G.b, G.n, G.cfg.k, idx, p);
+  let winner = null;
+  if (line) { G.win = line; winner = G.cfg.misere ? 3-p : p; }
+  else if (!G.cfg.endless && G.b.every(x => x)) winner = 0;
+  else if (G.cfg.endless && G.moves >= 120) winner = 0;
+  sfx.place(p);
+  if (winner !== null) finish(winner);
+  else { G.turn = 3 - p; render(); maybeAI(); }
+}
+function finish(winner) {
+  G.over = true;
+  const key = winner === 0 ? 'draw' : (winner === youMark() ? 'you' : 'opp');
+  G.result = key;
+  scores[key === 'draw' ? 'draw' : key]++;
+  const sk = S.mode + '|' + S.opp;
+  const st = S.stats[sk] || (S.stats[sk] = {w:0, d:0, l:0});
+  st[key === 'you' ? 'w' : key === 'draw' ? 'd' : 'l']++;
+  save(); render();
+  if (key === 'draw') sfx.draw();
+  else if (S.opp === 'pvp' || key === 'you') { sfx.win(); setTimeout(confetti, 250); petCheer(); }
+  else sfx.lose();
+  net.wantRematch = false; net.rematchReq = false;
+  overTimer = setTimeout(showOverlay, 950);
+}
+function showOverlay() {
+  if (!G || !G.over) return;
+  $('#resTitle').textContent = $('#status').textContent;
+  updateOverlay();
+  $('#overlay').classList.add('show');
+}
+function updateOverlay() {
+  const on = online();
+  const again = $('#bAgain'), exit = $('#bExit');
+  exit.hidden = !on; exit.textContent = t('exit');
+  if (!on) { again.textContent = t('again'); again.disabled = false; $('#resSub').textContent = ''; return; }
+  if (G.forfeit || net.state !== 'playing') {
+    again.textContent = t('newMatch'); again.disabled = false; exit.hidden = true;
+    $('#resSub').textContent = G.forfeit ? '' : (net.state === 'off' ? t('lostConn') : t('oppLeftIdle'));
+    return;
+  }
+  again.textContent = net.wantRematch ? t('waitRematch') : t('rematch');
+  again.disabled = net.wantRematch;
+  $('#resSub').textContent = net.rematchReq ? t('oppWantsRematch') : '';
+}
+function maybeAI() {
+  if (S.opp !== 'ai' || G.over || G.turn === youMark()) return;
+  G.thinking = true; render();
+  const g = G;
+  aiTimer = setTimeout(() => {
+    if (g !== G || G.over) return;
+    const m = aiMove({b:G.b, q:G.q}, G.cfg, G.turn, S.level);
+    G.thinking = false;
+    if (m >= 0) doMove(m); else render();
+  }, 420 + Math.random() * 380);
+}
+function canUndo() {
+  if (!G || G.over || G.thinking || !G.hist.length || online()) return false;
+  if (S.opp === 'pvp') return true;
+  return G.hist.some(h => h.turn === youMark());
+}
+function undo() {
+  if (!canUndo()) return;
+  let idx;
+  if (S.opp === 'pvp') idx = G.hist.length - 1;
+  else { idx = -1; for (let i = G.hist.length-1; i >= 0; i--) if (G.hist[i].turn === youMark()) { idx = i; break; } }
+  if (idx < 0) return;
+  const h = G.hist[idx];
+  G.hist.length = idx;
+  G.b = h.b; G.q = h.q; G.turn = h.turn; G.last = h.last; G.moves = h.moves; G.win = null;
+  hintIdx = -1; sfx.click(); render();
+}
+function hint() {
+  if (!isHumanTurn() || G.thinking) return;
+  const m = aiMove({b:G.b, q:G.q}, G.cfg, G.turn, 2, true);
+  if (m < 0) return;
+  hintIdx = m; sfx.click(); render();
+  clearTimeout(hintTimer); hintTimer = setTimeout(() => { hintIdx = -1; if (G && !G.over) render(); }, 2600);
+}
+
+// drag-to-pan (mouse) on the big board + zoom controls
+let pan = null, panMoved = false;
+$('#board').addEventListener('pointerdown', e => {
+  if (!isBig() || e.pointerType !== 'mouse' || e.button !== 0) return;
+  pan = {x: e.clientX, y: e.clientY, sl: $('#board').scrollLeft, st: $('#board').scrollTop}; panMoved = false;
+});
+window.addEventListener('pointermove', e => {
+  if (!pan) return;
+  const dx = e.clientX - pan.x, dy = e.clientY - pan.y;
+  if (!panMoved && Math.abs(dx) + Math.abs(dy) > 6) { panMoved = true; $('#board').classList.add('panning'); }
+  if (panMoved) { $('#board').scrollLeft = pan.sl - dx; $('#board').scrollTop = pan.st - dy; }
+});
+window.addEventListener('pointerup', () => { pan = null; $('#board').classList.remove('panning'); setTimeout(() => { panMoved = false; }, 0); });
+$('#board').addEventListener('wheel', e => { if (isBig() && e.ctrlKey) { e.preventDefault(); setZoom(zoomPx + (e.deltaY < 0 ? 4 : -4)); } }, {passive:false});
+$('#zIn').addEventListener('click', () => setZoom(zoomPx + 6));
+$('#zOut').addEventListener('click', () => setZoom(zoomPx - 6));
+$('#zLast').addEventListener('click', () => { if (isBig()) centerOn(G.last >= 0 ? G.last : (G.n >> 1) * G.n + (G.n >> 1), true); });
+
+$('#grid').addEventListener('click', e => {
+  if (panMoved) return;
+  const c = e.target.closest('.cell'); if (!c || !G) return;
+  const i = +c.dataset.cell;
+  if (!isHumanTurn() || G.thinking || G.b[i]) return;
+  doMove(i);
+});
+
+/* ===================== Sound & FX ===================== */
+let ac = null;
+function beep(f, d = .1, type = 'sine', v = .08, t0 = 0) {
+  if (!S.sound) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+    const o = ac.createOscillator(), g = ac.createGain(), tt = ac.currentTime + t0;
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(v, tt); g.gain.exponentialRampToValueAtTime(.0001, tt + d);
+    o.connect(g); g.connect(ac.destination); o.start(tt); o.stop(tt + d);
+  } catch (e) {}
+}
+const sfx = {
+  place: p => beep(p === 1 ? 520 : 390, .12, 'triangle'),
+  click: () => beep(700, .05, 'square', .03),
+  win: () => [523,659,784,1046].forEach((f, i) => beep(f, .22, 'sine', .09, i*.1)),
+  lose: () => [392,330,262].forEach((f, i) => beep(f, .25, 'sawtooth', .04, i*.15)),
+  draw: () => [330,294].forEach((f, i) => beep(f, .2, 'triangle', .07, i*.14))
+};
+function confetti() {
+  const cv = $('#fx'), x = cv.getContext('2d');
+  cv.width = innerWidth; cv.height = innerHeight;
+  const cs = getComputedStyle(document.documentElement);
+  const cols = [cs.getPropertyValue('--x').trim(), cs.getPropertyValue('--o').trim(), '#ffd93d', '#ffffff', '#7CFFB2'];
+  const ps = Array.from({length:120}, () => ({
+    x: innerWidth/2 + (Math.random()-.5)*240, y: innerHeight*.55,
+    vx: (Math.random()-.5)*15, vy: -Math.random()*15 - 4, s: 5 + Math.random()*6,
+    c: cols[(Math.random()*cols.length)|0], r: Math.random()*6, vr: (Math.random()-.5)*.4
+  }));
+  let f = 0;
+  (function tick() {
+    x.clearRect(0, 0, cv.width, cv.height);
+    for (const p of ps) {
+      p.vy += .36; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.s/2, -p.s/2, p.s, p.s*.6); x.restore();
+    }
+    if (++f < 120) requestAnimationFrame(tick); else x.clearRect(0, 0, cv.width, cv.height);
+  })();
+}
+
+/* ===================== UI wiring ===================== */
+const FLAG_VI = '<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#da251d"/><polygon fill="#ffeb00" points="15,4 16.8,9.5 22.5,9.5 17.9,12.9 19.6,18.3 15,15 10.4,18.3 12.1,12.9 7.5,9.5 13.2,9.5"/></svg>';
+const FLAG_EN = '<svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#012169"/><path d="M0 0L60 40M60 0L0 40" stroke="#fff" stroke-width="8"/><path d="M0 0L60 40M60 0L0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0V40M0 20H60" stroke="#fff" stroke-width="12"/><path d="M30 0V40M0 20H60" stroke="#c8102e" stroke-width="7"/></svg>';
+const SND_ON = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M3 9v6h4l5 4V5L7 9H3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>';
+const SND_OFF = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M3 9v6h4l5 4V5L7 9H3z"/><path d="M16 9l5 6M21 9l-5 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>';
+
+function modeLabel(m) { return /^m\d+$/.test(m) ? m.slice(1) + '×' + m.slice(1) : t(m); }
+
+function syncUI() {
+  document.documentElement.lang = S.lang;
+  document.documentElement.dataset.theme = S.theme;
+  $('.merry').dataset.i = S.season === 'tet' ? 'merryTet' : 'merry';
+  $$('[data-i]').forEach(el => { el.textContent = t(el.dataset.i); });
+  $$('[data-tip]').forEach(el => { el.title = t('tip_' + el.dataset.tip); });
+  $('#bLang').innerHTML = S.lang === 'vi' ? FLAG_VI : FLAG_EN;
+  $('#bSound').innerHTML = S.sound ? SND_ON : SND_OFF;
+  $('#bSound').classList.toggle('off', !S.sound);
+  $$('[data-mode]').forEach(b => {
+    if (/^m\d+$/.test(b.dataset.mode)) b.textContent = modeLabel(b.dataset.mode);
+    b.classList.toggle('on', b.dataset.mode === S.mode);
+  });
+  $$('[data-opp]').forEach(b => b.classList.toggle('on', b.dataset.opp === S.opp));
+  $$('[data-lvl]').forEach(b => b.classList.toggle('on', +b.dataset.lvl === S.level));
+  $('#segLvl').classList.toggle('dim', S.opp === 'pvp');
+  $('#lvlTitle').classList.toggle('dim', S.opp === 'pvp');
+  $('#segLvl').style.display = $('#lvlTitle').style.display = online() ? 'none' : '';
+  $('#onPanel').classList.toggle('show', online());
+  $('#bSwap').style.visibility = online() ? 'hidden' : '';
+  renderOnline();
+  // theme popover
+  $('#themePop').innerHTML = ['noel', 'tet'].map(k => {
+    const [a, b, c] = THEMES[k];
+    return `<button class="swatch ${(k === 'tet') === (S.season === 'tet') ? 'on' : ''}" data-season="${k}"><i style="background:linear-gradient(90deg,${a} 0 33%,${b} 33% 66%,${c} 66%)"></i>${t('th_' + k)}</button>`;
+  }).join('');
+  $$('.capy').forEach(c => c.classList.toggle('on', !!S.pet));
+  document.body.classList.toggle('xmas', !!S.xmas);
+  document.body.classList.toggle('tet', S.season === 'tet');
+  document.body.classList.toggle('noel', S.season !== 'tet');
+  petDressAll(); drawLights();
+  $('#xmas').hidden = $('#snow').hidden = !S.xmas;
+  $('#xLights').style.visibility = S.xmas ? '' : 'hidden';
+  if (G) render();
+}
+function restartAll() {
+  if (['searching', 'waiting', 'playing'].includes(net.state)) netLeave(true);
+  resetScores(); save(); syncUI(); newRound();
+}
+
+$$('[data-mode]').forEach(b => b.addEventListener('click', () => {
+  sfx.click();
+  if (S.mode !== b.dataset.mode) { S.mode = b.dataset.mode; restartAll(); } else if (!online()) newRound();
+}));
+$$('[data-opp]').forEach(b => b.addEventListener('click', () => {
+  sfx.click();
+  if (S.opp === b.dataset.opp) return;
+  S.opp = b.dataset.opp; restartAll();
+  if (online()) netConnect();
+}));
+$$('[data-lvl]').forEach(b => b.addEventListener('click', () => { sfx.click(); S.level = +b.dataset.lvl; restartAll(); }));
+$('#bSwap').addEventListener('click', () => { if (online()) return; sfx.click(); S.youX = !S.youX; save(); syncUI(); newRound(); });
+$('#bHint').addEventListener('click', hint);
+$('#bUndo').addEventListener('click', undo);
+$('#bNew').addEventListener('click', () => {
+  sfx.click();
+  if (online()) { if (net.state !== 'idle' && net.state !== 'off' && net.state !== 'connecting') netLeave(); return; }
+  newRound();
+});
+$('#bAgain').addEventListener('click', e => {
+  e.stopPropagation();
+  if (online()) {
+    if (G.forfeit || net.state !== 'playing') return netLeave();
+    if (net.wantRematch) return;
+    net.wantRematch = true; netSend({t:'rematch'}); updateOverlay();
+    return;
+  }
+  newRound();
+});
+$('#bExit').addEventListener('click', e => { e.stopPropagation(); netLeave(); });
+$('#overlay').addEventListener('click', () => { if (!online()) newRound(); });
+$('#bSound').addEventListener('click', () => { S.sound = !S.sound; save(); syncUI(); sfx.click(); });
+$('#bLang').addEventListener('click', () => { S.lang = S.lang === 'vi' ? 'en' : 'vi'; save(); syncUI(); if (G && G.over) { $('#resTitle').textContent = $('#status').textContent; updateOverlay(); } });
+$('#bDice').addEventListener('click', () => {
+  sfx.click();
+  if (online()) return;
+  S.youX = Math.random() < .5; save(); syncUI(); newRound();   // roll the dice: random side, new game
+});
+$('#bStyle').addEventListener('click', e => { e.stopPropagation(); $('#themePop').classList.toggle('open'); });
+$('#themePop').addEventListener('click', e => {
+  const sb = e.target.closest('[data-season]');
+  if (sb) { S.season = sb.dataset.season; S.theme = S.season === 'tet' ? 'tet' : 'noel'; save(); syncUI(); sfx.click(); return; }
+});
+document.addEventListener('click', e => { if (!e.target.closest('.stylebox')) $('#themePop').classList.remove('open'); });
+
+function showStats() {
+  const keys = Object.keys(S.stats);
+  let html;
+  if (!keys.length) html = `<p style="text-align:center;color:var(--muted);padding:14px 0">${t('noData')}</p>`;
+  else {
+    let W = 0, D = 0, L = 0;
+    const rows = keys.map(k => {
+      const [m, o] = k.split('|'), s = S.stats[k];
+      W += s.w; D += s.d; L += s.l;
+      return `<tr><td>${modeLabel(m)} · ${o === 'ai' ? t('ai') : o === 'online' ? t('online') : t('pvp')}</td><td>${s.w}</td><td>${s.d}</td><td>${s.l}</td></tr>`;
+    }).join('');
+    html = `<table><tr><th></th><th>${t('winS')}</th><th>${t('draw')}</th><th>${t('loseS')}</th></tr>${rows}<tr><td>${t('total')}</td><td><b>${W}</b></td><td><b>${D}</b></td><td><b>${L}</b></td></tr></table>`;
+  }
+  $('#statsBody').innerHTML = html;
+  $('#modal').classList.add('show');
+}
+$('#bStats').addEventListener('click', showStats);
+$('#bCloseStats').addEventListener('click', () => $('#modal').classList.remove('show'));
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') $('#modal').classList.remove('show'); });
+$('#bResetStats').addEventListener('click', () => { S.stats = {}; save(); showStats(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') $('#modal').classList.remove('show');
+  if (e.target.tagName === 'BUTTON' && e.key === ' ') return;
+});
+
+/* ===================== Online (WebSocket) ===================== */
+let netQueue = [];
+function serverUrl() {
+  const q = new URLSearchParams(location.search).get('server'); if (q) return q;
+  if (location.protocol === 'http:' || location.protocol === 'https:') return (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host;
+  return 'ws://localhost:3000';
+}
+function netSend(o) { if (net.ws && net.ws.readyState === 1) net.ws.send(JSON.stringify(o)); }
+function netConnect(cb) {
+  if (net.ws && net.ws.readyState === 1) { if (cb) cb(); return; }
+  if (cb) netQueue.push(cb);
+  if (net.ws && net.ws.readyState === 0) return;
+  net.state = 'connecting'; net.error = ''; renderOnline(); if (G) render();
+  let ws;
+  try { ws = new WebSocket(serverUrl()); } catch (e) { net.state = 'off'; renderOnline(); if (G) render(); return; }
+  net.ws = ws;
+  ws.onopen = () => { net.state = 'idle'; renderOnline(); if (G) render(); const q = netQueue; netQueue = []; q.forEach(f => f()); };
+  ws.onmessage = ev => { let m; try { m = JSON.parse(ev.data); } catch (e) { return; } onNet(m); };
+  ws.onclose = () => {
+    if (net.ws !== ws) return;
+    net.ws = null; netQueue = []; net.count = 0;
+    const was = net.state; net.state = 'off'; net.wantRematch = false;
+    if (was === 'playing' && G && !G.over) endEarly('lost');
+    else if (G && G.over && online()) updateOverlay();
+    renderOnline(); if (G) render();
+  };
+}
+function netLeave(silent) {
+  netSend({t:'leave'});
+  net.state = !net.ws ? 'off' : net.ws.readyState === 1 ? 'idle' : 'connecting';
+  net.mark = 0; net.code = ''; net.inMatch = false; net.wantRematch = net.rematchReq = false; net.error = '';
+  if (!silent) { newRound(); renderOnline(); }
+}
+function endEarly(kind) {
+  if (!G || G.over) return;
+  clearTimeout(aiTimer);
+  G.over = true; G.forfeit = kind; G.result = kind === 'oppLeft' ? 'you' : 'none';
+  if (kind === 'oppLeft') {
+    scores.you++;
+    const sk = S.mode + '|online', st = S.stats[sk] || (S.stats[sk] = {w:0, d:0, l:0});
+    st.w++; save(); sfx.win(); setTimeout(confetti, 250);
+  }
+  net.inMatch = false; render();
+  overTimer = setTimeout(showOverlay, 700);
+}
+function onNet(m) {
+  switch (m.t) {
+    case 'hello': case 'online': net.count = m.count; renderOnline(); break;
+    case 'searching': net.state = 'searching'; renderOnline(); render(); break;
+    case 'waiting': net.state = 'waiting'; net.code = m.code; renderOnline(); render(); break;
+    case 'start':
+      if (!net.inMatch) resetScores();
+      net.inMatch = true; net.state = 'playing'; net.mark = m.mark; net.code = m.code; net.error = '';
+      net.wantRematch = net.rematchReq = false;
+      if (MODES[m.mode]) S.mode = m.mode;
+      syncUI(); newRound(); sfx.win();
+      break;
+    case 'move':
+      if (online() && G && !G.over && net.state === 'playing' && G.turn !== net.mark) doMove(m.i, true);
+      break;
+    case 'opp_left':
+      if (G && !G.over && net.state === 'playing') { net.state = 'idle'; endEarly('oppLeft'); }
+      else { net.state = 'idle'; net.inMatch = false; if (G && G.over) updateOverlay(); }
+      renderOnline(); render();
+      break;
+    case 'rematch_req': net.rematchReq = true; updateOverlay(); break;
+    case 'emote': showEmote(m.e, false); break;
+    case 'error': net.error = m.msg === 'full' ? 'errFull' : 'errNotFound'; renderOnline(); break;
+  }
+}
+function showEmote(e, mine) {
+  const d = document.createElement('div');
+  d.className = 'emote ' + (mine ? 'mine' : 'theirs'); d.textContent = e;
+  $('.boardwrap').appendChild(d); setTimeout(() => d.remove(), 1900);
+  sfx.click();
+}
+function renderOnline() {
+  $('#onCountRow').classList.toggle('off', net.state === 'off' || net.state === 'connecting');
+  $('#onCount').textContent = net.count || 0;
+  if (!online()) return;
+  const s = net.state; let h = '';
+  if (s === 'connecting') h = `<div class="spin"></div><div class="sub">${t('connecting')}</div>`;
+  else if (s === 'off') h = `<div class="err">${t('connFail')}</div><button class="obtn pri" data-act="retry">${t('retry')}</button>`;
+  else if (s === 'idle') h = `<button class="obtn pri" data-act="quick">${t('quick')}</button><button class="obtn" data-act="create">${t('create')}</button>
+      <div class="joinrow"><input id="joinCode" maxlength="4" placeholder="${t('joinPh')}" value="${net.joinText}" autocomplete="off" spellcheck="false"><button class="obtn" data-act="join">${t('join')}</button></div>
+      ${net.error ? `<div class="err">${t(net.error)}</div>` : ''}`;
+  else if (s === 'searching') h = `<div class="spin"></div><div class="sub">${t('searching')}</div><button class="obtn danger" data-act="leave">${t('cancel')}</button>`;
+  else if (s === 'waiting') h = `<div class="sub">${t('roomCode')}</div><div class="code">${net.code}</div><div class="sub">${t('waitFriend')}</div><div class="spin"></div>
+      <button class="obtn" data-act="copy">${net.copied ? t('copied') : t('copyLink')}</button><button class="obtn danger" data-act="leave">${t('cancel')}</button>`;
+  else if (s === 'playing') h = `<div class="sub">${t('playingAs', {m: net.mark === 1 ? 'X' : 'O'})}</div>
+      <div class="emotes">${['😀','😮','😢','👍'].map(e => `<button data-emote="${e}">${e}</button>`).join('')}</div><button class="obtn danger" data-act="leave">${t('leave')}</button>`;
+  const el = $('#onBody');
+  if (el.dataset.sig !== h) { el.innerHTML = h; el.dataset.sig = h; }
+}
+function doJoin() {
+  const c = (net.joinText || '').trim();
+  if (c.length < 4) { net.error = 'errNotFound'; renderOnline(); return; }
+  net.error = ''; netSend({t:'join', code:c});
+}
+function copyLink() {
+  const link = (location.protocol.startsWith('http') ? location.origin + location.pathname : location.href.split('?')[0]) + '?room=' + net.code;
+  try { navigator.clipboard.writeText(link); } catch (e) {}
+  net.copied = true; renderOnline();
+  setTimeout(() => { net.copied = false; renderOnline(); }, 1600);
+}
+$('#onBody').addEventListener('click', e => {
+  const em = e.target.closest('[data-emote]');
+  if (em) { netSend({t:'emote', e:em.dataset.emote}); showEmote(em.dataset.emote, true); return; }
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  sfx.click();
+  const a = b.dataset.act;
+  if (a === 'retry') netConnect();
+  else if (a === 'quick') { net.error = ''; netSend({t:'quick', mode:S.mode}); }
+  else if (a === 'create') { net.error = ''; netSend({t:'create', mode:S.mode}); }
+  else if (a === 'join') doJoin();
+  else if (a === 'leave') netLeave();
+  else if (a === 'copy') copyLink();
+});
+$('#onBody').addEventListener('input', e => {
+  if (e.target.id === 'joinCode') { net.joinText = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); e.target.value = net.joinText; }
+});
+$('#onBody').addEventListener('keydown', e => { if (e.target.id === 'joinCode' && e.key === 'Enter') doJoin(); });
+
+/* ===================== Capybara mascots (3 at once) ===================== */
+const COSTUMES = ['santa', 'deer', 'tree'];          // Santa hat + scarf + gift · reindeer hood · Christmas tree
+const pets = [];
+let petLast = 0, petCheerUntil = 0;
+const SEASON_COSTUMES = {noel: ['santa', 'deer', 'tree'], tet: ['quan', 'quyt', 'rong']};
+function petDressAll() {
+  const list = SEASON_COSTUMES[S.season === 'tet' ? 'tet' : 'noel'], all = [...SEASON_COSTUMES.noel, ...SEASON_COSTUMES.tet];
+  pets.forEach((p, i) => all.forEach(c => p.el.classList.toggle('c-' + c, c === list[i])));
+}
+function petAdd(el, costume, speed, frac, dir, yOff) {
+  pets.push({el, speed, frac, dir, yOff, x: 0, started: false, idleUntil: 0, nextIdle: 0});
+}
+/* They run along the bottom of the screen: left corner <-> right corner (no circling). */
+function petFrame(now) {
+  requestAnimationFrame(petFrame);
+  if (!S.pet) { petLast = 0; return; }
+  const dt = petLast ? Math.min(.05, (now - petLast) / 1000) : 0; petLast = now;
+  const ch = Math.max(64, Math.min(108, Math.min(innerWidth, innerHeight) * .105)), cw = ch * .8;
+  const pad = 4, minX = cw / 2 + pad, maxX = Math.max(minX + 1, innerWidth - cw / 2 - pad);
+  const ground = S.xmas && innerWidth > 900 && innerHeight > 620 ? Math.max(34, Math.min(60, innerHeight * .06)) : 0;
+  const baseY = innerHeight - (ground ? ground * .42 : 4);
+  const cheering = now < petCheerUntil;
+  for (const p of pets) {
+    const el = p.el;
+    if (el.dataset.ch !== String(ch)) { el.dataset.ch = ch; el.style.width = cw + 'px'; el.style.height = ch + 'px'; }
+    if (!p.started) { p.x = minX + p.frac * (maxX - minX); p.started = true; p.nextIdle = now + 5000 + Math.random() * 9000; }
+    let idle = now < p.idleUntil;
+    if (!idle && now > p.nextIdle) { p.idleUntil = now + 1400 + Math.random() * 1200; p.nextIdle = p.idleUntil + 8000 + Math.random() * 9000; idle = true; }
+    el.classList.toggle('idle', idle && !cheering);
+    if (!idle || cheering) {
+      p.x += p.dir * (cheering ? p.speed * 2.1 : p.speed) * dt;
+      if (p.x >= maxX) { p.x = maxX; p.dir = -1; p.idleUntil = now + 600; }
+      else if (p.x <= minX) { p.x = minX; p.dir = 1; p.idleUntil = now + 600; }
+    }
+    p.x = Math.min(maxX, Math.max(minX, p.x));
+    el.style.transform = `translate(${p.x.toFixed(1)}px,${(baseY + p.yOff).toFixed(1)}px) scale(${p.dir},1) translate(${(-cw / 2).toFixed(1)}px,${(-ch).toFixed(1)}px)`;
+  }
+}
+function petCheer() {
+  if (!S.pet) return;
+  petCheerUntil = performance.now() + 2200;
+  if (S.season === 'tet') fwTextNow();
+  pets.forEach(p => { p.el.classList.add('hop'); setTimeout(() => p.el.classList.remove('hop'), 2000); });
+}
+(function petBoot() {
+  let hadPet = false;
+  try { hadPet = /"pet"/.test(localStorage.getItem('ttt-ultimate-v1') || ''); } catch (e) {}
+  if (!hadPet && window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) S.pet = false;
+  const first = $('#capy');
+  // three capybaras, one per costume, starting at different spots and speeds
+  const cfg = [['santa', 105, 0.0, 1, 0], ['deer', 125, 0.5, -1, -3], ['tree', 90, 1.0, -1, 3]];
+  cfg.forEach(([costume, speed, frac, dir, yOff], i) => {
+    let el = first;
+    if (i > 0) { el = first.cloneNode(true); el.removeAttribute('id'); el.className = 'capy'; document.body.appendChild(el); }
+    petAdd(el, costume, speed, frac, dir, yOff);
+  });
+  $$('.capy').forEach(c => c.classList.toggle('on', !!S.pet));
+  petDressAll();
+  requestAnimationFrame(petFrame);
+})();
+
+/* ===================== Christmas decorations ===================== */
+const snowCv = $('#snow'), sx = snowCv.getContext('2d');
+let flakes = [], twinkles = [], snowW = 0, snowH = 0, snowLast = 0;
+const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const newFlake = rand => ({x: Math.random() * snowW, y: rand ? Math.random() * snowH : -8, r: 1 + Math.random() * 2.6,
+  vy: 20 + Math.random() * 36, vx: (Math.random() - .5) * 14, ph: Math.random() * 6.28, sw: .5 + Math.random() * 1.2, a: .5 + Math.random() * .4});
+function snowResize() {
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  snowW = innerWidth; snowH = innerHeight;
+  snowCv.width = snowW * dpr; snowCv.height = snowH * dpr; sx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  flakes = Array.from({length: Math.round(Math.min(130, snowW * snowH / 13000))}, () => newFlake(true));
+  twinkles = Array.from({length: Math.round(snowW / 55)}, () => ({x: Math.random() * snowW, y: Math.random() * snowH * .75, r: 2 + Math.random() * 3.2, p: Math.random() * 6.28, s: .8 + Math.random() * 1.6}));
+  drawLights();
+}
+function snowFrame(now) {
+  requestAnimationFrame(snowFrame);
+  if (!S.xmas) { if (snowLast) { sx.clearRect(0, 0, snowW, snowH); snowLast = 0; } return; }
+  const dt = snowLast ? Math.min(.05, (now - snowLast) / 1000) : 0; snowLast = now;
+  const tet = S.season === 'tet';
+  sx.clearRect(0, 0, snowW, snowH);
+  // twinkling 4-point stars / golden sparkles
+  sx.fillStyle = tet ? '#ffffff' : '#fff6c9';
+  for (const s of twinkles) {
+    const a = .25 + .55 * (.5 + .5 * Math.sin(now / 1000 * s.s + s.p)), r = s.r * (.7 + .3 * a);
+    sx.globalAlpha = a; sx.beginPath();
+    sx.moveTo(s.x, s.y - r); sx.quadraticCurveTo(s.x, s.y, s.x + r, s.y); sx.quadraticCurveTo(s.x, s.y, s.x, s.y + r);
+    sx.quadraticCurveTo(s.x, s.y, s.x - r, s.y); sx.quadraticCurveTo(s.x, s.y, s.x, s.y - r); sx.fill();
+  }
+  // snow (Noel) or falling plum / peach petals (Tet)
+  for (const f of flakes) {
+    if (!reduceMotion) { f.ph += f.sw * dt; f.y += f.vy * dt; f.x += (f.vx + Math.sin(f.ph) * 14) * dt; }
+    if (f.y > snowH + 8 || f.x < -10 || f.x > snowW + 10) Object.assign(f, newFlake(false));
+    sx.globalAlpha = f.a;
+    if (tet) {
+      sx.fillStyle = f.r < 1.9 ? '#ff6f9a' : f.r < 2.5 ? '#ffffff' : '#e53935';
+      sx.save(); sx.translate(f.x, f.y); sx.rotate(f.ph * 1.6);
+      sx.beginPath(); sx.ellipse(0, 0, f.r * 1.7, f.r * .95, 0, 0, 6.2832); sx.fill(); sx.restore();
+    } else {
+      sx.fillStyle = '#fff';
+      sx.beginPath(); sx.arc(f.x, f.y, f.r, 0, 6.2832); sx.fill();
+    }
+  }
+  sx.globalAlpha = 1;
+}
+function drawLights() {
+  const w = innerWidth, tet = S.season === 'tet', host = $('#xLights');
+  const n = Math.max(2, Math.round(w / (tet ? 200 : 170))), seg = w / n;
+  host.style.height = tet ? '86px' : '40px';
+  host.setAttribute('viewBox', `0 0 ${w} ${tet ? 86 : 40}`);
+  if (tet) {
+    const rc = $('.boardwrap').getBoundingClientRect();
+    let d = 'M0 3', b = '';
+    for (let i = 0; i < n; i++) {
+      const x0 = i * seg, x2 = x0 + seg;
+      d += ` Q${(x0 + seg / 2).toFixed(1)} 16 ${x2.toFixed(1)} 3`;
+    }
+    for (let i = 0; i < n; i++) {
+      const x = (i + .5) * seg, y = 3 + 6.5;                     // lowest point of each sagging segment
+      if (x > rc.left - 26 && x < rc.right + 26 && rc.top < 100) continue;   // never hang over the board
+      b += `<g class="lantern" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><g class="swing">` +
+        `<path d="M0 0V8" stroke="#e8b84a" stroke-width="2"/><rect x="-7.5" y="7" width="15" height="5" rx="2" fill="#f5c33b" stroke="#5a1a14" stroke-width="1.6"/>` +
+        `<ellipse cx="0" cy="26" rx="15" ry="14.5" fill="#e2332c" stroke="#5a1a14" stroke-width="2"/>` +
+        `<path d="M0 11.5V40.5M-8 12.5Q-12 26 -8 39.5M8 12.5Q12 26 8 39.5" stroke="#a81b1b" stroke-width="1.6" fill="none"/>` +
+        `<text x="0" y="31" text-anchor="middle" font-size="14" font-weight="700" fill="#ffd24a" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif">福</text>` +
+        `<rect x="-7.5" y="39.5" width="15" height="5" rx="2" fill="#f5c33b" stroke="#5a1a14" stroke-width="1.6"/>` +
+        `<path d="M0 44.5V56" stroke="#f5c33b" stroke-width="2"/><path d="M-4.5 56H4.5L3 68H-3Z" fill="#f5c33b" stroke="#a8740a" stroke-width="1.2"/></g></g>`;
+    }
+    host.innerHTML = `<path d="${d}" fill="none" stroke="#a8541a" stroke-width="2.2"/>` + b;
+    return;
+  }
+  const cols = ['#ff4d5a', '#ffd84d', '#4cd37b', '#4aa8ff', '#ff8ad8'];
+  let d = 'M0 3', b = '', k = 0;
+  for (let i = 0; i < n; i++) {
+    const x0 = i * seg, x2 = x0 + seg, cx = x0 + seg / 2;
+    d += ` Q${cx.toFixed(1)} 32 ${x2.toFixed(1)} 3`;
+    for (const t of [.14, .38, .62, .86]) {
+      const m = 1 - t, x = m*m*x0 + 2*m*t*cx + t*t*x2, y = m*m*3 + 2*m*t*32 + t*t*3, c = cols[k % cols.length];
+      b += `<g class="bulb" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})" style="--c:${c}"><rect x="-2" y="-1" width="4" height="5" rx="1" fill="#2d2d33"/><ellipse cy="9" rx="4.4" ry="6.2" fill="${c}" style="animation-delay:${(-(k % 5) * .37).toFixed(2)}s"/><ellipse cx="-1.4" cy="7" rx="1.1" ry="1.8" fill="#fff" opacity=".6"/></g>`;
+      k++;
+    }
+  }
+  host.innerHTML = `<path d="${d}" fill="none" stroke="#1d1d22" stroke-width="2"/>` + b;
+}
+/* ---- Tet fireworks: rockets that climb, then burst (peony / ring / willow / double). Drawn above the UI. ---- */
+const fwCv = $('#fwc'), fx = fwCv.getContext('2d');
+let rockets = [], sparks = [], nextRocket = 0, fwCount = 0, fwLast = 0, fwW = 0, fwH = 0;
+const fwColors = () => ['#e8222a', '#ff5a1f', '#d6246e', '#c77d00', '#ffffff', '#7b1fa2', '#e8222a', '#ff9d00'];
+const fpick = a => a[(Math.random() * a.length) | 0];
+function fwResize() {
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  fwW = innerWidth; fwH = innerHeight;
+  fwCv.width = fwW * dpr; fwCv.height = fwH * dpr; fx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function fwTarget() {
+  const rc = $('.boardwrap').getBoundingClientRect(), zones = [];
+  if (rc.left > 110) zones.push([28, rc.left - 14]);
+  if (fwW - rc.right > 110) zones.push([rc.right + 14, fwW - 28]);
+  let x0, x1, rmax;
+  if (zones.length) { [x0, x1] = fpick(zones); rmax = Math.max(90, Math.min(160, (x1 - x0) * .85)); }
+  else { x0 = 40; x1 = fwW - 40; rmax = 110; }
+  return {x: x0 + Math.random() * Math.max(1, x1 - x0), y: fwH * (.14 + Math.random() * .34), rmax};
+}
+function launchRocket() {
+  const t = fwTarget();
+  rockets.push({x0: t.x + (Math.random() - .5) * 60, y0: fwH + 8, tx: t.x, ty: t.y, rmax: t.rmax, t: 0, dur: .8 + Math.random() * .35, c: fpick(fwColors()), trail: []});
+}
+function fwBurst(x, y, rmax, c1) {
+  const kind = Math.random(), c2 = fpick(fwColors());
+  const add = (a, v, col, o) => sparks.push({x, y, px: x, py: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 0, max: o.max, c: col, g: o.g, d: o.d, w: o.w});
+  if (kind < .4) {                                   // peony: dense radial ball in two colours
+    for (let i = 0; i < 70; i++) add(i / 70 * 6.2832 + Math.random() * .1, rmax * 2.05 * (.45 + Math.random() * .55), i % 3 ? c1 : c2, {max: 1.1 + Math.random() * .5, g: 40, d: 1.8, w: 2.2});
+  } else if (kind < .7) {                            // ring + inner star
+    for (let i = 0; i < 48; i++) add(i / 48 * 6.2832, rmax * 2.0, c1, {max: 1.2, g: 30, d: 1.8, w: 2.4});
+    for (let i = 0; i < 16; i++) add(i / 16 * 6.2832 + .2, rmax * 1.0, c2, {max: 1, g: 30, d: 1.8, w: 2});
+  } else {                                           // willow: long drooping strands
+    for (let i = 0; i < 60; i++) add(i / 60 * 6.2832 + Math.random() * .1, rmax * 1.6 * (.5 + Math.random() * .5), '#c77d00', {max: 1.9 + Math.random() * .7, g: 85, d: 1.5, w: 1.8});
+    for (let i = 0; i < 20; i++) add(Math.random() * 6.2832, rmax * 1.2 * Math.random(), c1, {max: 1.3, g: 60, d: 1.6, w: 2.4});
+  }
+  sparks.push({x, y, px: x, py: y, vx: 0, vy: 0, life: 0, max: .25, c: '#ffffff', g: 0, d: 0, w: 14, flash: true});
+}
+/* ---- "Happy New Year 2027" written in fireworks across the upper sky ---- */
+let textShow = null, nextText = 0, wantText = false;
+function fwTextNow() { wantText = true; }
+function fwTextPoints() {
+  const c = document.createElement('canvas'); c.width = 1200; c.height = 560;
+  const g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.font = '900 128px "Trebuchet MS","Segoe UI",Arial,sans-serif'; g.fillText('Happy New Year', 600, 130);
+  g.font = '900 250px "Trebuchet MS","Segoe UI",Arial,sans-serif'; g.fillText('2027', 600, 400);
+  const d = g.getImageData(0, 0, 1200, 560).data, step = 8, pts = [];
+  let minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+  for (let y = 0; y < 560; y += step) for (let x = 0; x < 1200; x += step) if (d[(y * 1200 + x) * 4 + 3] > 128) {
+    pts.push([x, y]); if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y;
+  }
+  if (!pts.length) return [];
+  const w = maxX - minX, h = maxY - minY;
+  let sc = Math.min(fwW * .9, 880) / w;
+  if (h * sc > fwH * .31) sc = fwH * .31 / h;
+  return pts.map(([x, y]) => ({x: (x - (minX + maxX) / 2) * sc, y: (y - (minY + maxY) / 2) * sc}));
+}
+function startTextShow(now) {
+  const pts = fwTextPoints(); if (!pts.length) return;
+  const cx = fwW / 2, cy = fwH * .205;
+  const cols = ['#ffd24a', '#ffd24a', '#ffd24a', '#fff4c2', '#fff4c2', '#ff9d00', '#ff8fb0'];
+  textShow = {t0: now, cx, cy, fired: false, parts: pts.map(p => ({
+    tx: cx + p.x, ty: cy + p.y, c: cols[(Math.random() * cols.length) | 0], ph: Math.random() * 6.28,
+    sz: 1.5 + Math.random() * .9, dx: (Math.random() - .5) * 40, dy: Math.random() * 20}))};
+  for (let k = 0; k < 3; k++) rockets.push({x0: cx + (k - 1) * 150 + (Math.random() - .5) * 40, y0: fwH + 8, tx: cx + (k - 1) * 30, ty: cy, rmax: 0, t: -k * .08, dur: .85, c: '#ffd24a', trail: [], flash: true});
+}
+function drawTextShow(now) {
+  const s = textShow; if (!s) return;
+  const T = (now - s.t0) / 1000;
+  if (T > 6.9) { textShow = null; return; }
+  if (!s.fired && T >= .85) { s.fired = true; sparks.push({x: s.cx, y: s.cy, px: s.cx, py: s.cy, vx: 0, vy: 0, life: 0, max: .4, c: '#fff', g: 0, d: 0, w: 38, flash: true}); }
+  if (T < .85) return;
+  const tf = T - .85;
+  fx.globalCompositeOperation = 'lighter';
+  for (const p of s.parts) {
+    let x, y, a = 1;
+    if (tf < 1.15) {                                    // burst: the sparks fly out from the centre and settle into the letters
+      const u = tf / 1.15, e = 1 - Math.pow(1 - u, 3);
+      x = s.cx + (p.tx - s.cx) * e + (1 - e) * Math.sin(p.ph * 3 + T * 9) * 16;
+      y = s.cy + (p.ty - s.cy) * e + (1 - e) * Math.cos(p.ph * 3 + T * 9) * 16;
+      a = .4 + .6 * e;
+    } else if (T < 5.3) {                               // hold: the letters glitter
+      x = p.tx + Math.sin(T * 3 + p.ph) * .7; y = p.ty + Math.cos(T * 3.3 + p.ph) * .7;
+      a = .74 + .26 * Math.sin(T * 7 + p.ph * 5);
+    } else {                                            // fade: the embers drift down
+      const k = T - 5.3;
+      x = p.tx + p.dx * k; y = p.ty + 60 * k * k + p.dy * k; a = 1 - k / 1.5;
+    }
+    a = Math.max(0, a);
+    fx.fillStyle = p.c;
+    fx.globalAlpha = a; fx.beginPath(); fx.arc(x, y, p.sz, 0, 6.2832); fx.fill();
+    fx.globalAlpha = a * .22; fx.beginPath(); fx.arc(x, y, p.sz * 2.6, 0, 6.2832); fx.fill();
+  }
+  fx.globalCompositeOperation = 'source-over';
+}
+function fwFrame(now) {
+  requestAnimationFrame(fwFrame);
+  const on = S.xmas && S.season === 'tet' && !reduceMotion;
+  if (!on) { if (fwLast) { fx.clearRect(0, 0, fwW, fwH); fwLast = 0; rockets = []; sparks = []; nextRocket = 0; textShow = null; nextText = 0; } return; }
+  const dt = fwLast ? Math.min(.05, (now - fwLast) / 1000) : 0; fwLast = now;
+  if (!nextRocket) nextRocket = now + 400;
+  if (now > nextRocket) {
+    launchRocket(); fwCount++;
+    if (fwCount % 5 === 0) { setTimeout(launchRocket, 220); setTimeout(launchRocket, 460); }   // now and then a volley
+    nextRocket = now + (textShow ? 350 + Math.random() * 350 : 700 + Math.random() * 900);
+  }
+  if (!nextText) nextText = now + 2500;
+  if (!textShow && (wantText || now > nextText)) { startTextShow(now); wantText = false; nextText = now + 38000; }
+  fx.clearRect(0, 0, fwW, fwH);
+  fx.lineCap = 'round';
+  for (let i = rockets.length - 1; i >= 0; i--) {
+    const r = rockets[i];
+    r.t += dt / r.dur;
+    const e = 1 - Math.pow(1 - Math.max(0, Math.min(1, r.t)), 2);
+    const x = r.x0 + (r.tx - r.x0) * e + Math.sin(r.t * 14) * 2, y = r.y0 + (r.ty - r.y0) * e;
+    r.trail.push([x, y]); if (r.trail.length > 14) r.trail.shift();
+    for (let k = 1; k < r.trail.length; k++) {
+      fx.globalAlpha = k / r.trail.length * .85; fx.strokeStyle = '#ffb02e'; fx.lineWidth = 2.6 * k / r.trail.length + .6;
+      fx.beginPath(); fx.moveTo(r.trail[k - 1][0], r.trail[k - 1][1]); fx.lineTo(r.trail[k][0], r.trail[k][1]); fx.stroke();
+    }
+    fx.globalAlpha = 1; fx.fillStyle = '#fff'; fx.beginPath(); fx.arc(x, y, 2.4, 0, 6.2832); fx.fill();
+    if (r.t >= 1) {
+      if (r.flash) sparks.push({x: r.tx, y: r.ty, px: r.tx, py: r.ty, vx: 0, vy: 0, life: 0, max: .3, c: '#fff', g: 0, d: 0, w: 10, flash: true}); else fwBurst(r.tx, r.ty, r.rmax, r.c);
+      rockets.splice(i, 1);
+    }
+  }
+  for (let i = sparks.length - 1; i >= 0; i--) {
+    const p = sparks[i];
+    p.life += dt;
+    if (p.life > p.max) { sparks.splice(i, 1); continue; }
+    const a = 1 - p.life / p.max;
+    if (p.flash) { fx.globalAlpha = a * .8; fx.fillStyle = '#fff'; fx.beginPath(); fx.arc(p.x, p.y, p.w * (1.6 - a), 0, 6.2832); fx.fill(); continue; }
+    p.px = p.x; p.py = p.y;
+    p.vx *= 1 - p.d * dt; p.vy = p.vy * (1 - p.d * dt) + p.g * dt;
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    fx.globalAlpha = Math.pow(a, .7) * (Math.random() < .08 ? .4 : 1);   // a little twinkle
+    fx.strokeStyle = p.c; fx.lineWidth = p.w * (.5 + .5 * a);
+    fx.beginPath(); fx.moveTo(p.px, p.py); fx.lineTo(p.x, p.y); fx.stroke();
+  }
+  drawTextShow(now);
+  fx.globalAlpha = 1;
+}
+window.addEventListener('resize', fwResize);
+fwResize(); requestAnimationFrame(fwFrame);
+
+window.addEventListener('resize', snowResize);
+snowResize(); requestAnimationFrame(snowFrame);
+
+// test hooks
+window.__ttt = {get G() { return G; }, get net() { return net; }, aiMove, cfgOf, S, doMove, newRound, fw: {burst: fwBurst, launch: launchRocket, text: fwTextNow, get show() { return !!textShow; }, get points() { return textShow ? textShow.parts.length : 0; }, get sparks() { return sparks.length; }, get rockets() { return rockets.length; }}};
+
+syncUI();
+newRound();
+(function initOnline() {
+  const room = new URLSearchParams(location.search).get('room');
+  if (room) { S.opp = 'online'; syncUI(); newRound(); netConnect(() => netSend({t:'join', code:room.toUpperCase().slice(0, 4)})); }
+  else if (online()) netConnect();
+})();
+})();
+</script>
+</body>
+</html>

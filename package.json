@@ -1,0 +1,15 @@
+{
+  "name": "tic-tac-toe-ultimate",
+  "version": "1.0.0",
+  "description": "Tic Tac Toe Ultimate with online multiplayer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
