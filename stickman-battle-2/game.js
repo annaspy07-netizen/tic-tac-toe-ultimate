@@ -17,7 +17,7 @@ const easeIn = t => t * t;
 const I18N = {
   en: {
     weapon: 'Weapon', skin: 'Skin', color: 'Color', boss: 'Boss', soccer: 'SOCCER', survival: 'SURVIVAL', free: 'Free',
-    lvlBtn: 'Level ', best: 'Best: ', settings: 'Settings', backMenu: 'Back to menu', language: 'Language', home: '🏠 Home',
+    lvlBtn: 'Level ', best: 'Best: ', settings: 'Settings', backMenu: 'Back to menu', language: 'Language', home: '🏠 Home', online: 'Online Duel', lobbyTitle: 'Online Duel', quick: '⚡ Quick match', createRoom: 'Create room', join: 'Join', codePh: 'CODE', connecting: 'Connecting…', connFail: 'Cannot reach the server', searching: 'Looking for an opponent…', shareCode: 'Share this code with a friend:', copyLink: 'Copy invite link', copied: 'Copied!', cancel: 'Cancel', errNotFound: 'Room not found', errFull: 'Room is full', opponent: 'RIVAL', round: 'ROUND ', ko: 'K.O.!', drawRound: 'DRAW', duelWin: 'You won the duel!', duelLose: 'You lost the duel', oppLeft: 'Rival left — you win!', lostConn: 'Connection lost', duelAgain: 'Rematch', waitRematch: 'Waiting…', leaveDuel: 'Leave the match? Your rival wins.', duelRule: '1v1 · first to win 2 rounds · uses your own weapon',
     needKey: 'You need a 🔑 key – clear 5 levels to earn one',
     gameOver: 'Game Over', waves: 'Waves: ', newBest: '🏆 New best!', menu: 'Menu', retry: 'Retry',
     keyPlus: '🔑 +1 Key', bossDefeated: 'Boss Defeated!', victory: 'Victory!', nobody: 'Nobody can stop you!',
@@ -37,7 +37,7 @@ const I18N = {
   },
   vi: {
     weapon: 'Vũ khí', skin: 'Mũ', color: 'Màu', boss: 'Trùm', soccer: 'BÓNG ĐÁ', survival: 'SINH TỒN', free: 'Miễn phí',
-    lvlBtn: 'Màn ', best: 'Cao nhất: ', settings: 'Cài đặt', backMenu: 'Về menu', language: 'Ngôn ngữ', home: '🏠 Trang chủ',
+    lvlBtn: 'Màn ', best: 'Cao nhất: ', settings: 'Cài đặt', backMenu: 'Về menu', language: 'Ngôn ngữ', home: '🏠 Trang chủ', online: 'Đấu online', lobbyTitle: 'Đấu online', quick: '⚡ Tìm trận nhanh', createRoom: 'Tạo phòng', join: 'Vào', codePh: 'MÃ', connecting: 'Đang kết nối…', connFail: 'Không kết nối được máy chủ', searching: 'Đang tìm đối thủ…', shareCode: 'Gửi mã này cho bạn bè:', copyLink: 'Sao chép liên kết mời', copied: 'Đã sao chép!', cancel: 'Hủy', errNotFound: 'Không tìm thấy phòng', errFull: 'Phòng đã đủ người', opponent: 'ĐỐI THỦ', round: 'VÒNG ', ko: 'HẠ GỤC!', drawRound: 'HÒA VÒNG NÀY', duelWin: 'Bạn thắng trận đấu!', duelLose: 'Bạn thua trận đấu', oppLeft: 'Đối thủ đã thoát — bạn thắng!', lostConn: 'Mất kết nối', duelAgain: 'Đấu lại', waitRematch: 'Đang chờ…', leaveDuel: 'Rời trận? Đối thủ sẽ thắng.', duelRule: 'Đấu tay đôi 1v1 · ai thắng 2 vòng trước thì thắng · dùng vũ khí của bạn',
     needKey: 'Bạn cần 🔑 chìa khóa – qua 5 màn để nhận một chiếc',
     gameOver: 'Thua rồi', waves: 'Số đợt: ', newBest: '🏆 Kỷ lục mới!', menu: 'Menu', retry: 'Chơi lại',
     keyPlus: '🔑 +1 Chìa khóa', bossDefeated: 'Hạ gục trùm!', victory: 'Chiến thắng!', nobody: 'Không ai cản nổi bạn!',
@@ -353,6 +353,7 @@ function takeHit(t, src, dmg, knock) {
 }
 
 function doAttack(f) {
+  if (G.mode === 'duel') return f.isPlayer ? duelAttack(f) : undefined;
   if (G.mode === 'soccer') return kickBall(f);
   if (f.shooter) return spawnProj(f);
   const w = WBY[f.weapon], list = f.isPlayer ? G.enemies : [G.player];
@@ -549,7 +550,8 @@ function playerControl(p) {
   if (d && p.atk <= 0) p.face = d;
   if (keys.jump && p.onGround) { p.vy = -12.2; snd.jump(); }
   if (keys.atk && p.atk <= 0 && p.cd <= 0) {
-    if (!d && G.mode === 'fight') {
+    if (!d && G.mode === 'duel' && G.remote) p.face = G.remote.x >= p.x ? 1 : -1;
+    else if (!d && G.mode === 'fight') {
       let best = null;
       for (const e of G.enemies) if (!e.dead && Math.abs(e.x - p.x) < 170 && (!best || Math.abs(e.x - p.x) < Math.abs(best.x - p.x))) best = e;
       if (best) p.face = best.x >= p.x ? 1 : -1;
@@ -782,7 +784,7 @@ function render() {
   c.save();
   if (G.shake > 0.3) { c.translate(rnd(-G.shake, G.shake), rnd(-G.shake, G.shake)); G.shake *= 0.85; }
   drawBG(c);
-  const fighters = G.mode === 'fight' ? [...G.enemies, G.player] : [G.ai, G.player];
+  const fighters = G.mode === 'fight' ? [...G.enemies, G.player] : G.mode === 'duel' ? [G.remote, G.player] : [G.ai, G.player];
   fighters.forEach(f => drawShadow(c, f));
   fighters.forEach(f => {
     drawFighter(c, f);
@@ -806,6 +808,7 @@ function render() {
 }
 
 function drawHUD(c) {
+  if (G.mode === 'duel') { drawDuelHUD(c); return; }
   const p = G.player;
   if (G.mode === 'fight') {
     drawBar(c, 20, 20, 250, 18, p.hp / p.maxhp, '#3ddc5a');
@@ -834,7 +837,7 @@ function drawHUD(c) {
 function update() {
   if (G.mode === 'menu') return;
   if (G.hitstop > 0) { G.hitstop--; return; }
-  G.mode === 'fight' ? updateFight() : updateSoccer();
+  G.mode === 'fight' ? updateFight() : G.mode === 'duel' ? updateDuel() : updateSoccer();
   for (const p of G.parts) { p.x += p.vx; p.y += p.vy; p.vy += 0.25; p.life--; }
   G.parts = G.parts.filter(p => p.life > 0);
   for (const t of G.texts) { t.y += t.vy; t.life--; }
@@ -880,6 +883,7 @@ function openModal({ title, body, buttons = [], wide = false }) {
 const closeModal = () => $('#modal').classList.remove('on');
 
 function toMenu() {
+  netLeave(); NET.lobbyOpen = false; G.remote = null; G.duel = null;
   closeModal(); G.mode = 'menu'; G.ball = null; showScreen('menu'); refreshMenu();
 }
 
@@ -1018,6 +1022,203 @@ function openSettings() {
 }
 
 
+/* ================================================================= online duel (1v1) =================================================================
+   Each browser simulates its own stickman and streams its state (~30/s) to the other through the site's WebSocket server.
+   A hit is decided by the attacker (using the rival's last position) and applied by the victim, who owns his own HP. */
+const NET = { ws: null, state: 'off', idx: 0, code: '', err: '', copied: false, joinText: '', lobbyOpen: false, after: null };
+const netSend = o => { if (NET.ws && NET.ws.readyState === 1) NET.ws.send(JSON.stringify(o)); };
+const relay = d => netSend({ t: 'sb_relay', d });
+const netUrl = () => (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host;
+const num = v => typeof v === 'number' && isFinite(v);
+const OK_HEX = /^#[0-9a-fA-F]{6}$/;
+
+function netOpen(cb) {
+  if (NET.ws && NET.ws.readyState === 1) { if (cb) cb(); return; }
+  if (NET.ws && NET.ws.readyState === 0) { NET.after = cb || NET.after; return; }
+  NET.state = 'connecting'; NET.after = cb || null; renderLobby();
+  let ws;
+  try { ws = new WebSocket(netUrl()); } catch (e) { NET.state = 'off'; renderLobby(); return; }
+  NET.ws = ws;
+  ws.onopen = () => { NET.state = 'idle'; const f = NET.after; NET.after = null; renderLobby(); if (f) f(); };
+  ws.onmessage = ev => { let m; try { m = JSON.parse(ev.data); } catch (e) { return; } netHandle(m); };
+  ws.onclose = () => {
+    if (NET.ws !== ws) return;
+    NET.ws = null; NET.state = 'off';
+    if (G.mode === 'duel' && G.duel && !G.duel.over) duelEnd('lost'); else renderLobby();
+  };
+}
+function netLeave() {
+  const ws = NET.ws; NET.ws = null; NET.state = 'off'; NET.code = ''; NET.err = ''; NET.after = null;
+  if (ws) { try { if (ws.readyState === 1) ws.send(JSON.stringify({ t: 'sb_leave' })); ws.close(); } catch (e) {} }
+}
+function netHandle(m) {
+  switch (m.t) {
+    case 'sb_searching': NET.state = 'searching'; renderLobby(); break;
+    case 'sb_waiting': NET.state = 'waiting'; NET.code = String(m.code || ''); renderLobby(); break;
+    case 'sb_start': NET.idx = m.idx === 1 ? 1 : 0; NET.code = String(m.code || ''); startDuel(); break;
+    case 'sb_relay': onRelay(m.d); break;
+    case 'sb_opp_left': if (G.mode === 'duel' && G.duel && !G.duel.over) duelEnd('left'); break;
+    case 'sb_error': NET.err = m.msg === 'full' ? 'errFull' : 'errNotFound'; renderLobby(); break;
+  }
+}
+
+/* ----- lobby (a modal on the menu) ----- */
+function openLobby() { NET.lobbyOpen = true; NET.err = ''; renderLobby(); netOpen(); }
+function closeLobby() { NET.lobbyOpen = false; netLeave(); closeModal(); }
+function copyInvite() {
+  const link = location.origin + location.pathname + '?room=' + NET.code;
+  try { navigator.clipboard.writeText(link); } catch (e) {}
+  NET.copied = true; renderLobby();
+  setTimeout(() => { NET.copied = false; if (NET.state === 'waiting') renderLobby(); }, 1600);
+}
+function renderLobby() {
+  if (!NET.lobbyOpen || G.mode !== 'menu') return;
+  const body = document.createElement('div');
+  const say = (txt, cls) => { const d = document.createElement('div'); d.className = cls || 'sub'; d.textContent = txt; body.appendChild(d); return d; };
+  const mk = (label, cls, fn) => { const b = document.createElement('button'); b.className = 'btn inl ' + cls; b.style.margin = '6px 4px'; b.textContent = label; b.onclick = fn; return b; };
+  const s = NET.state;
+  if (s === 'connecting') say(T('connecting'));
+  else if (s === 'off') { say(T('connFail')); body.appendChild(mk(T('retry'), 'green', () => { NET.err = ''; netOpen(); })); }
+  else if (s === 'idle') {
+    const row1 = document.createElement('div');
+    row1.appendChild(mk(T('quick'), 'green', () => { NET.err = ''; netSend({ t: 'sb_quick' }); }));
+    row1.appendChild(mk(T('createRoom'), '', () => { NET.err = ''; netSend({ t: 'sb_create' }); }));
+    body.appendChild(row1);
+    const row2 = document.createElement('div'); row2.style.cssText = 'display:flex;justify-content:center;align-items:center;gap:8px;margin-top:6px';
+    const inp = document.createElement('input'); inp.maxLength = 4; inp.placeholder = T('codePh'); inp.value = NET.joinText; inp.autocomplete = 'off'; inp.spellcheck = false;
+    inp.style.cssText = 'width:120px;height:44px;border-radius:6px;border:2px solid #0d2a66;background:#173a82;color:#fff;font:inherit;font-size:22px;letter-spacing:4px;text-align:center;text-transform:uppercase;outline:none;-webkit-user-select:text;user-select:text';
+    const join = () => { const c = inp.value.trim(); if (c.length < 4) { NET.err = 'errNotFound'; renderLobby(); return; } NET.err = ''; netSend({ t: 'sb_join', code: c }); };
+    inp.oninput = () => { inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); NET.joinText = inp.value; };
+    inp.onkeydown = e => { if (e.key === 'Enter') join(); };
+    row2.appendChild(inp); row2.appendChild(mk(T('join'), 'yellow', join)); body.appendChild(row2);
+    if (NET.err) { const e = say(T(NET.err)); e.style.color = '#ff9a9a'; e.style.marginTop = '8px'; }
+    say(T('duelRule')).style.marginTop = '10px';
+  } else if (s === 'searching') say(T('searching'));
+  else if (s === 'waiting') {
+    say(T('shareCode'));
+    say(NET.code, 'reward').style.letterSpacing = '8px';
+    body.appendChild(mk(NET.copied ? T('copied') : T('copyLink'), 'yellow', copyInvite));
+  }
+  openModal({ title: T('lobbyTitle'), body, buttons: [{ label: T('cancel'), cls: 'gray', fn: closeLobby }] });
+}
+
+/* ----- the match ----- */
+function startDuel() {
+  NET.lobbyOpen = false; closeModal(); resetWorld();
+  G.mode = 'duel'; G.boss = false; G.survival = false; G.enemies = []; G.ai = null; G.ball = null; G.theme = 1;
+  G.duel = { idx: NET.idx, win: [0, 0], round: 1, res: null, endT: 0, over: false, tick: 0, koSent: false, rematch: [false, false] };
+  duelRound(); showScreen('hud');
+}
+function duelRound() {
+  const D = G.duel, left = D.idx === 0;
+  resetWorld();
+  G.player = mkPlayer(left ? 150 : 810); G.player.face = left ? 1 : -1;
+  G.remote = new Fighter({ x: left ? 810 : 150, face: left ? -1 : 1, weapon: 'bat', color: '#ff5a5a', hp: 100 });
+  G.remote.tx = G.remote.x; G.remote.ty = G.remote.y;
+  D.res = null; D.endT = 0; D.koSent = false; G.intro = 80;
+}
+function updateDuel() {
+  const p = G.player, r = G.remote, D = G.duel;
+  if (G.intro > 0) G.intro--;
+  playerControl(p);
+  stepFighter(p);
+  stepRemote(r);
+  if (++D.tick % 2 === 0) sendState();
+  if (p.dead && !D.koSent) {                       // I went down: tell the rival (if he fell in the same instant it's a draw)
+    D.koSent = true; relay({ k: 'ko' });
+    D.res = !D.res ? 'lose' : D.res === 'win' ? 'draw' : D.res;
+  }
+  if (D.res && !D.over && ++D.endT > 130) duelRoundEnd();
+}
+function sendState() {
+  const p = G.player;
+  relay({ k: 's', x: +p.x.toFixed(1), y: +p.y.toFixed(1), f: p.face, a: p.atk, ad: p.atkDur, mv: +p.mv.toFixed(2), w: p.weapon, s: p.skin, c: p.color,
+          hp: p.hp, g: p.onGround ? 1 : 0, dd: p.dead, h: p.hurt });
+}
+function applyRemote(d) {
+  const r = G.remote; if (!num(d.x) || !num(d.y)) return;
+  r.tx = clamp(d.x, 0, W); r.ty = clamp(d.y, -300, GROUND);
+  r.face = d.f === -1 ? -1 : 1;
+  r.atk = clamp(d.a | 0, 0, 80); r.atkDur = clamp(d.ad | 0, 1, 80) || 20;
+  r.mv = clamp(+d.mv || 0, -6, 6);
+  r.weapon = WEAPONS.some(w => w.id === d.w) ? d.w : 'bat';
+  r.skin = SKINS.some(s => s.id === d.s) ? d.s : 'none';
+  const mine = G.player.color.toLowerCase(), alt = mine === '#ff5a5a' ? '#ffd23f' : '#ff5a5a';
+  r.color = OK_HEX.test(d.c) ? (d.c.toLowerCase() === mine ? alt : d.c) : alt;
+  r.hp = clamp(d.hp | 0, 0, 100); r.maxhp = 100;
+  r.onGround = !!d.g; r.dead = clamp(d.dd | 0, 0, 200); r.hurt = clamp(d.h | 0, 0, 20);
+}
+function stepRemote(r) {
+  if (r.tx === undefined) return;
+  r.x += (r.tx - r.x) * 0.4; r.y += (r.ty - r.y) * 0.4;
+  if (r.atk > 0) r.atk--;
+  if (r.hurt > 0) r.hurt--;
+  if (r.dead > 0) r.dead++;
+  if (r.onGround && Math.abs(r.mv) > 0.2) r.walk += Math.abs(r.mv) * 0.13;
+  r.kvx = 0; r.vy = 0;
+}
+function duelAttack(f) {                           // my swing: decide the hit, send it, show the effect at once
+  const r = G.remote; if (!r || r.dead || G.duel.res) return;
+  const w = WBY[f.weapon], reach = w.range * f.scale, dx = (r.x - f.x) * f.face;
+  if (dx > -14 && dx < reach + 12 && Math.abs(r.y - f.y) < 58) {
+    const dmg = Math.max(1, Math.round(w.dmg * rnd(.9, 1.12)));
+    relay({ k: 'hit', dmg, kn: w.knock, fc: f.face });
+    G.hitstop = Math.min(6, 2 + ((w.knock * 0.3) | 0)); G.shake = Math.max(G.shake, w.knock * 0.7);
+    spark(r.x - f.face * 4, r.y - 62, 8, '#fff', 5); spark(r.x, r.y - 62, 4, r.color, 4);
+    floatText(r.x, r.y - 118, String(dmg), '#ffe066'); snd.hit();
+  }
+}
+function onRelay(d) {
+  if (G.mode !== 'duel' || !G.duel || !d || typeof d !== 'object') return;
+  const D = G.duel;
+  switch (d.k) {
+    case 's': applyRemote(d); break;
+    case 'hit':
+      if (num(d.dmg) && !G.player.dead && !D.res && G.intro <= 0)
+        takeHit(G.player, { face: d.fc === -1 ? -1 : 1, isPlayer: false }, clamp(d.dmg | 0, 1, 40), clamp(+d.kn || 0, 0, 20));
+      break;
+    case 'ko': if (D.res === 'lose') D.res = 'draw'; else if (!D.res) D.res = 'win'; break;
+    case 'rm': D.rematch[1] = true; if (D.rematch[0]) duelRestart(); break;
+  }
+}
+function duelRoundEnd() {
+  const D = G.duel;
+  if (D.res === 'win') D.win[0]++; else if (D.res === 'lose') D.win[1]++;
+  if (D.win[0] >= 2 || D.win[1] >= 2) return duelEnd(D.win[0] > D.win[1] ? 'win' : 'lose');
+  D.round++; duelRound();
+}
+function duelEnd(kind) {
+  const D = G.duel; if (!D || D.over) return;
+  D.over = true; G.over = true;
+  const win = kind === 'win' || kind === 'left', reward = kind === 'lost' ? 0 : win ? 50 : 10;
+  if (reward) { save.cash += reward; persist(); refreshMenu(); }
+  win ? snd.win() : snd.lose();
+  const title = kind === 'left' ? T('oppLeft') : kind === 'lost' ? T('lostConn') : win ? T('duelWin') : T('duelLose');
+  const buttons = [{ label: T('menu'), cls: 'gray', fn: toMenu }];
+  if (kind === 'win' || kind === 'lose') buttons.push({ label: T('duelAgain'), cls: 'green', fn: duelRematch });
+  openModal({ title, body: `<div class="reward">${D.win[0]} : ${D.win[1]}</div>` + (reward ? `<div class="reward">💵 +${reward}</div>` : ''), buttons });
+}
+function duelRematch() {
+  const D = G.duel; if (!D || D.rematch[0]) return;
+  D.rematch[0] = true; relay({ k: 'rm' });
+  const b = $('#mBtns').lastChild; if (b) { b.textContent = T('waitRematch'); b.disabled = true; b.style.opacity = '.6'; }
+  if (D.rematch[1]) duelRestart();
+}
+function duelRestart() {
+  const D = G.duel; D.win = [0, 0]; D.round = 1; D.over = false; D.rematch = [false, false];
+  closeModal(); G.over = false; duelRound();
+}
+function drawDuelHUD(c) {
+  const p = G.player, r = G.remote, D = G.duel;
+  drawBar(c, 20, 20, 250, 18, p.hp / p.maxhp, '#3ddc5a'); outlineText(c, T('you'), 26, 48, 16, '#fff', 'left');
+  drawBar(c, W - 270, 20, 250, 18, Math.max(0, r.hp) / 100, '#ff4d4d'); outlineText(c, T('opponent'), W - 26, 48, 16, '#fff', 'right');
+  outlineText(c, `${D.win[0]}  :  ${D.win[1]}`, W / 2, 30, 38, '#fff');
+  outlineText(c, T('round') + D.round, W / 2, 62, 18, '#cfe0ff');
+  if (G.intro > 0) outlineText(c, G.intro > 35 ? T('round') + D.round : T('fight'), W / 2, 200, G.intro > 35 ? 60 : 80, G.intro > 35 ? '#fff' : '#ffe066');
+  else if (D.res) outlineText(c, D.res === 'draw' ? T('drawRound') : T('ko'), W / 2, 200, 84, D.res === 'win' ? '#ffe066' : D.res === 'lose' ? '#ff7b7b' : '#fff');
+  if (!G.intro && D.round === 1 && D.tick < 420 && !D.res) outlineText(c, T('helpFight'), W / 2, 512, 18, '#cfe0ff');
+}
+
 /* ----- language ----- */
 function applyLang() {
   document.documentElement.lang = LANG;
@@ -1029,6 +1230,7 @@ function applyLang() {
   $('#btnSettings').title = T('settings'); $('#btnExit').title = T('backMenu');
   $('#btnLang').textContent = LANG.toUpperCase(); $('#btnLang').title = T('language');
   $('#btnHome').textContent = T('home');
+  $('#btnOnline').textContent = '🌐 ' + T('online');
   refreshMenu();
 }
 function setLang(l) {
@@ -1039,6 +1241,7 @@ function setLang(l) {
 
 /* ----- wiring ----- */
 $('#btnLang').onclick = () => setLang(LANG === 'vi' ? 'en' : 'vi');
+$('#btnOnline').onclick = openLobby;
 $('#btnHome').onclick = () => { location.href = '/'; };            // back to the Alex Games home page
 if (location.protocol === 'file:') $('#btnHome').style.display = 'none';   // only meaningful on the website
 $('#btnWeapon').onclick = () => openShop('weapon');
@@ -1053,6 +1256,7 @@ $('#bossBox').onclick = () => startFight(true);
 $('#btnSoccer').onclick = startSoccer;
 $('#btnSurvival').onclick = startSurvival;
 $('#btnExit').onclick = () => {
+  if (G.mode === 'duel') { if (G.duel && !G.duel.over && !confirm(T('leaveDuel'))) return; toMenu(); return; }
   if (G.mode === 'fight' && G.survival && !G.over) { const r = bankSurvival(); toast(T('banked', r.reward, r.cleared)); }
   toMenu();
 };
@@ -1080,7 +1284,9 @@ document.querySelectorAll('#touch button').forEach(b => {
 /* ------------------------------------------------------------------ go */
 applyLang();
 requestAnimationFrame(frame);
+// invite link  /stickman-battle-2/?room=ABCD  opens the lobby and joins that room
+try { const rc = new URLSearchParams(location.search).get('room'); if (rc) { openLobby(); netOpen(() => netSend({ t: 'sb_join', code: rc.toUpperCase().slice(0, 4) })); } } catch (e) {}
 
 // tiny debug hook for automated tests
-window.__game = { G, save: () => save, startFight, startSoccer, startSurvival, keys };
+window.__game = { G, save: () => save, startFight, startSoccer, startSurvival, keys, NET, openLobby };
 })();
