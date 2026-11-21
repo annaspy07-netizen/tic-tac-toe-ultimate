@@ -17,7 +17,7 @@ const easeIn = t => t * t;
 const I18N = {
   en: {
     weapon: 'Weapon', skin: 'Skin', color: 'Color', boss: 'Boss', soccer: 'SOCCER', survival: 'SURVIVAL', free: 'Free',
-    lvlBtn: 'Level ', best: 'Best: ', settings: 'Settings', backMenu: 'Back to menu', language: 'Language',
+    lvlBtn: 'Level ', best: 'Best: ', settings: 'Settings', backMenu: 'Back to menu', language: 'Language', home: '🏠 Home',
     needKey: 'You need a 🔑 key – clear 5 levels to earn one',
     gameOver: 'Game Over', waves: 'Waves: ', newBest: '🏆 New best!', menu: 'Menu', retry: 'Retry',
     keyPlus: '🔑 +1 Key', bossDefeated: 'Boss Defeated!', victory: 'Victory!', nobody: 'Nobody can stop you!',
@@ -37,7 +37,7 @@ const I18N = {
   },
   vi: {
     weapon: 'Vũ khí', skin: 'Mũ', color: 'Màu', boss: 'Trùm', soccer: 'BÓNG ĐÁ', survival: 'SINH TỒN', free: 'Miễn phí',
-    lvlBtn: 'Màn ', best: 'Cao nhất: ', settings: 'Cài đặt', backMenu: 'Về menu', language: 'Ngôn ngữ',
+    lvlBtn: 'Màn ', best: 'Cao nhất: ', settings: 'Cài đặt', backMenu: 'Về menu', language: 'Ngôn ngữ', home: '🏠 Trang chủ',
     needKey: 'Bạn cần 🔑 chìa khóa – qua 5 màn để nhận một chiếc',
     gameOver: 'Thua rồi', waves: 'Số đợt: ', newBest: '🏆 Kỷ lục mới!', menu: 'Menu', retry: 'Chơi lại',
     keyPlus: '🔑 +1 Chìa khóa', bossDefeated: 'Hạ gục trùm!', victory: 'Chiến thắng!', nobody: 'Không ai cản nổi bạn!',
@@ -1028,6 +1028,7 @@ function applyLang() {
   $('#btnSoccer').firstChild.textContent = T('soccer');
   $('#btnSettings').title = T('settings'); $('#btnExit').title = T('backMenu');
   $('#btnLang').textContent = LANG.toUpperCase(); $('#btnLang').title = T('language');
+  $('#btnHome').textContent = T('home');
   refreshMenu();
 }
 function setLang(l) {
@@ -1038,6 +1039,8 @@ function setLang(l) {
 
 /* ----- wiring ----- */
 $('#btnLang').onclick = () => setLang(LANG === 'vi' ? 'en' : 'vi');
+$('#btnHome').onclick = () => { location.href = '/'; };            // back to the Alex Games home page
+if (location.protocol === 'file:') $('#btnHome').style.display = 'none';   // only meaningful on the website
 $('#btnWeapon').onclick = () => openShop('weapon');
 $('#btnSkin').onclick = () => openShop('skin');
 $('#btnColor').onclick = () => openShop('color');
