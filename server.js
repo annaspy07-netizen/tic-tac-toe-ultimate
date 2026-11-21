@@ -75,8 +75,49 @@ function lineAt(b, n, k, idx, p) {
 }
 
 const wss = new WebSocketServer({ server, maxPayload: 1024 });
+/* ---------- Stickman Battle 2: online duel (matchmaking + relay; the clients simulate the fight) ---------- */
+function sbLeave(ws) {
+  if (sbWaiting === ws) sbWaiting = null;
+  const room = ws.sb;
+  if (!room) return;
+  ws.sb = null; sbRooms.delete(room.code);
+  for (const p of room.players) if (p && p !== ws) { p.sb = null; send(p, { t: 'sb_opp_left' }); }
+}
+function sbStart(room) {
+  room.players.forEach((p, i) => { p.sb = room; send(p, { t: 'sb_start', idx: i, code: room.code }); });
+}
+function sbMessage(ws, m) {
+  if (m.t === 'sb_relay') {
+    const room = ws.sb;
+    if (!room || room.players.length < 2 || !m.d || typeof m.d !== 'object') return;
+    send(room.players.find(x => x !== ws), { t: 'sb_relay', d: m.d });
+  } else if (m.t === 'sb_quick') {
+    sbLeave(ws);
+    if (sbWaiting && sbWaiting !== ws && sbWaiting.readyState === 1) {
+      const room = { code: makeCode(), players: [sbWaiting, ws] }; sbWaiting = null;
+      sbRooms.set(room.code, room); sbStart(room);
+    } else { sbWaiting = ws; send(ws, { t: 'sb_searching' }); }
+  } else if (m.t === 'sb_create') {
+    sbLeave(ws);
+    const room = { code: makeCode(), players: [ws] };
+    sbRooms.set(room.code, room); ws.sb = room;
+    send(ws, { t: 'sb_waiting', code: room.code });
+  } else if (m.t === 'sb_join') {
+    const room = sbRooms.get(String(m.code || '').toUpperCase().trim());
+    if (!room) return send(ws, { t: 'sb_error', msg: 'not_found' });
+    if (room.players.length >= 2) return send(ws, { t: 'sb_error', msg: 'full' });
+    if (room.players[0] === ws) return;
+    sbLeave(ws);
+    room.players.push(ws); sbStart(room);
+  } else if (m.t === 'sb_leave') {
+    sbLeave(ws);
+  }
+}
+
 const queues = {};            // mode -> ws waiting
-const rooms = new Map();      // code -> room
+const rooms = new Map();      // code -> room (Tic Tac Toe)
+const sbRooms = new Map();    // code -> room (Stickman Battle 2 duels)
+let sbWaiting = null;         // Stickman quick-match queue (one waiting socket)
 let nextId = 1;
 
 const send = (ws, obj) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj)); };
@@ -85,7 +126,7 @@ const broadcastCount = () => { const msg = { t: 'online', count: wss.clients.siz
 function makeCode() {
   const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code;
-  do { code = Array.from({ length: 4 }, () => A[(Math.random() * A.length) | 0]).join(''); } while (rooms.has(code));
+  do { code = Array.from({ length: 4 }, () => A[(Math.random() * A.length) | 0]).join(''); } while (rooms.has(code) || sbRooms.has(code));
   return code;
 }
 function leaveAll(ws) {
@@ -125,6 +166,10 @@ wss.on('connection', ws => {
   ws.on('message', raw => {
     let m; try { m = JSON.parse(raw); } catch { return; }
     if (!m || typeof m.t !== 'string') return;
+    const now = Date.now();                                   // tiny flood guard (the fight sends ~30 messages/second)
+    if (now - (ws.rlT || 0) > 1000) { ws.rlT = now; ws.rlN = 0; }
+    if (++ws.rlN > 150) return;
+    if (m.t.startsWith('sb_')) return sbMessage(ws, m);
 
     if (m.t === 'quick' && MODES[m.mode]) {
       leaveAll(ws);
@@ -176,7 +221,7 @@ wss.on('connection', ws => {
     else if (m.t === 'leave') { leaveAll(ws); send(ws, { t: 'left' }); }
   });
 
-  ws.on('close', () => { leaveAll(ws); broadcastCount(); });
+  ws.on('close', () => { leaveAll(ws); sbLeave(ws); broadcastCount(); });
   ws.on('error', () => {});
 });
 
