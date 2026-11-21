@@ -761,6 +761,7 @@ try { if (!/"season"/.test(localStorage.getItem('ttt-ultimate-v1') || '')) { S.s
 if (S.season !== 'noel' && S.season !== 'tet') S.season = 'tet';
 S.theme = S.season === 'tet' ? 'tet' : 'noel';      // the only two styles: Noel and Tet
 S.xmas = true; S.pet = true;                          // decorations + capybaras are always shown
+try { const g = localStorage.getItem('ag-lang'); if (g === 'vi' || g === 'en') S.lang = g; } catch (e) {}   // language chosen on the Alex Games home page
 const save = () => { try { localStorage.setItem('ttt-ultimate-v1', JSON.stringify(S)); } catch(e) {} };
 const t = (k, v) => { let s = (I18N[S.lang]||I18N.vi)[k] ?? k; if (v) for (const x in v) s = s.replace('{'+x+'}', v[x]); return s; };
 
@@ -1330,7 +1331,7 @@ $('#bAgain').addEventListener('click', e => {
 $('#bExit').addEventListener('click', e => { e.stopPropagation(); netLeave(); });
 $('#overlay').addEventListener('click', () => { if (!online()) newRound(); });
 $('#bSound').addEventListener('click', () => { S.sound = !S.sound; save(); syncUI(); sfx.click(); });
-$('#bLang').addEventListener('click', () => { S.lang = S.lang === 'vi' ? 'en' : 'vi'; save(); syncUI(); if (G && G.over) { $('#resTitle').textContent = $('#status').textContent; updateOverlay(); } });
+$('#bLang').addEventListener('click', () => { S.lang = S.lang === 'vi' ? 'en' : 'vi'; save(); try { localStorage.setItem('ag-lang', S.lang); } catch (e) {} syncUI(); if (G && G.over) { $('#resTitle').textContent = $('#status').textContent; updateOverlay(); } });
 $('#bDice').addEventListener('click', () => {
   sfx.click();
   if (online()) return;

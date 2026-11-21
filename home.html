@@ -39,6 +39,10 @@ nav{display:flex;gap:6px}
 nav a{padding:8px 14px;border-radius:999px;font-weight:700;font-size:15px;color:var(--muted);transition:.15s}
 nav a:hover{background:rgba(255,255,255,.12);color:#fff}
 
+nav{align-items:center}
+.lang{display:inline-flex;align-items:center;gap:7px;margin-left:6px;padding:7px 12px;border-radius:999px;border:2px solid var(--line);background:rgba(88,10,18,.7);color:#fff;font-family:inherit;font-weight:800;font-size:13px;line-height:1;cursor:pointer;transition:.15s}
+.lang:hover{border-color:var(--gold);background:rgba(88,10,18,.95)}
+.lang svg{width:22px;height:15px;border-radius:2px;flex:none;display:block}
 /* hero */
 .hero{text-align:center;padding:26px 0 0}
 .hero h1{font-size:clamp(38px,8vw,76px);font-weight:900;letter-spacing:.04em;line-height:1.02;color:var(--gold);
@@ -121,14 +125,14 @@ footer small{display:block;margin-top:6px;opacity:.8}
 <div class="wrap">
   <header>
     <a class="brand" href="/" aria-label="Alex Games"><div class="logo">A</div><span>ALEX <b>GAMES</b></span></a>
-    <nav><a href="#games">Trò chơi</a><a href="#moi-ban">Mời bạn bè</a></nav>
+    <nav><a href="#games" data-i="navGames">Trò chơi</a><a href="#moi-ban" data-i="navInvite">Mời bạn bè</a><button class="lang" id="lang" type="button" aria-label="Đổi ngôn ngữ"></button></nav>
   </header>
 
   <div class="hero">
-    <h1>ALEX GAMES<small>CHÚC MỪNG NĂM MỚI 2027</small></h1>
-    <p>Những trò chơi nhỏ vui nhộn, chơi ngay trên trình duyệt và rủ bạn bè chơi online cùng. Miễn phí, không cần cài đặt.</p>
+    <h1>ALEX GAMES<small data-i="heroSmall">CHÚC MỪNG NĂM MỚI 2027</small></h1>
+    <p data-i="heroP">Những trò chơi nhỏ vui nhộn, chơi ngay trên trình duyệt và rủ bạn bè chơi online cùng. Miễn phí, không cần cài đặt.</p>
     <a class="cta" href="/tic-tac-toe">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Chơi Tic Tac Toe Ultimate
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i="cta">Chơi Tic Tac Toe Ultimate</span>
     </a>
     <div class="stage" aria-hidden="true">
       <div class="hcapy c-quan"><svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round">
@@ -637,8 +641,8 @@ footer small{display:block;margin-top:6px;opacity:.8}
   </div>
 
   <section id="games">
-    <h2>Trò chơi</h2>
-    <p class="lead">Chọn một trò chơi và bắt đầu thôi!</p>
+    <h2 data-i="gamesH">Trò chơi</h2>
+    <p class="lead" data-i="gamesLead">Chọn một trò chơi và bắt đầu thôi!</p>
     <div class="grid">
       <a class="card" href="/tic-tac-toe">
         <div class="art">
@@ -650,9 +654,9 @@ footer small{display:block;margin-top:6px;opacity:.8}
         </div>
         <div class="body">
           <h3>Tic Tac Toe Ultimate</h3>
-          <p>Cờ caro nhiều cỡ bàn (7×7, 10×10, 20×20). Đấu với máy ba cấp độ hoặc chơi online cùng bạn bè.</p>
-          <div class="tags"><span class="on">Online</span><span>1–2 người</span><span>Miễn phí</span></div>
-          <span class="play">Chơi ngay</span>
+          <p data-i="tttP">Cờ caro nhiều cỡ bàn (7×7, 10×10, 20×20). Đấu với máy ba cấp độ hoặc chơi online cùng bạn bè.</p>
+          <div class="tags"><span class="on" data-i="tagOnline">Online</span><span data-i="tagPlayers12">1–2 người</span><span data-i="tagFree">Miễn phí</span></div>
+          <span class="play" data-i="play">Chơi ngay</span>
         </div>
       </a>
       <a class="card" href="/stickman-battle-2/">
@@ -668,32 +672,32 @@ footer small{display:block;margin-top:6px;opacity:.8}
         </div>
         <div class="body">
           <h3>Stickman Battle 2</h3>
-          <p>Chú người que chiến đấu: vượt màn, hạ trùm, sinh tồn và đá bóng. Mở rương để nhận vũ khí và trang phục mới.</p>
-          <div class="tags"><span>1 người</span><span>Cảm ứng</span><span>Miễn phí</span></div>
-          <span class="play">Chơi ngay</span>
+          <p data-i="sbP">Chú người que chiến đấu: vượt màn, hạ trùm, sinh tồn và đá bóng. Mở rương để nhận vũ khí và trang phục mới.</p>
+          <div class="tags"><span data-i="tagPlayer1">1 người</span><span data-i="tagTouch">Cảm ứng</span><span data-i="tagFree">Miễn phí</span></div>
+          <span class="play" data-i="play">Chơi ngay</span>
         </div>
       </a>
       <div class="card soon">
         <div class="art"><b>?</b></div>
-        <div class="body"><h3>Sắp ra mắt</h3><p>Trò chơi mới đang được chuẩn bị. Hãy quay lại sau nhé!</p><span class="play">Đang chuẩn bị</span></div>
+        <div class="body"><h3 data-i="soonH">Sắp ra mắt</h3><p data-i="soonP">Trò chơi mới đang được chuẩn bị. Hãy quay lại sau nhé!</p><span class="play" data-i="soonBtn">Đang chuẩn bị</span></div>
       </div>
     </div>
   </section>
 
   <section id="moi-ban">
-    <h2>Mời bạn bè chơi cùng</h2>
-    <p class="lead">Chỉ ba bước, không cần đăng ký tài khoản.</p>
+    <h2 data-i="inviteH">Mời bạn bè chơi cùng</h2>
+    <p class="lead" data-i="inviteLead">Chỉ ba bước, không cần đăng ký tài khoản.</p>
     <div class="steps">
-      <div class="step"><h4>Vào trò chơi</h4><p>Bấm <b>Chơi ngay</b> ở thẻ Tic Tac Toe Ultimate.</p></div>
-      <div class="step"><h4>Tạo phòng</h4><p>Chọn <b>Online</b> rồi bấm <b>Tạo phòng riêng</b>, hoặc <b>Tìm trận nhanh</b> để ghép với người lạ.</p></div>
-      <div class="step"><h4>Gửi liên kết</h4><p>Bấm <b>Sao chép liên kết</b> và gửi cho bạn. Bạn mở liên kết là vào thẳng phòng.</p></div>
+      <div class="step"><h4 data-i="s1H">Vào trò chơi</h4><p data-i="s1P">Bấm <b>Chơi ngay</b> ở thẻ Tic Tac Toe Ultimate.</p></div>
+      <div class="step"><h4 data-i="s2H">Tạo phòng</h4><p data-i="s2P">Chọn <b>Online</b> rồi bấm <b>Tạo phòng riêng</b>, hoặc <b>Tìm trận nhanh</b> để ghép với người lạ.</p></div>
+      <div class="step"><h4 data-i="s3H">Gửi liên kết</h4><p data-i="s3P">Bấm <b>Sao chép liên kết</b> và gửi cho bạn. Bạn mở liên kết là vào thẳng phòng.</p></div>
     </div>
   </section>
 </div>
 
 <footer>
-  <b>Alex Games</b> · Trò chơi nhỏ cho những phút vui vẻ
-  <small>© 2026 Alex Games · Lần đầu mở trang có thể chờ vài chục giây để máy chủ thức dậy.</small>
+  <span data-i="footA"><b>Alex Games</b> · Trò chơi nhỏ cho những phút vui vẻ</span>
+  <small data-i="footB">© 2026 Alex Games · Lần đầu mở trang có thể chờ vài chục giây để máy chủ thức dậy.</small>
 </footer>
 
 <script>
@@ -715,6 +719,74 @@ footer small{display:block;margin-top:6px;opacity:.8}
     e.style.transform = 'scale(' + (.7 + Math.random() * .9).toFixed(2) + ')';
     pt.appendChild(e);
   }
+})();
+</script>
+<script>
+/* Vietnamese / English switch. The choice is stored under "ag-lang" and shared with the Tic Tac Toe game. */
+(function () {
+  var D = {
+    vi: {
+      title: 'Alex Games – Trò chơi nhỏ, chơi cùng bạn bè',
+      desc: 'Alex Games: những trò chơi nhỏ vui nhộn, chơi ngay trên trình duyệt và mời bạn bè chơi online cùng. Miễn phí, không cần cài đặt.',
+      langLabel: 'Đổi ngôn ngữ',
+      navGames: 'Trò chơi', navInvite: 'Mời bạn bè',
+      heroSmall: 'CHÚC MỪNG NĂM MỚI 2027',
+      heroP: 'Những trò chơi nhỏ vui nhộn, chơi ngay trên trình duyệt và rủ bạn bè chơi online cùng. Miễn phí, không cần cài đặt.',
+      cta: 'Chơi Tic Tac Toe Ultimate',
+      gamesH: 'Trò chơi', gamesLead: 'Chọn một trò chơi và bắt đầu thôi!',
+      tttP: 'Cờ caro nhiều cỡ bàn (7×7, 10×10, 20×20). Đấu với máy ba cấp độ hoặc chơi online cùng bạn bè.',
+      tagOnline: 'Online', tagPlayers12: '1–2 người', tagPlayer1: '1 người', tagTouch: 'Cảm ứng', tagFree: 'Miễn phí',
+      play: 'Chơi ngay',
+      sbP: 'Chú người que chiến đấu: vượt màn, hạ trùm, sinh tồn và đá bóng. Mở rương để nhận vũ khí và trang phục mới.',
+      soonH: 'Sắp ra mắt', soonP: 'Trò chơi mới đang được chuẩn bị. Hãy quay lại sau nhé!', soonBtn: 'Đang chuẩn bị',
+      inviteH: 'Mời bạn bè chơi cùng', inviteLead: 'Chỉ ba bước, không cần đăng ký tài khoản.',
+      s1H: 'Vào trò chơi', s1P: 'Bấm <b>Chơi ngay</b> ở thẻ Tic Tac Toe Ultimate.',
+      s2H: 'Tạo phòng', s2P: 'Chọn <b>Online</b> rồi bấm <b>Tạo phòng riêng</b>, hoặc <b>Tìm trận nhanh</b> để ghép với người lạ.',
+      s3H: 'Gửi liên kết', s3P: 'Bấm <b>Sao chép liên kết</b> và gửi cho bạn. Bạn mở liên kết là vào thẳng phòng.',
+      footA: '<b>Alex Games</b> · Trò chơi nhỏ cho những phút vui vẻ',
+      footB: '© 2026 Alex Games · Lần đầu mở trang có thể chờ vài chục giây để máy chủ thức dậy.'
+    },
+    en: {
+      title: 'Alex Games – Little games to play with friends',
+      desc: 'Alex Games: fun little games you can play right in your browser, and invite friends to play online together. Free, no install needed.',
+      langLabel: 'Change language',
+      navGames: 'Games', navInvite: 'Invite friends',
+      heroSmall: 'HAPPY NEW YEAR 2027',
+      heroP: 'Fun little games you can play right in your browser, and invite friends to play online together. Free, nothing to install.',
+      cta: 'Play Tic Tac Toe Ultimate',
+      gamesH: 'Games', gamesLead: "Pick a game and let's go!",
+      tttP: 'Five-in-a-row on 7×7, 10×10 or 20×20 boards. Play the computer on three levels, or play online with friends.',
+      tagOnline: 'Online', tagPlayers12: '1–2 players', tagPlayer1: '1 player', tagTouch: 'Touch', tagFree: 'Free',
+      play: 'Play now',
+      sbP: 'A stickman brawler: clear levels, beat bosses, survive the waves and play soccer. Open chests for new weapons and skins.',
+      soonH: 'Coming soon', soonP: 'New games are on the way. Check back soon!', soonBtn: 'In the works',
+      inviteH: 'Invite friends to play', inviteLead: 'Just three steps, no account needed.',
+      s1H: 'Open the game', s1P: 'Press <b>Play now</b> on the Tic Tac Toe Ultimate card.',
+      s2H: 'Create a room', s2P: 'Choose <b>Online</b>, then press <b>Create private room</b> — or <b>Quick match</b> to be paired with someone.',
+      s3H: 'Send the link', s3P: 'Press <b>Copy link</b> and send it to a friend. They open it and land straight in your room.',
+      footA: '<b>Alex Games</b> · Little games for happy moments',
+      footB: '© 2026 Alex Games · The first visit can take a little while as the server wakes up.'
+    }
+  };
+  var FLAG = {
+    vi: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#da251d"/><polygon fill="#ffeb00" points="15,4 16.8,9.5 22.5,9.5 17.9,12.9 19.6,18.3 15,15 10.4,18.3 12.1,12.9 7.5,9.5 13.2,9.5"/></svg>',
+    en: '<svg viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#012169"/><path d="M0 0L60 40M60 0L0 40" stroke="#fff" stroke-width="8"/><path d="M0 0L60 40M60 0L0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0V40M0 20H60" stroke="#fff" stroke-width="12"/><path d="M30 0V40M0 20H60" stroke="#c8102e" stroke-width="7"/></svg>'
+  };
+  var btn = document.getElementById('lang'), lang = 'vi';
+  try { var v = localStorage.getItem('ag-lang'); if (v === 'vi' || v === 'en') lang = v; } catch (e) {}
+  function apply() {
+    var d = D[lang], nodes = document.querySelectorAll('[data-i]'), i, meta = document.querySelector('meta[name="description"]');
+    document.documentElement.lang = lang; document.title = d.title; if (meta) meta.setAttribute('content', d.desc);
+    for (i = 0; i < nodes.length; i++) nodes[i].innerHTML = d[nodes[i].getAttribute('data-i')];
+    btn.innerHTML = FLAG[lang] + '<span>' + lang.toUpperCase() + '</span>';
+    btn.setAttribute('aria-label', d.langLabel); btn.title = d.langLabel;
+  }
+  btn.addEventListener('click', function () {
+    lang = lang === 'vi' ? 'en' : 'vi';
+    try { localStorage.setItem('ag-lang', lang); } catch (e) {}
+    apply();
+  });
+  apply();
 })();
 </script>
 </body>
