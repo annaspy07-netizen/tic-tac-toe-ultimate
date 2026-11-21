@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Stickman Battle 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="game" width="960" height="540"></canvas>
+
+  <!-- ================= MENU ================= -->
+  <div id="menu" class="screen on">
+    <div id="topbar">
+      <div id="chips"></div>
+      <div class="stat" style="left:590px"><i>🔑</i><b id="keyCount">0</b></div>
+      <div class="stat" style="left:715px"><i>💵</i><b id="cashCount">0</b></div>
+      <button id="btnSettings" class="sq" style="left:850px" title="Settings">⚙</button>
+    </div>
+
+    <button class="btn side" id="btnWeapon" style="left:93px;top:174px"><span class="badge">🗡️</span>Weapon</button>
+    <button class="btn side" id="btnSkin"   style="left:93px;top:238px"><span class="badge">🎩</span>Skin</button>
+    <button class="btn side" id="btnColor"  style="left:93px;top:302px"><span class="badge">🎨</span>Color</button>
+
+    <canvas id="prev" width="260" height="290" style="left:165px;top:105px"></canvas>
+    <div id="divider"></div>
+
+    <div id="equipBox" style="left:112px;top:386px"><canvas id="equipIcon" width="64" height="64"></canvas></div>
+    <div id="equipName" style="left:215px;top:416px">Hammer</div>
+
+    <!-- chest -->
+    <div id="chestWrap" style="left:497px;top:176px">
+      <svg id="chest" viewBox="0 0 120 100" width="120" height="100">
+        <defs><radialGradient id="glow"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+        <circle cx="60" cy="50" r="58" fill="url(#glow)"/>
+        <rect x="14" y="42" width="92" height="44" rx="6" fill="#2457b0" stroke="#8b97ab" stroke-width="3"/>
+        <path d="M14 46 Q14 16 60 16 Q106 16 106 46 Z" fill="#3b72d6" stroke="#b4bece" stroke-width="4"/>
+        <rect x="22" y="16" width="10" height="70" fill="#c3ccda"/>
+        <rect x="88" y="16" width="10" height="70" fill="#c3ccda"/>
+        <rect x="50" y="38" width="20" height="22" rx="4" fill="#a3aebd"/>
+        <circle cx="60" cy="47" r="4.5" fill="#39445a"/>
+        <rect x="58" y="48" width="4" height="8" fill="#39445a"/>
+      </svg>
+    </div>
+    <button class="btn yellow" id="btnChest" style="left:508px;top:289px;width:103px;height:46px">Free</button>
+
+    <!-- boss (key) -->
+    <div id="bossBox" style="left:702px;top:208px"><span>⚔️</span></div>
+    <button class="btn purple" id="btnBoss" style="left:698px;top:288px;width:103px;height:46px">Boss <i>🔑</i></button>
+
+    <button class="btn blue" id="btnSoccer" style="left:445px;top:386px;width:108px;height:64px">SOCCER<span class="ball">⚽</span></button>
+    <button class="btn green big" id="btnPlay" style="left:579px;top:386px;width:143px;height:64px">Level 1</button>
+    <button class="btn red" id="btnSurvival" style="left:740px;top:386px;width:108px;height:64px">SURVIVAL</button>
+  </div>
+
+  <!-- ================= HUD / TOUCH ================= -->
+  <div id="hud" class="screen">
+    <button id="btnExit" class="sq gray" style="left:902px;top:9px" title="Back to menu">✕</button>
+    <div id="touch">
+      <button data-k="left"  style="left:18px;bottom:18px">◀</button>
+      <button data-k="right" style="left:104px;bottom:18px">▶</button>
+      <button data-k="jump"  style="right:104px;bottom:18px">▲</button>
+      <button data-k="atk"   style="right:18px;bottom:18px" class="big">⚔</button>
+    </div>
+  </div>
+
+  <!-- ================= MODAL ================= -->
+  <div id="modal" class="screen">
+    <div id="card">
+      <h2 id="mTitle"></h2>
+      <div id="mBody"></div>
+      <div id="mBtns"></div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+</div>
+<script src="game.js"></script>
+</body>
+</html>
