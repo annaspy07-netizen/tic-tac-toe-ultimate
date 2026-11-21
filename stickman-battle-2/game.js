@@ -13,6 +13,60 @@ const pick = a => a[(Math.random() * a.length) | 0];
 const easeOut = t => 1 - (1 - t) * (1 - t);
 const easeIn = t => t * t;
 
+/* ------------------------------------------------- language (shared with the Alex Games site: key "ag-lang") */
+const I18N = {
+  en: {
+    weapon: 'Weapon', skin: 'Skin', color: 'Color', boss: 'Boss', soccer: 'SOCCER', survival: 'SURVIVAL', free: 'Free',
+    lvlBtn: 'Level ', best: 'Best: ', settings: 'Settings', backMenu: 'Back to menu', language: 'Language',
+    needKey: 'You need a 🔑 key – clear 5 levels to earn one',
+    gameOver: 'Game Over', waves: 'Waves: ', newBest: '🏆 New best!', menu: 'Menu', retry: 'Retry',
+    keyPlus: '🔑 +1 Key', bossDefeated: 'Boss Defeated!', victory: 'Victory!', nobody: 'Nobody can stop you!',
+    levelCleared: n => 'Level ' + n + ' cleared', bossAgain: 'Boss again', nextLevel: 'Next Level',
+    defeated: 'Defeated', tryAgain: 'Try a stronger weapon from the shop, or try again!',
+    youWin: 'You Win!', youLose: 'You Lose', rematch: 'Rematch',
+    you: 'YOU', cpu: 'CPU', bossFight: 'BOSS FIGHT', wave: 'WAVE ', level: 'LEVEL ', enemies: 'Enemies: ', bossBang: 'BOSS!', fight: 'FIGHT!',
+    helpFight: 'A/D or ←/→ move  •  W / Space jump  •  J / click attack',
+    golden: 'GOLDEN GOAL!', kickoff: 'KICK-OFF!', timeUp: "TIME'S UP!", goal: 'GOAL!', helpSoccer: 'First to 5 goals wins  •  J / click = kick',
+    recharging: 'Chest is recharging…', chestOpened: 'Chest Opened!', nice: 'Nice!',
+    newItem: (k, n) => '🎁 New ' + k + ': ' + n + '!',
+    tabWeapons: 'Weapons', tabSkins: 'Skins', tabColors: 'Colors',
+    stats: (d, s) => 'DMG ' + d + ' • SPD ' + s, equipped: 'Equipped', equip: 'Equip', noCash: 'Not enough cash 💵', shop: 'Shop', close: 'Close',
+    sound: 'Sound', on: 'ON', off: 'OFF', progress: 'Progress', reset: 'Reset', confirmReset: 'Reset all progress?', progressReset: 'Progress reset',
+    help: 'Move: A/D or ←/→<br>Jump: W / ↑ / Space<br>Attack / Kick: J / K / click<br>Clear 5 levels → 🔑 key → Boss fight',
+    banked: (r, c) => 'Banked 💵 ' + r + ' (' + c + ' waves)',
+  },
+  vi: {
+    weapon: 'Vũ khí', skin: 'Mũ', color: 'Màu', boss: 'Trùm', soccer: 'BÓNG ĐÁ', survival: 'SINH TỒN', free: 'Miễn phí',
+    lvlBtn: 'Màn ', best: 'Cao nhất: ', settings: 'Cài đặt', backMenu: 'Về menu', language: 'Ngôn ngữ',
+    needKey: 'Bạn cần 🔑 chìa khóa – qua 5 màn để nhận một chiếc',
+    gameOver: 'Thua rồi', waves: 'Số đợt: ', newBest: '🏆 Kỷ lục mới!', menu: 'Menu', retry: 'Chơi lại',
+    keyPlus: '🔑 +1 Chìa khóa', bossDefeated: 'Hạ gục trùm!', victory: 'Chiến thắng!', nobody: 'Không ai cản nổi bạn!',
+    levelCleared: n => 'Đã qua màn ' + n, bossAgain: 'Đánh trùm lại', nextLevel: 'Màn tiếp',
+    defeated: 'Thất bại', tryAgain: 'Hãy thử vũ khí mạnh hơn trong cửa hàng, hoặc thử lại!',
+    youWin: 'Bạn thắng!', youLose: 'Bạn thua', rematch: 'Đá lại',
+    you: 'BẠN', cpu: 'MÁY', bossFight: 'ĐẤU TRÙM', wave: 'ĐỢT ', level: 'MÀN ', enemies: 'Kẻ địch: ', bossBang: 'TRÙM!', fight: 'CHIẾN!',
+    helpFight: 'A/D hoặc ←/→ di chuyển  •  W / Space nhảy  •  J / bấm chuột để đánh',
+    golden: 'BÀN THẮNG VÀNG!', kickoff: 'KHAI CUỘC!', timeUp: 'HẾT GIỜ!', goal: 'VÀO!', helpSoccer: 'Ai ghi 5 bàn trước thắng  •  J / bấm chuột = sút',
+    recharging: 'Rương đang nạp lại…', chestOpened: 'Đã mở rương!', nice: 'Tuyệt!',
+    newItem: (k, n) => '🎁 ' + ({ weapon: 'Vũ khí', skin: 'Mũ', color: 'Màu' }[k] || k) + ' mới: ' + n + '!',
+    tabWeapons: 'Vũ khí', tabSkins: 'Mũ', tabColors: 'Màu sắc',
+    stats: (d, s) => 'Dame ' + d + ' • Tốc ' + s, equipped: 'Đang dùng', equip: 'Dùng', noCash: 'Không đủ tiền 💵', shop: 'Cửa hàng', close: 'Đóng',
+    sound: 'Âm thanh', on: 'BẬT', off: 'TẮT', progress: 'Tiến trình', reset: 'Xóa', confirmReset: 'Xóa toàn bộ tiến trình?', progressReset: 'Đã xóa tiến trình',
+    help: 'Di chuyển: A/D hoặc ←/→<br>Nhảy: W / ↑ / Space<br>Đánh / Sút: J / K / bấm chuột<br>Qua 5 màn → 🔑 chìa khóa → Đấu trùm',
+    banked: (r, c) => 'Đã nhận 💵 ' + r + ' (' + c + ' đợt)',
+  },
+};
+const NAMES_VI = {
+  w: { fist: 'Nắm đấm', bat: 'Gậy', sword: 'Kiếm', hammer: 'Búa', axe: 'Rìu', spear: 'Giáo', katana: 'Katana', mace: 'Chùy', none: 'Đá', bow: 'Cung' },
+  s: { none: 'Không mũ', cap: 'Mũ lưỡi trai', headband: 'Băng đô', cowboy: 'Cao bồi', tophat: 'Mũ chóp', horns: 'Sừng', helmet: 'Mũ sắt', halo: 'Hào quang', crown: 'Vương miện' },
+  c: { '#10a9e8': 'Xanh trời', '#ff5a5a': 'Đỏ', '#ffd23f': 'Vàng', '#5ddc5d': 'Xanh lá', '#b266ff': 'Tím', '#ff8c1a': 'Cam', '#ff6fb5': 'Hồng', '#f2f2f2': 'Trắng', '#3a3a3a': 'Đen', '#00e5c0': 'Bạc hà' },
+};
+let LANG = 'vi';
+try { const g = localStorage.getItem('ag-lang'); if (g === 'vi' || g === 'en') LANG = g; } catch (e) {}
+const T = (k, ...a) => { const v = I18N[LANG][k] !== undefined ? I18N[LANG][k] : I18N.en[k]; return typeof v === 'function' ? v(...a) : v; };
+const nameOf = (kind, it) => (LANG === 'vi' && NAMES_VI[kind][it.id]) || it.name;
+const kindOf = tab => tab === 'weapon' ? 'w' : tab === 'skin' ? 's' : 'c';
+
 /* ---------------------------------------------------------------- data */
 const WEAPONS = [
   { id: 'fist',   name: 'Fists',  dmg: 7,  range: 46,  dur: 14, knock: 4,  cost: 0,   len: 0,  thrust: true },
@@ -424,7 +478,7 @@ function resetWorld() {
 }
 
 function startFight(boss) {
-  if (boss && save.keys < 1) { toast('You need a 🔑 key – clear 5 levels to earn one'); return; }
+  if (boss && save.keys < 1) { toast(T('needKey')); return; }
   resetWorld();
   G.mode = 'fight'; G.boss = boss; G.intro = 80;
   const n = save.level; G.lvl = n;
@@ -461,9 +515,9 @@ function finishSurvival() {
   G.over = true; snd.lose();
   const { cleared, reward, newBest } = bankSurvival();
   openModal({
-    title: 'Game Over',
-    body: `<div class="reward">Waves: ${cleared}</div><div class="sub">${newBest ? '🏆 New best!' : 'Best: ' + save.best}</div><div class="reward">💵 +${reward}</div>`,
-    buttons: [{ label: 'Menu', cls: 'gray', fn: toMenu }, { label: 'Retry', cls: 'green', fn: () => { closeModal(); startSurvival(); } }],
+    title: T('gameOver'),
+    body: `<div class="reward">${T('waves')}${cleared}</div><div class="sub">${newBest ? T('newBest') : T('best') + save.best}</div><div class="reward">💵 +${reward}</div>`,
+    buttons: [{ label: T('menu'), cls: 'gray', fn: toMenu }, { label: T('retry'), cls: 'green', fn: () => { closeModal(); startSurvival(); } }],
   });
 }
 
@@ -531,23 +585,23 @@ function finishFight(win) {
     if (G.boss) { reward = 150 + n * 15; save.keys--; }
     else {
       reward = 25 + n * 8;
-      if (n % 5 === 0) { save.keys++; extra = '<div class="reward">🔑 +1 Key</div>'; }
+      if (n % 5 === 0) { save.keys++; extra = '<div class="reward">' + T('keyPlus') + '</div>'; }
       save.level++;
     }
     save.cash += reward; persist();
     openModal({
-      title: G.boss ? 'Boss Defeated!' : 'Victory!',
-      body: `<div class="reward">💵 +${reward}</div>${extra}<div class="sub">${G.boss ? 'Nobody can stop you!' : 'Level ' + n + ' cleared'}</div>`,
+      title: G.boss ? T('bossDefeated') : T('victory'),
+      body: `<div class="reward">💵 +${reward}</div>${extra}<div class="sub">${G.boss ? T('nobody') : T('levelCleared', n)}</div>`,
       buttons: [
-        { label: 'Menu', cls: 'gray', fn: toMenu },
-        { label: G.boss ? 'Boss again' : 'Next Level', cls: 'green', fn: () => { closeModal(); startFight(G.boss && save.keys > 0); } },
+        { label: T('menu'), cls: 'gray', fn: toMenu },
+        { label: G.boss ? T('bossAgain') : T('nextLevel'), cls: 'green', fn: () => { closeModal(); startFight(G.boss && save.keys > 0); } },
       ],
     });
   } else {
     snd.lose();
     openModal({
-      title: 'Defeated', body: '<div class="sub">Try a stronger weapon from the shop, or try again!</div>',
-      buttons: [{ label: 'Menu', cls: 'gray', fn: toMenu }, { label: 'Retry', cls: 'green', fn: () => { closeModal(); startFight(G.boss); } }],
+      title: T('defeated'), body: '<div class="sub">' + T('tryAgain') + '</div>',
+      buttons: [{ label: T('menu'), cls: 'gray', fn: toMenu }, { label: T('retry'), cls: 'green', fn: () => { closeModal(); startFight(G.boss); } }],
     });
   }
 }
@@ -665,8 +719,8 @@ function finishSoccer() {
   save.cash += reward; persist();
   win ? snd.win() : snd.lose();
   openModal({
-    title: win ? 'You Win!' : 'You Lose', body: `<div class="reward">${G.score[0]} : ${G.score[1]}</div><div class="reward">💵 +${reward}</div>`,
-    buttons: [{ label: 'Menu', cls: 'gray', fn: toMenu }, { label: 'Rematch', cls: 'green', fn: () => { closeModal(); startSoccer(); } }],
+    title: win ? T('youWin') : T('youLose'), body: `<div class="reward">${G.score[0]} : ${G.score[1]}</div><div class="reward">💵 +${reward}</div>`,
+    buttons: [{ label: T('menu'), cls: 'gray', fn: toMenu }, { label: T('rematch'), cls: 'green', fn: () => { closeModal(); startSoccer(); } }],
   });
 }
 
@@ -755,24 +809,24 @@ function drawHUD(c) {
   const p = G.player;
   if (G.mode === 'fight') {
     drawBar(c, 20, 20, 250, 18, p.hp / p.maxhp, '#3ddc5a');
-    outlineText(c, 'YOU', 26, 48, 16, '#fff', 'left');
-    outlineText(c, G.boss ? 'BOSS FIGHT' : (G.survival ? 'WAVE ' : 'LEVEL ') + G.lvl, W / 2, 28, 28, G.boss ? '#ff7b7b' : '#fff');
+    outlineText(c, T('you'), 26, 48, 16, '#fff', 'left');
+    outlineText(c, G.boss ? T('bossFight') : (G.survival ? T('wave') : T('level')) + G.lvl, W / 2, 28, 28, G.boss ? '#ff7b7b' : '#fff');
     const left = G.enemies.filter(e => !e.dead).length;
-    outlineText(c, 'Enemies: ' + left, 780, 28, 20, '#ffd2d2', 'right');
+    outlineText(c, T('enemies') + left, 780, 28, 20, '#ffd2d2', 'right');
     if (G.boss) { const e = G.enemies[0]; drawBar(c, W / 2 - 170, 50, 340, 12, e.hp / e.maxhp, '#ff4d4d'); }
     if (G.intro > 0) {
-      const t = G.intro > 35 ? (G.boss ? 'BOSS!' : (G.survival ? 'WAVE ' : 'LEVEL ') + G.lvl) : 'FIGHT!';
+      const t = G.intro > 35 ? (G.boss ? T('bossBang') : (G.survival ? T('wave') : T('level')) + G.lvl) : T('fight');
       outlineText(c, t, W / 2, 200, G.intro > 35 ? 64 : 80, G.intro > 35 ? '#fff' : '#ffe066');
     }
-    if (!G.intro && G.lvl === 1 && !G.survival && !G.over && p.hp > 0) outlineText(c, 'A/D or ←/→ move  •  W / Space jump  •  J / click attack', W / 2, 512, 18, '#cfe0ff');
+    if (!G.intro && G.lvl === 1 && !G.survival && !G.over && p.hp > 0) outlineText(c, T('helpFight'), W / 2, 512, 18, '#cfe0ff');
   } else {
     outlineText(c, `${G.score[0]}  :  ${G.score[1]}`, W / 2, 30, 44, '#fff');
     const s = Math.ceil(G.time / 60);
-    outlineText(c, G.ot ? 'GOLDEN GOAL!' : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`, W / 2, 68, 22, G.ot ? '#ffe066' : '#e6f0ff');
-    outlineText(c, 'YOU', 40, 30, 22, '#fff', 'left'); outlineText(c, 'CPU', W - 130, 30, 22, '#fff', 'right');
-    if (G.intro > 0 && G.score[0] + G.score[1] === 0) outlineText(c, 'KICK-OFF!', W / 2, 190, 70, '#ffe066');
-    if (G.freeze > 0) outlineText(c, G.over && G.time === 0 && G.score[0] !== G.score[1] && !G.ot ? "TIME'S UP!" : 'GOAL!', W / 2, 190, 84, '#ffe066');
-    if (!G.intro && G.score[0] + G.score[1] === 0) outlineText(c, 'First to 5 goals wins  •  J / click = kick', W / 2, 512, 18, '#17406b');
+    outlineText(c, G.ot ? T('golden') : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`, W / 2, 68, 22, G.ot ? '#ffe066' : '#e6f0ff');
+    outlineText(c, T('you'), 40, 30, 22, '#fff', 'left'); outlineText(c, T('cpu'), W - 130, 30, 22, '#fff', 'right');
+    if (G.intro > 0 && G.score[0] + G.score[1] === 0) outlineText(c, T('kickoff'), W / 2, 190, 70, '#ffe066');
+    if (G.freeze > 0) outlineText(c, G.over && G.time === 0 && G.score[0] !== G.score[1] && !G.ot ? T('timeUp') : T('goal'), W / 2, 190, 84, '#ffe066');
+    if (!G.intro && G.score[0] + G.score[1] === 0) outlineText(c, T('helpSoccer'), W / 2, 512, 18, '#17406b');
   }
 }
 
@@ -872,25 +926,25 @@ function refreshMenu() {
   for (let i = 1; i <= 5; i++) h += `<div class="chip ${i < pos ? '' : i === pos ? 'cur' : 'todo'}">${i}</div>`;
   h += `<div class="chip key ${pos > 5 ? 'got' : ''}">🔑</div>`;
   $('#chips').innerHTML = h;
-  $('#btnPlay').textContent = 'Level ' + save.level;
-  $('#btnSurvival').innerHTML = `SURVIVAL<small>Best: ${save.best}</small>`;
+  $('#btnPlay').textContent = T('lvlBtn') + save.level;
+  $('#btnSurvival').innerHTML = `${T('survival')}<small>${T('best')}${save.best}</small>`;
   $('#btnBoss').classList.toggle('ready', save.keys > 0);
-  $('#equipName').textContent = WBY[save.weapon].name;
+  $('#equipName').textContent = nameOf('w', WBY[save.weapon]);
   drawItemIcon($('#equipIcon'), 'weapon', save.weapon);
   updateChest();
 }
 function updateChest() {
   const left = Math.ceil((save.chestAt - Date.now()) / 1000), b = $('#btnChest');
   if (left > 0) { b.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`; b.classList.add('gray'); b.classList.remove('yellow'); $('#chestWrap').classList.remove('ready'); }
-  else { b.textContent = 'Free'; b.classList.remove('gray'); b.classList.add('yellow'); $('#chestWrap').classList.add('ready'); }
+  else { b.textContent = T('free'); b.classList.remove('gray'); b.classList.add('yellow'); $('#chestWrap').classList.add('ready'); }
 }
 setInterval(() => { if (G.mode === 'menu') updateChest(); }, 500);
 
 function openChest() {
-  if (save.chestAt > Date.now()) { toast('Chest is recharging…'); return; }
+  if (save.chestAt > Date.now()) { toast(T('recharging')); return; }
   save.chestAt = Date.now() + 90 * 1000;
   const r = Math.random(); let msg = '';
-  if (r < 0.15) { save.keys++; msg = '🔑 +1 Key'; }
+  if (r < 0.15) { save.keys++; msg = T('keyPlus'); }
   else if (r < 0.40) {
     const pool = [
       ...WEAPONS.filter(w => !save.ownedW.includes(w.id)).map(i => ['weapon', i]),
@@ -900,12 +954,12 @@ function openChest() {
     if (pool.length) {
       const [t, it] = pick(pool);
       (t === 'weapon' ? save.ownedW : t === 'skin' ? save.ownedS : save.ownedC).push(it.id);
-      msg = `🎁 New ${t}: ${it.name}!`;
+      msg = T('newItem', t, nameOf(kindOf(t), it));
     }
   }
   if (!msg) { const n = 40 + ((Math.random() * 100) | 0); save.cash += n; msg = `💵 +${n}`; }
   persist(); snd.coin(); refreshMenu();
-  openModal({ title: 'Chest Opened!', body: `<div class="reward">${msg}</div>`, buttons: [{ label: 'Nice!', cls: 'green', fn: closeModal }] });
+  openModal({ title: T('chestOpened'), body: `<div class="reward">${msg}</div>`, buttons: [{ label: T('nice'), cls: 'green', fn: closeModal }] });
 }
 
 /* ----- shop ----- */
@@ -915,7 +969,7 @@ function openShop(tab) {
   const data = { weapon: [WEAPONS, 'ownedW', 'weapon'], skin: [SKINS, 'ownedS', 'skin'], color: [COLORS, 'ownedC', 'color'] };
   const body = document.createElement('div');
   const tabs = document.createElement('div'); tabs.className = 'tabs';
-  [['weapon', 'Weapons'], ['skin', 'Skins'], ['color', 'Colors']].forEach(([k, label]) => {
+  [['weapon', T('tabWeapons')], ['skin', T('tabSkins')], ['color', T('tabColors')]].forEach(([k, label]) => {
     const t = document.createElement('button'); t.className = 'tab' + (k === shopTab ? ' on' : ''); t.textContent = label;
     t.onclick = () => openShop(k); tabs.appendChild(t);
   });
@@ -926,13 +980,13 @@ function openShop(tab) {
     const owned = save[ownKey].includes(it.id), eq = save[saveKey] === it.id;
     const d = document.createElement('div'); d.className = 'item' + (eq ? ' eq' : '');
     const cv2 = document.createElement('canvas'); cv2.width = cv2.height = 72; d.appendChild(cv2);
-    const nm = document.createElement('span'); nm.textContent = it.name; d.appendChild(nm);
-    if (shopTab === 'weapon') { const st = document.createElement('span'); st.className = 'st'; st.textContent = `DMG ${it.dmg} • SPD ${Math.round(100 / it.dur * 4)}`; d.appendChild(st); }
+    const nm = document.createElement('span'); nm.textContent = nameOf(kindOf(shopTab), it); d.appendChild(nm);
+    if (shopTab === 'weapon') { const st = document.createElement('span'); st.className = 'st'; st.textContent = T('stats', it.dmg, Math.round(100 / it.dur * 4)); d.appendChild(st); }
     const tag = document.createElement('span'); tag.className = 'tag ' + (owned ? 'own' : 'price');
-    tag.textContent = eq ? 'Equipped' : owned ? 'Equip' : '💵 ' + it.cost; d.appendChild(tag);
+    tag.textContent = eq ? T('equipped') : owned ? T('equip') : '💵 ' + it.cost; d.appendChild(tag);
     d.onclick = () => {
       if (!owned) {
-        if (save.cash < it.cost) { toast('Not enough cash 💵'); return; }
+        if (save.cash < it.cost) { toast(T('noCash')); return; }
         save.cash -= it.cost; save[ownKey].push(it.id); snd.coin();
       }
       save[saveKey] = it.id; persist(); refreshMenu(); openShop();
@@ -940,26 +994,50 @@ function openShop(tab) {
     grid.appendChild(d); drawItemIcon(cv2, shopTab, it.id);
   });
   body.appendChild(grid);
-  openModal({ title: `Shop   💵 ${save.cash}`, body, wide: true, buttons: [{ label: 'Close', cls: 'green', fn: closeModal }] });
+  openModal({ title: `${T('shop')}   💵 ${save.cash}`, body, wide: true, buttons: [{ label: T('close'), cls: 'green', fn: closeModal }] });
 }
 
 function openSettings() {
   const body = document.createElement('div');
-  const row = document.createElement('div'); row.className = 'row'; row.innerHTML = '<span>Sound</span>';
-  const tg = document.createElement('button'); tg.className = 'tog' + (save.sound ? '' : ' off'); tg.textContent = save.sound ? 'ON' : 'OFF';
-  tg.onclick = () => { save.sound = !save.sound; persist(); tg.className = 'tog' + (save.sound ? '' : ' off'); tg.textContent = save.sound ? 'ON' : 'OFF'; };
+  const row = document.createElement('div'); row.className = 'row'; row.innerHTML = '<span>' + T('sound') + '</span>';
+  const tg = document.createElement('button'); tg.className = 'tog' + (save.sound ? '' : ' off'); tg.textContent = save.sound ? T('on') : T('off');
+  tg.onclick = () => { save.sound = !save.sound; persist(); tg.className = 'tog' + (save.sound ? '' : ' off'); tg.textContent = save.sound ? T('on') : T('off'); };
   row.appendChild(tg); body.appendChild(row);
-  const r2 = document.createElement('div'); r2.className = 'row'; r2.innerHTML = '<span>Progress</span>';
-  const rs = document.createElement('button'); rs.className = 'tog off'; rs.textContent = 'Reset';
-  rs.onclick = () => { if (confirm('Reset all progress?')) { save = defSave(); persist(); refreshMenu(); closeModal(); toast('Progress reset'); } };
+  const r2 = document.createElement('div'); r2.className = 'row'; r2.innerHTML = '<span>' + T('progress') + '</span>';
+  const rs = document.createElement('button'); rs.className = 'tog off'; rs.textContent = T('reset');
+  rs.onclick = () => { if (confirm(T('confirmReset'))) { save = defSave(); persist(); refreshMenu(); closeModal(); toast(T('progressReset')); } };
   r2.appendChild(rs); body.appendChild(r2);
+  const r3 = document.createElement('div'); r3.className = 'row'; r3.innerHTML = '<span>' + T('language') + '</span>';
+  const lg = document.createElement('button'); lg.className = 'tog'; lg.textContent = LANG === 'vi' ? 'Tiếng Việt' : 'English';
+  lg.onclick = () => { setLang(LANG === 'vi' ? 'en' : 'vi'); openSettings(); };
+  r3.appendChild(lg); body.appendChild(r3);
   const help = document.createElement('div'); help.className = 'sub'; help.style.marginTop = '8px';
-  help.innerHTML = 'Move: A/D or ←/→<br>Jump: W / ↑ / Space<br>Attack / Kick: J / K / click<br>Clear 5 levels → 🔑 key → Boss fight';
+  help.innerHTML = T('help');
   body.appendChild(help);
-  openModal({ title: 'Settings', body, buttons: [{ label: 'Close', cls: 'green', fn: closeModal }] });
+  openModal({ title: T('settings'), body, buttons: [{ label: T('close'), cls: 'green', fn: closeModal }] });
+}
+
+
+/* ----- language ----- */
+function applyLang() {
+  document.documentElement.lang = LANG;
+  $('#btnWeapon').lastChild.textContent = T('weapon');
+  $('#btnSkin').lastChild.textContent = T('skin');
+  $('#btnColor').lastChild.textContent = T('color');
+  $('#btnBoss').firstChild.textContent = T('boss') + ' ';
+  $('#btnSoccer').firstChild.textContent = T('soccer');
+  $('#btnSettings').title = T('settings'); $('#btnExit').title = T('backMenu');
+  $('#btnLang').textContent = LANG.toUpperCase(); $('#btnLang').title = T('language');
+  refreshMenu();
+}
+function setLang(l) {
+  LANG = l;
+  try { localStorage.setItem('ag-lang', l); } catch (e) {}
+  applyLang();
 }
 
 /* ----- wiring ----- */
+$('#btnLang').onclick = () => setLang(LANG === 'vi' ? 'en' : 'vi');
 $('#btnWeapon').onclick = () => openShop('weapon');
 $('#btnSkin').onclick = () => openShop('skin');
 $('#btnColor').onclick = () => openShop('color');
@@ -972,7 +1050,7 @@ $('#bossBox').onclick = () => startFight(true);
 $('#btnSoccer').onclick = startSoccer;
 $('#btnSurvival').onclick = startSurvival;
 $('#btnExit').onclick = () => {
-  if (G.mode === 'fight' && G.survival && !G.over) { const r = bankSurvival(); toast(`Banked 💵 ${r.reward} (${r.cleared} waves)`); }
+  if (G.mode === 'fight' && G.survival && !G.over) { const r = bankSurvival(); toast(T('banked', r.reward, r.cleared)); }
   toMenu();
 };
 
@@ -997,7 +1075,7 @@ document.querySelectorAll('#touch button').forEach(b => {
 });
 
 /* ------------------------------------------------------------------ go */
-refreshMenu();
+applyLang();
 requestAnimationFrame(frame);
 
 // tiny debug hook for automated tests
