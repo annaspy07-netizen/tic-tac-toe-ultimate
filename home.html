@@ -3,30 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17040e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Alex Games – Trò chơi nhỏ, chơi cùng bạn bè</title>
 <meta name="description" content="Alex Games: những trò chơi nhỏ vui nhộn, chơi ngay trên trình duyệt và mời bạn bè chơi online cùng. Miễn phí, không cần cài đặt.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b3141c'/%3E%3Ctext x='32' y='45' font-size='36' font-weight='900' text-anchor='middle' fill='%23ffd24a' font-family='Arial'%3EA%3C/text%3E%3C/svg%3E">
 <style>
 :root{--gold:#ffd24a;--gold2:#f6a623;--red:#b3141c;--card:rgba(88,10,18,.9);--line:rgba(255,215,120,.38);--text:#fff;--muted:#ffdcb3}
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 body{
   font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--text);min-height:100vh;
   background:linear-gradient(to top,#ffd84a 0%,#f6a623 9%,#d2601f 22%,#7c1521 42%,#3b0a19 64%,#17040e 100%);
   background-attachment:fixed;overflow-x:hidden;
 }
 @media (hover:none){body{background-attachment:scroll}}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+body::before{content:"";position:fixed;top:0;right:0;bottom:0;left:0;pointer-events:none;z-index:0;
   background:repeating-conic-gradient(from -90deg at 50% 108%,rgba(255,236,160,.34) 0 4deg,rgba(255,236,160,0) 4deg 8deg);
   -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 55%);mask-image:linear-gradient(to top,#000 0%,transparent 55%)}
 a{color:inherit;text-decoration:none}
 .wrap{position:relative;z-index:2;width:min(1040px,100% - 32px);margin:0 auto}
 
 /* falling petals + sparkles */
-.petals{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.petals{position:fixed;top:0;right:0;bottom:0;left:0;pointer-events:none;z-index:1;overflow:hidden}
 .petals i{position:absolute;top:-20px;width:10px;height:6px;border-radius:50%;opacity:.8;animation:fall linear infinite}
 @keyframes fall{0%{transform:translate(0,-20px) rotate(0)}100%{transform:translate(70px,105vh) rotate(540deg)}}
-.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.stars{position:fixed;top:0;right:0;bottom:0;left:0;pointer-events:none;z-index:0}
 .stars b{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;animation:tw 2.4s ease-in-out infinite}
 @keyframes tw{0%,100%{opacity:.15}50%{opacity:.9}}
 
@@ -106,7 +110,7 @@ a.card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 20
 .step h4{font-size:18px;margin:6px 0 6px}
 .step p{color:var(--muted);line-height:1.45;font-size:15.5px}
 
-footer{position:relative;z-index:2;margin-top:64px;background:#4a0912;border-top:3px solid var(--gold2);padding:26px 16px 30px;text-align:center;color:var(--muted)}
+footer{position:relative;z-index:2;margin-top:64px;background:#4a0912;border-top:3px solid var(--gold2);padding:26px 16px 30px;padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));text-align:center;color:var(--muted)}
 footer b{color:var(--gold)}
 footer small{display:block;margin-top:6px;opacity:.8}
 
@@ -115,6 +119,7 @@ footer small{display:block;margin-top:6px;opacity:.8}
   .stage{min-height:130px}
   nav a{padding:6px 10px}
 }
+@media (hover:none){a.card:hover{transform:none}.cta:hover{transform:none;filter:none}nav a:hover{background:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>

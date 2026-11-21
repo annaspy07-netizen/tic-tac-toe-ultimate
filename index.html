@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17040e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Tic Tac Toe Ultimate</title>
 <style>
 :root{
@@ -35,7 +39,7 @@ body::after{ /* retro floor grid */
 }
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 
-.app{position:relative;z-index:1;display:grid;grid-template-columns:clamp(205px,23vw,320px) minmax(0,1fr) clamp(190px,21vw,300px);gap:clamp(12px,2vw,26px);height:100vh;padding:18px clamp(12px,2vw,24px);align-items:center}
+.app{position:relative;z-index:1;display:grid;grid-template-columns:clamp(205px,23vw,320px) minmax(0,1fr) clamp(190px,21vw,300px);gap:clamp(12px,2vw,26px);height:100vh;height:100dvh;padding:18px clamp(12px,2vw,24px);align-items:center}
 .left,.right{display:flex;flex-direction:column;gap:14px;min-width:0}
 .center{display:flex;align-items:center;justify-content:center;height:100%;min-height:0}
 
@@ -83,10 +87,10 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .rule{text-align:center;color:var(--muted);font-size:13px;line-height:1.35;min-height:36px}
 
 /* ---------- Board ---------- */
-.boardwrap{position:relative;width:min(100%,calc(100vh - 36px));aspect-ratio:1}
+.boardwrap{position:relative;width:min(100%,calc(100vh - 36px));width:min(100%,calc(100dvh - 36px));aspect-ratio:1}
 .board{
   --pad:clamp(16px,3.4vmin,34px);
-  position:absolute;inset:0;padding:var(--pad);border-radius:34px;
+  position:absolute;top:0;right:0;bottom:0;left:0;padding:var(--pad);border-radius:34px;
   background:linear-gradient(160deg,rgba(32,12,70,.85),rgba(14,6,34,.9));
   border:2px solid rgba(139,92,246,.5);box-shadow:0 0 40px -6px rgba(139,92,246,.55),inset 0 0 60px rgba(60,20,120,.35);
 }
@@ -107,7 +111,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .mk.big{filter:drop-shadow(0 0 7px currentColor)}
 .mk.static path,.mk.static circle{animation:none}
 @keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
-.ghost{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .15s}
+.ghost{position:absolute;top:0;right:0;bottom:0;left:0;display:grid;place-items:center;opacity:0;transition:opacity .15s}
 .ghost .mk{filter:none}
 .cell:not(.locked):hover .ghost{opacity:.28}
 .cell.hint .ghost{opacity:.7;animation:blink .6s infinite alternate}
@@ -121,7 +125,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .cell.win.bad{background:radial-gradient(circle,rgba(255,60,60,.28),transparent 72%)}
 @keyframes pulse{from{transform:scale(.95)}to{transform:scale(1.14)}}
 
-.overlay{position:absolute;inset:0;border-radius:34px;display:none;place-items:center;background:rgba(6,2,18,.5);backdrop-filter:blur(2px);z-index:5;cursor:pointer;animation:fadein .35s}
+.overlay{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:34px;display:none;place-items:center;background:rgba(6,2,18,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);z-index:5;cursor:pointer;animation:fadein .35s}
 .overlay.show{display:grid}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 .result{text-align:center;padding:22px 34px;border-radius:22px;background:rgba(18,8,42,.95);border:2px solid var(--accent);box-shadow:0 0 36px -4px var(--accent);animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
@@ -180,8 +184,8 @@ body.tet .capy{--cb:#c79b68}
 .petrow{border-top:1px solid var(--panel-b);margin-top:2px;border-radius:0 0 10px 10px}
 
 /* ---------- Christmas decorations ---------- */
-#snow{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-#xmas{position:fixed;inset:0;pointer-events:none;z-index:2}
+#snow{position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#xmas{position:fixed;top:0;right:0;bottom:0;left:0;pointer-events:none;z-index:2}
 #xmas[hidden],#snow[hidden]{display:none}
 #xLights{position:fixed;top:0;left:0;width:100%;height:40px;z-index:32;overflow:visible}
 .bulb ellipse{animation:twinkle 1.8s ease-in-out infinite;filter:drop-shadow(0 0 5px var(--c))}
@@ -224,7 +228,7 @@ body.xmas .merry{display:block}
   background-attachment:fixed;
 }
 :root[data-theme="tet"] body::before{      /* sunrise rays fanning up from the horizon, fading into the night sky */
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  content:"";position:fixed;top:0;right:0;bottom:0;left:0;pointer-events:none;z-index:0;
   background:repeating-conic-gradient(from -90deg at 50% 108%,rgba(255,236,160,.38) 0 4deg,rgba(255,236,160,0) 4deg 8deg);
   -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 58%);mask-image:linear-gradient(to top,#000 0%,transparent 58%);
 }
@@ -242,12 +246,12 @@ body.xmas .merry{display:block}
 :root[data-theme="tet"] .act.undo{background:linear-gradient(#c8793e,#8a4620);box-shadow:0 4px 0 #5a2a10,0 6px 14px rgba(120,20,10,.4)}
 :root[data-theme="tet"] .stylebtn{border-color:#ffd24a}
 :root[data-theme="tet"] .xground{filter:drop-shadow(0 -2px 10px rgba(255,255,255,.5))}
-#fwc{position:fixed;inset:0;width:100%;height:100%;z-index:31;pointer-events:none}
+#fwc{position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:100%;z-index:31;pointer-events:none}
 #fwc[hidden]{display:none}
 
 /* ---------- Big board (50×50) ---------- */
-.boardwrap.big{width:min(100%,calc(100vh - 24px));aspect-ratio:1}
-.app:has(.boardwrap.big){grid-template-columns:clamp(222px,21vw,290px) minmax(0,1fr) clamp(214px,20vw,270px);padding:12px clamp(10px,1.4vw,20px);gap:clamp(10px,1.4vw,20px)}
+.boardwrap.big{width:min(100%,calc(100vh - 24px));width:min(100%,calc(100dvh - 24px));aspect-ratio:1}
+.app.hasbig{grid-template-columns:clamp(222px,21vw,290px) minmax(0,1fr) clamp(214px,20vw,270px);padding:12px clamp(10px,1.4vw,20px);gap:clamp(10px,1.4vw,20px)}
 .seg button{white-space:nowrap;font-size:clamp(13px,1.4vw,16px);padding:0 4px}
 .seg button svg{flex:none}
 .status{font-size:clamp(18px,2vw,23px)}
@@ -307,7 +311,7 @@ body.xmas .merry{display:block}
 .ressub{min-height:20px;margin:-6px 0 12px;font-size:14px;font-weight:700;color:var(--muted)}
 
 /* ---------- Modal ---------- */
-.modal{position:fixed;inset:0;z-index:50;display:none;place-items:center;background:rgba(4,1,14,.7);backdrop-filter:blur(4px);padding:16px}
+.modal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:50;display:none;place-items:center;background:rgba(4,1,14,.7);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);padding:16px}
 .modal.show{display:grid}
 .card{width:min(460px,100%);max-height:90vh;overflow:auto;background:rgba(20,9,46,.98);border:2px solid var(--accent);border-radius:20px;padding:22px;box-shadow:0 0 40px -6px var(--accent)}
 .card h3{font-size:22px;margin-bottom:14px;text-align:center}
@@ -319,12 +323,12 @@ tr:nth-child(even) td{background:rgba(255,255,255,.04)}
 .card .row{display:flex;gap:10px;margin-top:16px}
 .card .row button{flex:1;height:42px;border-radius:12px;font-weight:800;background:rgba(255,255,255,.1)}
 .card .row button.pri{background:linear-gradient(135deg,var(--accent),var(--accent2))}
-#fx{position:fixed;inset:0;pointer-events:none;z-index:60}
+#fx{position:fixed;top:0;right:0;bottom:0;left:0;pointer-events:none;z-index:60}
 
 /* ---------- Responsive ---------- */
 @media (max-width:900px){
   body{overflow:auto}
-  .app{display:flex;flex-direction:column;height:auto;min-height:100vh;padding:14px 14px 40px;gap:14px;align-items:stretch}
+  .app{display:flex;flex-direction:column;height:auto;min-height:100vh;min-height:100dvh;padding:14px 14px 40px;padding:calc(14px + env(safe-area-inset-top,0px)) calc(14px + env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) calc(14px + env(safe-area-inset-left,0px));gap:14px;align-items:stretch}
   .left{display:contents}
   .logo{order:1}.toolbar{order:2}.stylebox{order:3}.scores{order:4}
   .center{order:5;height:auto}
@@ -336,9 +340,16 @@ tr:nth-child(even) td{background:rgba(255,255,255,.04)}
   .score{padding:10px 14px}.score b{font-size:28px}
   .opt{height:50px;font-size:18px}
 }
-/* ---------- Compact menus on desktop: leave the room to the board ---------- */
+/* phones held sideways: board on the left, everything else scrolls on the right */
+@media (max-width:900px) and (orientation:landscape) and (max-height:560px){
+  .app{display:grid;grid-template-columns:min(calc(100vh - 16px),58vw) minmax(0,1fr);column-gap:14px;row-gap:8px;align-items:start;padding:8px 12px 24px;min-height:100vh;min-height:100dvh}
+  .center{grid-column:1;grid-row:1 / span 14;position:sticky;top:8px;order:0;height:auto;align-self:start}
+  .logo,.toolbar,.stylebox,.scores,.status,.actions,.rule,.right{grid-column:2;order:0}
+  .boardwrap,.boardwrap.big{width:min(100%,calc(100vh - 16px));width:min(100%,calc(100dvh - 16px))}
+  .logo h1{font-size:22px}.opt{height:42px;font-size:16px}.score{padding:8px 12px}.score b{font-size:24px}
+}/* ---------- Compact menus on desktop: leave the room to the board ---------- */
 @media (min-width:901px){
-  .app,.app:has(.boardwrap.big){grid-template-columns:clamp(168px,16vw,225px) minmax(0,1fr) clamp(172px,17vw,225px);gap:clamp(8px,1.1vw,16px);padding:10px clamp(8px,1.1vw,16px)}
+  .app,.app.hasbig{grid-template-columns:clamp(168px,16vw,225px) minmax(0,1fr) clamp(172px,17vw,225px);gap:clamp(8px,1.1vw,16px);padding:10px clamp(8px,1.1vw,16px)}
   .left,.right{gap:8px}
   .logo h1{font-size:clamp(19px,1.9vw,26px)}
   .logo .badge{font-size:10px;padding:1px 12px;margin-top:5px}
@@ -363,8 +374,16 @@ tr:nth-child(even) td{background:rgba(255,255,255,.04)}
   .logo h1{font-size:24px}.score{padding:9px 14px}.score b{font-size:28px}.opt{height:48px;font-size:18px}
   .app{gap:18px;padding:10px 18px}.left,.right{gap:9px}.status{font-size:19px}.rule{display:none}
 }
-</style>
-</head>
+/* touch / browser polish */
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.cell,.ibtn,.opt,.act,.obtn,.zoombox button{touch-action:manipulation}
+@media (hover:none){
+  .ibtn:hover,.opt:hover,.obtn:hover,.emotes button:hover,.zoombox button:hover,.homelink:hover{transform:none}
+  .act:hover{filter:none}
+  .cell:not(.locked):hover,.board.big .cell:not(.locked):hover{background:none}
+  .cell:not(.locked):hover .ghost{opacity:0}
+}
+</style></head>
 <body>
 <div class="app">
   <aside class="left">
@@ -702,6 +721,11 @@ tr:nth-child(even) td{background:rgba(255,255,255,.04)}
 (() => {
 'use strict';
 const $ = s => document.querySelector(s);
+const COARSE = !!(window.matchMedia && matchMedia('(pointer:coarse)').matches);     // phones / tablets
+function copyText(txt) {
+  try { if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(txt); return; } } catch (e) {}
+  try { const ta = document.createElement('textarea'); ta.value = txt; ta.style.cssText = 'position:fixed;left:-999px;top:0;opacity:0'; document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand('copy'); ta.remove(); } catch (e) {}
+}
 const $$ = s => [...document.querySelectorAll(s)];
 
 /* ===================== Config ===================== */
@@ -764,7 +788,7 @@ S.theme = S.season === 'tet' ? 'tet' : 'noel';      // the only two styles: Noel
 S.xmas = true; S.pet = true;                          // decorations + capybaras are always shown
 try { const g = localStorage.getItem('ag-lang'); if (g === 'vi' || g === 'en') S.lang = g; } catch (e) {}   // language chosen on the Alex Games home page
 const save = () => { try { localStorage.setItem('ttt-ultimate-v1', JSON.stringify(S)); } catch(e) {} };
-const t = (k, v) => { let s = (I18N[S.lang]||I18N.vi)[k] ?? k; if (v) for (const x in v) s = s.replace('{'+x+'}', v[x]); return s; };
+const t = (k, v) => { const d = (I18N[S.lang]||I18N.vi)[k]; let s = (d === undefined || d === null) ? k : d; if (v) for (const x in v) s = s.replace('{'+x+'}', v[x]); return s; };
 
 /* ===================== Game engine ===================== */
 const cfgCache = {};
@@ -978,10 +1002,11 @@ const isBig = () => G && G.n > BIG;
 function buildBoard() {
   const g = $('#grid'), n = G.n, big = n > BIG, board = $('#board');
   board.classList.toggle('big', big);
+  $('.app').classList.toggle('hasbig', big);
   board.classList.toggle('dense', n >= 7 && !big);
   $('.boardwrap').classList.toggle('big', big);
   $('#zoomBox').hidden = !big;
-  if (big) { userZoom = false; zoomPx = n <= 30 ? fitZoom(n) : 30; }   // small-ish big boards fit the frame exactly
+  if (big) { userZoom = false; zoomPx = n <= 30 ? Math.max(fitZoom(n), COARSE ? 30 : 0) : 30; }   // small-ish big boards fit the frame exactly
   board.style.setProperty('--n', n);
   board.style.setProperty('--cs', zoomPx + 'px');
   g.style.gridTemplateColumns = big ? `repeat(${n},${zoomPx}px)` : `repeat(${n},1fr)`;
@@ -1016,7 +1041,7 @@ function keepVisible(idx) {
 }
 let userZoom = false;
 const fitZoom = n => Math.max(14, Math.min(60, Math.floor(($('#board').clientWidth - 30) / n)));
-window.addEventListener('resize', () => { if (isBig() && G.n <= 30 && !userZoom) setZoom(fitZoom(G.n), true); });
+window.addEventListener('resize', () => { if (isBig() && G.n <= 30 && !userZoom) setZoom(Math.max(fitZoom(G.n), COARSE ? 30 : 0), true); });
 function setZoom(px, auto) {
   px = Math.max(14, Math.min(60, px));
   if (!isBig() || px === zoomPx) return;
@@ -1471,7 +1496,7 @@ function doJoin() {
 }
 function copyLink() {
   const link = (location.protocol.startsWith('http') ? location.origin + location.pathname : location.href.split('?')[0]) + '?room=' + net.code;
-  try { navigator.clipboard.writeText(link); } catch (e) {}
+  copyText(link);
   net.copied = true; renderOnline();
   setTimeout(() => { net.copied = false; renderOnline(); }, 1600);
 }
@@ -1510,7 +1535,7 @@ function petFrame(now) {
   requestAnimationFrame(petFrame);
   if (!S.pet) { petLast = 0; return; }
   const dt = petLast ? Math.min(.05, (now - petLast) / 1000) : 0; petLast = now;
-  const ch = Math.max(64, Math.min(108, Math.min(innerWidth, innerHeight) * .105)), cw = ch * .8;
+  const ch = Math.max(Math.min(innerWidth, innerHeight) < 600 ? 42 : 64, Math.min(108, Math.min(innerWidth, innerHeight) * .105)), cw = ch * .8;
   const pad = 4, minX = cw / 2 + pad, maxX = Math.max(minX + 1, innerWidth - cw / 2 - pad);
   const ground = S.xmas && innerWidth > 900 && innerHeight > 620 ? Math.max(34, Math.min(60, innerHeight * .06)) : 0;
   const baseY = innerHeight - (ground ? ground * .42 : 4);
@@ -1561,7 +1586,7 @@ const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: r
 const newFlake = rand => ({x: Math.random() * snowW, y: rand ? Math.random() * snowH : -8, r: 1 + Math.random() * 2.6,
   vy: 20 + Math.random() * 36, vx: (Math.random() - .5) * 14, ph: Math.random() * 6.28, sw: .5 + Math.random() * 1.2, a: .5 + Math.random() * .4});
 function snowResize() {
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const dpr = Math.min(COARSE ? 1.5 : 2, window.devicePixelRatio || 1);
   snowW = innerWidth; snowH = innerHeight;
   snowCv.width = snowW * dpr; snowCv.height = snowH * dpr; sx.setTransform(dpr, 0, 0, dpr, 0, 0);
   flakes = Array.from({length: Math.round(Math.min(130, snowW * snowH / 13000))}, () => newFlake(true));
@@ -1643,7 +1668,7 @@ let rockets = [], sparks = [], nextRocket = 0, fwCount = 0, fwLast = 0, fwW = 0,
 const fwColors = () => ['#e8222a', '#ff5a1f', '#d6246e', '#c77d00', '#ffffff', '#7b1fa2', '#e8222a', '#ff9d00'];
 const fpick = a => a[(Math.random() * a.length) | 0];
 function fwResize() {
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const dpr = Math.min(COARSE ? 1.5 : 2, window.devicePixelRatio || 1);
   fwW = innerWidth; fwH = innerHeight;
   fwCv.width = fwW * dpr; fwCv.height = fwH * dpr; fx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
