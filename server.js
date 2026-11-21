@@ -17,16 +17,21 @@ const MODES = {
 const DIRS = [[0, 1], [1, 0], [1, 1], [1, -1]];
 
 /* ---------- static file ---------- */
+function sendPage(res, file) {
+  fs.readFile(path.join(__dirname, file), (err, data) => {
+    if (err) { res.writeHead(500); return res.end(file + ' missing'); }
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+    res.end(data);
+  });
+}
 const server = http.createServer((req, res) => {
-  const url = req.url.split('?')[0];
-  if (url === '/' || url === '/index.html') {
-    fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
-      if (err) { res.writeHead(500); return res.end('index.html missing'); }
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
-      res.end(data);
-    });
-  } else if (url === '/health') { res.writeHead(200); res.end('ok'); }
-  else { res.writeHead(404); res.end('Not found'); }
+  const [url, query = ''] = req.url.split('?');
+  if (url === '/') {
+    // old invite links looked like /?room=ABCD - keep them working by opening the game
+    sendPage(res, /(^|&)room=/.test(query) ? 'index.html' : 'home.html');
+  } else if (url === '/tic-tac-toe' || url === '/tic-tac-toe/' || url === '/index.html') sendPage(res, 'index.html');
+  else if (url === '/health') { res.writeHead(200); res.end('ok'); }
+  else { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('Không tìm thấy trang này'); }
 });
 
 /* ---------- game helpers ---------- */

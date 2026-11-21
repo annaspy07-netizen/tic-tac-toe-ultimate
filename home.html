@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Alex Games – Trò chơi nhỏ, chơi cùng bạn bè</title>
+<meta name="description" content="Alex Games: những trò chơi nhỏ vui nhộn, chơi ngay trên trình duyệt và mời bạn bè chơi online cùng. Miễn phí, không cần cài đặt.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b3141c'/%3E%3Ctext x='32' y='45' font-size='36' font-weight='900' text-anchor='middle' fill='%23ffd24a' font-family='Arial'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+:root{--gold:#ffd24a;--gold2:#f6a623;--red:#b3141c;--card:rgba(88,10,18,.9);--line:rgba(255,215,120,.38);--text:#fff;--muted:#ffdcb3}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--text);min-height:100vh;
+  background:linear-gradient(to top,#ffd84a 0%,#f6a623 9%,#d2601f 22%,#7c1521 42%,#3b0a19 64%,#17040e 100%);
+  background-attachment:fixed;overflow-x:hidden;
+}
+@media (hover:none){body{background-attachment:scroll}}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-conic-gradient(from -90deg at 50% 108%,rgba(255,236,160,.34) 0 4deg,rgba(255,236,160,0) 4deg 8deg);
+  -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 55%);mask-image:linear-gradient(to top,#000 0%,transparent 55%)}
+a{color:inherit;text-decoration:none}
+.wrap{position:relative;z-index:2;width:min(1040px,100% - 32px);margin:0 auto}
+
+/* falling petals + sparkles */
+.petals{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.petals i{position:absolute;top:-20px;width:10px;height:6px;border-radius:50%;opacity:.8;animation:fall linear infinite}
+@keyframes fall{0%{transform:translate(0,-20px) rotate(0)}100%{transform:translate(70px,105vh) rotate(540deg)}}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.stars b{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;animation:tw 2.4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.15}50%{opacity:.9}}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.06em;font-size:22px}
+.brand .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#ff4a3d,#b3141c);border:2px solid var(--gold);display:grid;place-items:center;color:var(--gold);font-size:22px;box-shadow:0 0 16px -2px var(--gold2)}
+.brand span b{color:var(--gold)}
+nav{display:flex;gap:6px}
+nav a{padding:8px 14px;border-radius:999px;font-weight:700;font-size:15px;color:var(--muted);transition:.15s}
+nav a:hover{background:rgba(255,255,255,.12);color:#fff}
+
+/* hero */
+.hero{text-align:center;padding:26px 0 0}
+.hero h1{font-size:clamp(38px,8vw,76px);font-weight:900;letter-spacing:.04em;line-height:1.02;color:var(--gold);
+  text-shadow:0 3px 0 #b3141c,0 0 30px rgba(255,160,40,.65),0 8px 24px rgba(0,0,0,.4)}
+.hero h1 small{display:block;font-size:.34em;letter-spacing:.35em;color:#fff;text-shadow:0 0 14px #ffb02e;margin-top:8px}
+.hero p{max-width:620px;margin:18px auto 0;font-size:clamp(16px,2.4vw,20px);line-height:1.5;color:var(--muted)}
+.cta{display:inline-flex;align-items:center;gap:10px;margin-top:26px;padding:16px 34px;border-radius:16px;font-weight:900;font-size:19px;color:#4a1004;
+  background:linear-gradient(#ffe066,#f2a81a);box-shadow:0 5px 0 #a8650c,0 10px 26px rgba(0,0,0,.4),0 0 30px -4px #ffb02e;transition:.12s}
+.cta:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.cta:active{transform:translateY(3px);box-shadow:0 2px 0 #a8650c}
+.cta svg{width:22px;height:22px}
+
+/* capybara stage */
+.stage{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:clamp(4px,3vw,28px);margin-top:26px;min-height:170px}
+.hcapy{width:clamp(88px,14vw,130px);aspect-ratio:120/150}
+.hcapy svg{width:100%;height:100%;overflow:visible;display:block;filter:drop-shadow(0 5px 6px rgba(0,0,0,.4))}
+.hcapy .kq,.hcapy .ko,.hcapy .kr,.hcapy .ks,.hcapy .kd,.hcapy .kt{display:none}
+.hcapy.c-quan .kq,.hcapy.c-quyt .ko,.hcapy.c-rong .kr{display:inline}
+.hcapy .cb{fill:#c79b68}
+.hcapy .waddle{transform-origin:60px 130px;animation:waddle 1.15s ease-in-out infinite}
+.hcapy .foot{animation:footup 1.15s ease-in-out infinite}
+.hcapy .foot.r{animation-delay:-.575s}
+.hcapy:nth-child(2) .waddle,.hcapy:nth-child(2) .foot{animation-delay:-.4s}
+.hcapy:nth-child(2) .foot.r{animation-delay:-.975s}
+.hcapy:nth-child(3) .waddle,.hcapy:nth-child(3) .foot{animation-delay:-.8s}
+.hcapy:nth-child(3) .foot.r{animation-delay:-1.375s}
+.hcapy .spark{transform-box:fill-box;transform-origin:center;animation:sparkle .32s ease-in-out infinite alternate}
+@keyframes waddle{0%,100%{transform:rotate(-4deg) translateY(0)}25%,75%{transform:rotate(0) translateY(-9px)}50%{transform:rotate(4deg) translateY(0)}}
+@keyframes footup{0%,50%,100%{transform:translateY(0)}25%{transform:translateY(-6px)}}
+@keyframes sparkle{from{transform:scale(.8) rotate(-8deg);opacity:.75}to{transform:scale(1.15) rotate(10deg);opacity:1}}
+.ground{height:34px;margin:-8px calc(50% - 50vw) 0;background:linear-gradient(#e0392f,#8f1119);border-radius:50% 50% 0 0/100% 100% 0 0;box-shadow:0 -4px 14px rgba(255,255,255,.35)}
+
+/* sections */
+section{padding:54px 0 6px}
+section h2{font-size:clamp(26px,4vw,36px);font-weight:900;margin-bottom:8px;color:var(--gold);text-shadow:0 2px 0 rgba(0,0,0,.3)}
+section .lead{color:var(--muted);margin-bottom:24px;font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px}
+.card{position:relative;display:flex;flex-direction:column;background:var(--card);border:2px solid var(--line);border-radius:22px;overflow:hidden;
+  box-shadow:0 14px 34px rgba(0,0,0,.35);transition:transform .18s,box-shadow .18s,border-color .18s}
+a.card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 20px 44px rgba(0,0,0,.45),0 0 30px -6px var(--gold2)}
+.art{aspect-ratio:16/10;background:linear-gradient(160deg,#76101e,#3e0612);display:grid;place-items:center;border-bottom:2px solid var(--line);position:relative}
+.art svg{width:62%;height:auto;filter:drop-shadow(0 0 12px rgba(255,200,80,.5))}
+.card .body{padding:18px 20px 22px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card h3{font-size:22px;font-weight:900}
+.card p{color:var(--muted);line-height:1.45;font-size:15.5px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);font-size:12.5px;font-weight:700}
+.tags span.on{background:rgba(37,224,138,.2);border-color:rgba(37,224,138,.6);color:#9dffd0}
+.play{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:13px;font-weight:900;font-size:16px;color:#4a1004;background:linear-gradient(#ffe066,#f2a81a);box-shadow:0 4px 0 #a8650c}
+.soon{opacity:.62}
+.soon .art{background:repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0 14px,rgba(255,255,255,0) 14px 28px),linear-gradient(160deg,#4a0f1a,#240510)}
+.soon .art b{font-size:54px;font-weight:900;color:rgba(255,215,120,.5)}
+.soon .play{background:rgba(255,255,255,.12);color:var(--muted);box-shadow:none}
+
+/* how to invite */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;counter-reset:s}
+.step{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px 20px 22px;position:relative}
+.step::before{counter-increment:s;content:counter(s);position:absolute;top:-16px;left:18px;width:34px;height:34px;border-radius:50%;background:linear-gradient(#ffe066,#f2a81a);color:#4a1004;font-weight:900;display:grid;place-items:center;box-shadow:0 3px 0 #a8650c}
+.step h4{font-size:18px;margin:6px 0 6px}
+.step p{color:var(--muted);line-height:1.45;font-size:15.5px}
+
+footer{position:relative;z-index:2;margin-top:64px;background:#4a0912;border-top:3px solid var(--gold2);padding:26px 16px 30px;text-align:center;color:var(--muted)}
+footer b{color:var(--gold)}
+footer small{display:block;margin-top:6px;opacity:.8}
+
+@media (max-width:560px){
+  header{flex-direction:column;gap:6px}
+  .stage{min-height:130px}
+  nav a{padding:6px 10px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+<div class="petals" id="petals" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header>
+    <a class="brand" href="/" aria-label="Alex Games"><div class="logo">A</div><span>ALEX <b>GAMES</b></span></a>
+    <nav><a href="#games">Trò chơi</a><a href="#moi-ban">Mời bạn bè</a></nav>
+  </header>
+
+  <div class="hero">
+    <h1>ALEX GAMES<small>CHÚC MỪNG NĂM MỚI 2027</small></h1>
+    <p>Những trò chơi nhỏ vui nhộn, chơi ngay trên trình duyệt và rủ bạn bè chơi online cùng. Miễn phí, không cần cài đặt.</p>
+    <a class="cta" href="/tic-tac-toe">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Chơi Tic Tac Toe Ultimate
+    </a>
+    <div class="stage" aria-hidden="true">
+      <div class="hcapy c-quan"><svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round">
+<g transform="translate(0 20)">
+<g class="waddle">
+  <!-- feet -->
+  <ellipse class="foot l" cx="34" cy="123" rx="12" ry="7" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+  <ellipse class="foot r" cx="86" cy="123" rx="12" ry="7" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+
+  <!-- REINDEER: antlers + fluffy hood (behind the face) -->
+  <g class="kd" fill="none">
+    <path d="M44 18C36 4 40 -6 32 -14M40 2C32 2 27 -3 25 -9" stroke="#3a2416" stroke-width="15"/>
+    <path d="M76 18C84 4 80 -6 88 -14M80 2C88 2 93 -3 95 -9" stroke="#3a2416" stroke-width="15"/>
+    <path d="M44 18C36 4 40 -6 32 -14M40 2C32 2 27 -3 25 -9" stroke="#f4b53c" stroke-width="9.5"/>
+    <path d="M76 18C84 4 80 -6 88 -14M80 2C88 2 93 -3 95 -9" stroke="#f4b53c" stroke-width="9.5"/>
+    <path d="M42 12C38 4 40 -2 36 -8M78 12C82 4 80 -2 84 -8" stroke="#ffe39a" stroke-width="2.6"/>
+  </g>
+  <g class="kd">
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="#3a2416"/>
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="none" stroke="#3a2416" stroke-width="13" stroke-dasharray="0.1 9"/>
+    <ellipse cx="60" cy="52" rx="49" ry="42" fill="#8b5a3c"/>
+    <ellipse cx="60" cy="52" rx="49" ry="42" fill="none" stroke="#8b5a3c" stroke-width="9.5" stroke-dasharray="0.1 9"/>
+    <ellipse cx="13" cy="36" rx="9" ry="14" fill="#8b5a3c" stroke="#3a2416" stroke-width="3" transform="rotate(-35 13 36)"/>
+    <ellipse cx="14" cy="37" rx="4.5" ry="9" fill="#f3c9a8" transform="rotate(-35 14 37)"/>
+    <ellipse cx="107" cy="36" rx="9" ry="14" fill="#8b5a3c" stroke="#3a2416" stroke-width="3" transform="rotate(35 107 36)"/>
+    <ellipse cx="106" cy="37" rx="4.5" ry="9" fill="#f3c9a8" transform="rotate(35 106 37)"/>
+  </g>
+
+  <!-- DRAGON hood (Tet): horns, red mane, ears (behind the face) -->
+  <g class="kr">
+    <path d="M34 22Q24 4 38 -6Q37 10 47 17Z" fill="#ffe3a8" stroke="#3a2416" stroke-width="3"/>
+    <path d="M86 22Q96 4 82 -6Q83 10 73 17Z" fill="#ffe3a8" stroke="#3a2416" stroke-width="3"/>
+    <path d="M12 40L0 32L10 50ZM9 62L-3 64L10 74ZM108 40L120 32L110 50ZM111 62L123 64L110 74ZM28 15L24 3L40 11ZM92 15L96 3L80 11Z" fill="#d8322f" stroke="#3a2416" stroke-width="2.8"/>
+    <ellipse cx="15" cy="30" rx="8" ry="12.5" fill="#d8322f" stroke="#3a2416" stroke-width="3" transform="rotate(-28 15 30)"/>
+    <ellipse cx="16" cy="31" rx="4" ry="8" fill="#ffb3b9" transform="rotate(-28 16 31)"/>
+    <ellipse cx="105" cy="30" rx="8" ry="12.5" fill="#d8322f" stroke="#3a2416" stroke-width="3" transform="rotate(28 105 30)"/>
+    <ellipse cx="104" cy="31" rx="4" ry="8" fill="#ffb3b9" transform="rotate(28 104 31)"/>
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="#e0402f" stroke="#3a2416" stroke-width="3"/>
+    <ellipse cx="60" cy="52" rx="46" ry="39" fill="none" stroke="#f5c33b" stroke-width="2.4" stroke-dasharray="5 5"/>
+  </g>
+
+  <!-- body: Santa, reindeer, and the bare Tet ones -->
+  <g class="ks kd kq ko kr"><ellipse class="cb" cx="60" cy="96" rx="39" ry="28" fill="#d9a45f" stroke="#3a2416" stroke-width="3"/></g>
+
+  <!-- TET: red jacket (orange-on-head capybara) -->
+  <g class="ko">
+    <path d="M22 94C22 78 42 82 60 82C78 82 98 78 98 94L102 124C82 130 38 130 18 124Z" fill="#c8392d" stroke="#3a2416" stroke-width="3"/>
+    <path d="M60 104V128" stroke="#3a2416" stroke-width="2.4" fill="none"/>
+    <path d="M60 110l5.5 5.5-5.5 5.5-5.5-5.5z" fill="#f0c060" stroke="#3a2416" stroke-width="2"/>
+  </g>
+
+  <!-- TREE: tiers instead of a body -->
+  <g class="kt">
+    <path d="M10 124C4 108 14 98 28 98L92 98C106 98 116 108 110 124C88 131 32 131 10 124Z" fill="#78c76c" stroke="#3a2416" stroke-width="3"/>
+    <path d="M20 102C16 88 26 80 40 80L80 80C94 80 104 88 100 102C80 108 40 108 20 102Z" fill="#69b95f" stroke="#3a2416" stroke-width="3"/>
+    <path d="M30 84C30 72 42 68 60 68C78 68 90 72 90 84C76 90 44 90 30 84Z" fill="#5eae58" stroke="#3a2416" stroke-width="3"/>
+    <g stroke="#3a2416" stroke-width="2"><circle cx="24" cy="113" r="5" fill="#e8454a"/><circle cx="46" cy="119" r="4.6" fill="#ffd84d"/><circle cx="74" cy="118" r="5" fill="#e8454a"/><circle cx="96" cy="111" r="4.6" fill="#ffd84d"/><circle cx="34" cy="93" r="4.4" fill="#ffd84d"/><circle cx="60" cy="100" r="4.8" fill="#e8454a"/><circle cx="86" cy="94" r="4.4" fill="#e8454a"/></g>
+  </g>
+
+  <!-- ears (Santa, tree, and the Tet ones without a hood) -->
+  <g class="ks kt kq ko">
+    <circle cx="26" cy="30" r="8.5" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="94" cy="30" r="8.5" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+  </g>
+
+  <!-- head + snout -->
+  <ellipse class="cb" cx="60" cy="56" rx="41" ry="34" fill="#d9a45f" stroke="#3a2416" stroke-width="3"/>
+  <ellipse class="ks kd kt" cx="30" cy="64" rx="7.5" ry="4.2" fill="#f28b8b" opacity=".7"/>
+  <ellipse class="ks kd kt" cx="90" cy="64" rx="7.5" ry="4.2" fill="#f28b8b" opacity=".7"/>
+  <path d="M44 58C44 49 51 45 60 45C69 45 76 49 76 58L78 70C78 79 70 84 60 84C50 84 42 79 42 70Z" fill="#8d6238" stroke="#3a2416" stroke-width="2.6"/>
+  <ellipse class="ks kd kt" cx="60" cy="52" rx="7" ry="4.2" fill="#3a2416"/>
+
+  <!-- SANTA face + scarf + hat + gift -->
+  <g class="ks" fill="none" stroke="#3a2416" stroke-width="3.2">
+    <path d="M26 53Q33 46 40 53M80 53Q87 46 94 53"/>
+    <path d="M51 69Q55.5 75 60 69Q64.5 75 69 69" stroke-width="2.4"/>
+  </g>
+  <g class="ks">
+    <g class="sway"><path d="M84 98L98 94L104 120L90 124Z" fill="#d93a35" stroke="#3a2416" stroke-width="2.8"/><path d="M92 97L98 121M97 95.5L103 119" stroke="#fdf6e6" stroke-width="3.4" fill="none"/></g>
+    <path d="M22 86Q60 108 98 86L102 100Q60 124 18 100Z" fill="#d93a35" stroke="#3a2416" stroke-width="3"/>
+    <path d="M30 91V103M54 97V109M78 95V107" stroke="#fdf6e6" stroke-width="4.6" fill="none"/>
+    <path d="M42 94.5V106.5M66 97V109M90 90V102" stroke="#2f9a54" stroke-width="4.6" fill="none"/>
+    <rect x="40" y="106" width="40" height="20" rx="3" fill="#6a5fd6" stroke="#3a2416" stroke-width="2.8"/>
+    <rect x="36" y="99" width="48" height="10" rx="3" fill="#7d72e6" stroke="#3a2416" stroke-width="2.8"/>
+    <rect x="56" y="99" width="8" height="27" fill="#ffd84d" stroke="#3a2416" stroke-width="2"/>
+    <path d="M60 99C50 86 40 94 48 100ZM60 99C70 86 80 94 72 100Z" fill="#ffd84d" stroke="#3a2416" stroke-width="2.2"/>
+    <ellipse cx="37" cy="113" rx="7" ry="6" fill="#7a5230" stroke="#3a2416" stroke-width="2.6"/>
+    <ellipse cx="83" cy="113" rx="7" ry="6" fill="#7a5230" stroke="#3a2416" stroke-width="2.6"/>
+    <path d="M26 34C28 6 66 -10 100 6C88 6 84 16 86 28Q56 18 26 34Z" fill="#d93a35" stroke="#3a2416" stroke-width="3"/>
+    <path d="M18 38Q60 8 102 34Q104 46 94 45Q60 26 28 46Q16 46 18 38Z" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="102" cy="8" r="9" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+  </g>
+
+  <!-- REINDEER face -->
+  <g class="kd">
+    <path d="M27 55L40 50M80 50L93 55" fill="none" stroke="#3a2416" stroke-width="3.2"/>
+    <path d="M51 69Q55.5 75 60 69Q64.5 75 69 69" fill="none" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M62 72Q62 84 70 80Q74 73 68 70Z" fill="#f08a96" stroke="#3a2416" stroke-width="2"/>
+    <circle cx="60" cy="14" r="5.6" fill="#e8353b" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M48 93Q43 104 45 114M72 93Q77 104 75 114" fill="none" stroke="#e03a3a" stroke-width="3.2"/>
+    <circle cx="45" cy="116" r="3.8" fill="#e03a3a" stroke="#3a2416" stroke-width="2"/><circle cx="75" cy="116" r="3.8" fill="#e03a3a" stroke="#3a2416" stroke-width="2"/>
+  </g>
+
+  <!-- TREE face + cap + bow + star -->
+  <g class="kt">
+    <path d="M31 53H40M80 53H89" fill="none" stroke="#3a2416" stroke-width="3.2"/>
+    <path d="M52 73Q60 67 68 73" fill="none" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M30 37C30 12 90 12 90 37Q60 28 30 37Z" fill="#78c76c" stroke="#3a2416" stroke-width="3"/>
+    <path d="M60 19L40 7L38 25Z" fill="#e8454a" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M60 19L80 7L82 25Z" fill="#e8454a" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M47 10L45.5 22M73 10L74.5 22" stroke="#fdf6e6" stroke-width="2.8" fill="none"/>
+    <circle cx="60" cy="19" r="4.2" fill="#d03a40" stroke="#3a2416" stroke-width="2"/>
+    <path d="M60 -9l3.6 7.4 8 1.1-5.8 5.6 1.4 8-7.2-3.8-7.2 3.8 1.4-8-5.8-5.6 8-1.1z" fill="#ffd84d" stroke="#3a2416" stroke-width="2.4" transform="translate(0 4)"/>
+  </g>
+
+  <!-- TET: shared face (dash eyes, "I" nose, whisker marks) -->
+  <g class="kq ko kr" fill="none" stroke="#3a2416" stroke-width="3">
+    <path d="M30 52H40M80 52H90"/>
+    <path d="M53 48H67M60 48V62M54 65Q60 68.5 66 65" stroke-width="2.7"/>
+    <path d="M17 55H25M16 61H24.5M95 55H103M95.5 61H104" stroke-width="2.2"/>
+  </g>
+
+  <!-- TET 1: quan hat, "tien den" sign, red envelopes (li xi) -->
+  <g class="kq">
+    <path d="M36 27L22 19M84 27L98 19" stroke="#3a2416" stroke-width="3" fill="none"/>
+    <circle cx="19" cy="17" r="6.5" fill="#f5c33b" stroke="#3a2416" stroke-width="2.6"/>
+    <circle cx="101" cy="17" r="6.5" fill="#f5c33b" stroke="#3a2416" stroke-width="2.6"/>
+    <path d="M38 26C38 5 82 5 82 26Z" fill="#e24a3b" stroke="#3a2416" stroke-width="3"/>
+    <rect x="34" y="23" width="52" height="10" rx="5" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="24" r="3.4" fill="#4caf50" stroke="#3a2416" stroke-width="1.8"/>
+    <path d="M60 7V3" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="1" r="4" fill="#f5c33b" stroke="#3a2416" stroke-width="2.4"/>
+    <g transform="rotate(-8 18 92)">
+      <rect x="2" y="68" width="32" height="46" rx="4" fill="#f2b844" stroke="#3a2416" stroke-width="3"/>
+      <text x="18" y="92" text-anchor="middle" font-size="17" font-weight="700" fill="#d9761f" stroke="none" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif">钱</text>
+      <text x="18" y="110" text-anchor="middle" font-size="17" font-weight="700" fill="#d9761f" stroke="none" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif">来</text>
+    </g>
+    <ellipse cx="16" cy="66" rx="8" ry="6" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+    <g transform="translate(100 92)">
+      <rect x="-8" y="-16" width="16" height="30" rx="2" transform="rotate(-24)" fill="#c92f28" stroke="#3a2416" stroke-width="2.6"/>
+      <rect x="-8" y="-16" width="16" height="30" rx="2" transform="rotate(24)" fill="#e8453a" stroke="#3a2416" stroke-width="2.6"/>
+      <rect x="-8" y="-16" width="16" height="30" rx="2" fill="#f05a45" stroke="#3a2416" stroke-width="2.6"/>
+      <circle cx="0" cy="-3" r="3" fill="#f5c33b" stroke="#3a2416" stroke-width="1.6"/>
+    </g>
+    <ellipse cx="101" cy="112" rx="7" ry="6" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+
+  <!-- TET 2: tangerine on the head, white collar, sparkler -->
+  <g class="ko">
+    <path d="M28 88Q60 108 92 88L96 100Q60 120 24 100Z" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="16" r="9.5" fill="#ff9a2a" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="56.5" cy="12.5" r="2.4" fill="#ffd28a" stroke="none"/>
+    <path d="M61 7Q65 -3 75 0Q72 8 61 7Z" fill="#4caf50" stroke="#3a2416" stroke-width="2.2"/>
+    <path d="M17 90L25 56" stroke="#3a2416" stroke-width="3.4" fill="none"/>
+    <g transform="translate(26 50)"><g class="spark">
+      <path d="M0-14V14M-14 0H14M-10-10L10 10M10-10L-10 10" stroke="#ffe36b" stroke-width="2.8" fill="none"/>
+      <circle r="4.4" fill="#fff7c2" stroke="none"/>
+    </g></g>
+    <ellipse cx="14" cy="91" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+
+  <!-- TET 3: dragon paws -->
+  <g class="kr">
+    <ellipse cx="22" cy="106" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+    <ellipse cx="98" cy="106" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+</g>
+</g>
+</svg></div>
+      <div class="hcapy c-quyt"><svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round">
+<g transform="translate(0 20)">
+<g class="waddle">
+  <!-- feet -->
+  <ellipse class="foot l" cx="34" cy="123" rx="12" ry="7" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+  <ellipse class="foot r" cx="86" cy="123" rx="12" ry="7" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+
+  <!-- REINDEER: antlers + fluffy hood (behind the face) -->
+  <g class="kd" fill="none">
+    <path d="M44 18C36 4 40 -6 32 -14M40 2C32 2 27 -3 25 -9" stroke="#3a2416" stroke-width="15"/>
+    <path d="M76 18C84 4 80 -6 88 -14M80 2C88 2 93 -3 95 -9" stroke="#3a2416" stroke-width="15"/>
+    <path d="M44 18C36 4 40 -6 32 -14M40 2C32 2 27 -3 25 -9" stroke="#f4b53c" stroke-width="9.5"/>
+    <path d="M76 18C84 4 80 -6 88 -14M80 2C88 2 93 -3 95 -9" stroke="#f4b53c" stroke-width="9.5"/>
+    <path d="M42 12C38 4 40 -2 36 -8M78 12C82 4 80 -2 84 -8" stroke="#ffe39a" stroke-width="2.6"/>
+  </g>
+  <g class="kd">
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="#3a2416"/>
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="none" stroke="#3a2416" stroke-width="13" stroke-dasharray="0.1 9"/>
+    <ellipse cx="60" cy="52" rx="49" ry="42" fill="#8b5a3c"/>
+    <ellipse cx="60" cy="52" rx="49" ry="42" fill="none" stroke="#8b5a3c" stroke-width="9.5" stroke-dasharray="0.1 9"/>
+    <ellipse cx="13" cy="36" rx="9" ry="14" fill="#8b5a3c" stroke="#3a2416" stroke-width="3" transform="rotate(-35 13 36)"/>
+    <ellipse cx="14" cy="37" rx="4.5" ry="9" fill="#f3c9a8" transform="rotate(-35 14 37)"/>
+    <ellipse cx="107" cy="36" rx="9" ry="14" fill="#8b5a3c" stroke="#3a2416" stroke-width="3" transform="rotate(35 107 36)"/>
+    <ellipse cx="106" cy="37" rx="4.5" ry="9" fill="#f3c9a8" transform="rotate(35 106 37)"/>
+  </g>
+
+  <!-- DRAGON hood (Tet): horns, red mane, ears (behind the face) -->
+  <g class="kr">
+    <path d="M34 22Q24 4 38 -6Q37 10 47 17Z" fill="#ffe3a8" stroke="#3a2416" stroke-width="3"/>
+    <path d="M86 22Q96 4 82 -6Q83 10 73 17Z" fill="#ffe3a8" stroke="#3a2416" stroke-width="3"/>
+    <path d="M12 40L0 32L10 50ZM9 62L-3 64L10 74ZM108 40L120 32L110 50ZM111 62L123 64L110 74ZM28 15L24 3L40 11ZM92 15L96 3L80 11Z" fill="#d8322f" stroke="#3a2416" stroke-width="2.8"/>
+    <ellipse cx="15" cy="30" rx="8" ry="12.5" fill="#d8322f" stroke="#3a2416" stroke-width="3" transform="rotate(-28 15 30)"/>
+    <ellipse cx="16" cy="31" rx="4" ry="8" fill="#ffb3b9" transform="rotate(-28 16 31)"/>
+    <ellipse cx="105" cy="30" rx="8" ry="12.5" fill="#d8322f" stroke="#3a2416" stroke-width="3" transform="rotate(28 105 30)"/>
+    <ellipse cx="104" cy="31" rx="4" ry="8" fill="#ffb3b9" transform="rotate(28 104 31)"/>
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="#e0402f" stroke="#3a2416" stroke-width="3"/>
+    <ellipse cx="60" cy="52" rx="46" ry="39" fill="none" stroke="#f5c33b" stroke-width="2.4" stroke-dasharray="5 5"/>
+  </g>
+
+  <!-- body: Santa, reindeer, and the bare Tet ones -->
+  <g class="ks kd kq ko kr"><ellipse class="cb" cx="60" cy="96" rx="39" ry="28" fill="#d9a45f" stroke="#3a2416" stroke-width="3"/></g>
+
+  <!-- TET: red jacket (orange-on-head capybara) -->
+  <g class="ko">
+    <path d="M22 94C22 78 42 82 60 82C78 82 98 78 98 94L102 124C82 130 38 130 18 124Z" fill="#c8392d" stroke="#3a2416" stroke-width="3"/>
+    <path d="M60 104V128" stroke="#3a2416" stroke-width="2.4" fill="none"/>
+    <path d="M60 110l5.5 5.5-5.5 5.5-5.5-5.5z" fill="#f0c060" stroke="#3a2416" stroke-width="2"/>
+  </g>
+
+  <!-- TREE: tiers instead of a body -->
+  <g class="kt">
+    <path d="M10 124C4 108 14 98 28 98L92 98C106 98 116 108 110 124C88 131 32 131 10 124Z" fill="#78c76c" stroke="#3a2416" stroke-width="3"/>
+    <path d="M20 102C16 88 26 80 40 80L80 80C94 80 104 88 100 102C80 108 40 108 20 102Z" fill="#69b95f" stroke="#3a2416" stroke-width="3"/>
+    <path d="M30 84C30 72 42 68 60 68C78 68 90 72 90 84C76 90 44 90 30 84Z" fill="#5eae58" stroke="#3a2416" stroke-width="3"/>
+    <g stroke="#3a2416" stroke-width="2"><circle cx="24" cy="113" r="5" fill="#e8454a"/><circle cx="46" cy="119" r="4.6" fill="#ffd84d"/><circle cx="74" cy="118" r="5" fill="#e8454a"/><circle cx="96" cy="111" r="4.6" fill="#ffd84d"/><circle cx="34" cy="93" r="4.4" fill="#ffd84d"/><circle cx="60" cy="100" r="4.8" fill="#e8454a"/><circle cx="86" cy="94" r="4.4" fill="#e8454a"/></g>
+  </g>
+
+  <!-- ears (Santa, tree, and the Tet ones without a hood) -->
+  <g class="ks kt kq ko">
+    <circle cx="26" cy="30" r="8.5" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="94" cy="30" r="8.5" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+  </g>
+
+  <!-- head + snout -->
+  <ellipse class="cb" cx="60" cy="56" rx="41" ry="34" fill="#d9a45f" stroke="#3a2416" stroke-width="3"/>
+  <ellipse class="ks kd kt" cx="30" cy="64" rx="7.5" ry="4.2" fill="#f28b8b" opacity=".7"/>
+  <ellipse class="ks kd kt" cx="90" cy="64" rx="7.5" ry="4.2" fill="#f28b8b" opacity=".7"/>
+  <path d="M44 58C44 49 51 45 60 45C69 45 76 49 76 58L78 70C78 79 70 84 60 84C50 84 42 79 42 70Z" fill="#8d6238" stroke="#3a2416" stroke-width="2.6"/>
+  <ellipse class="ks kd kt" cx="60" cy="52" rx="7" ry="4.2" fill="#3a2416"/>
+
+  <!-- SANTA face + scarf + hat + gift -->
+  <g class="ks" fill="none" stroke="#3a2416" stroke-width="3.2">
+    <path d="M26 53Q33 46 40 53M80 53Q87 46 94 53"/>
+    <path d="M51 69Q55.5 75 60 69Q64.5 75 69 69" stroke-width="2.4"/>
+  </g>
+  <g class="ks">
+    <g class="sway"><path d="M84 98L98 94L104 120L90 124Z" fill="#d93a35" stroke="#3a2416" stroke-width="2.8"/><path d="M92 97L98 121M97 95.5L103 119" stroke="#fdf6e6" stroke-width="3.4" fill="none"/></g>
+    <path d="M22 86Q60 108 98 86L102 100Q60 124 18 100Z" fill="#d93a35" stroke="#3a2416" stroke-width="3"/>
+    <path d="M30 91V103M54 97V109M78 95V107" stroke="#fdf6e6" stroke-width="4.6" fill="none"/>
+    <path d="M42 94.5V106.5M66 97V109M90 90V102" stroke="#2f9a54" stroke-width="4.6" fill="none"/>
+    <rect x="40" y="106" width="40" height="20" rx="3" fill="#6a5fd6" stroke="#3a2416" stroke-width="2.8"/>
+    <rect x="36" y="99" width="48" height="10" rx="3" fill="#7d72e6" stroke="#3a2416" stroke-width="2.8"/>
+    <rect x="56" y="99" width="8" height="27" fill="#ffd84d" stroke="#3a2416" stroke-width="2"/>
+    <path d="M60 99C50 86 40 94 48 100ZM60 99C70 86 80 94 72 100Z" fill="#ffd84d" stroke="#3a2416" stroke-width="2.2"/>
+    <ellipse cx="37" cy="113" rx="7" ry="6" fill="#7a5230" stroke="#3a2416" stroke-width="2.6"/>
+    <ellipse cx="83" cy="113" rx="7" ry="6" fill="#7a5230" stroke="#3a2416" stroke-width="2.6"/>
+    <path d="M26 34C28 6 66 -10 100 6C88 6 84 16 86 28Q56 18 26 34Z" fill="#d93a35" stroke="#3a2416" stroke-width="3"/>
+    <path d="M18 38Q60 8 102 34Q104 46 94 45Q60 26 28 46Q16 46 18 38Z" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="102" cy="8" r="9" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+  </g>
+
+  <!-- REINDEER face -->
+  <g class="kd">
+    <path d="M27 55L40 50M80 50L93 55" fill="none" stroke="#3a2416" stroke-width="3.2"/>
+    <path d="M51 69Q55.5 75 60 69Q64.5 75 69 69" fill="none" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M62 72Q62 84 70 80Q74 73 68 70Z" fill="#f08a96" stroke="#3a2416" stroke-width="2"/>
+    <circle cx="60" cy="14" r="5.6" fill="#e8353b" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M48 93Q43 104 45 114M72 93Q77 104 75 114" fill="none" stroke="#e03a3a" stroke-width="3.2"/>
+    <circle cx="45" cy="116" r="3.8" fill="#e03a3a" stroke="#3a2416" stroke-width="2"/><circle cx="75" cy="116" r="3.8" fill="#e03a3a" stroke="#3a2416" stroke-width="2"/>
+  </g>
+
+  <!-- TREE face + cap + bow + star -->
+  <g class="kt">
+    <path d="M31 53H40M80 53H89" fill="none" stroke="#3a2416" stroke-width="3.2"/>
+    <path d="M52 73Q60 67 68 73" fill="none" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M30 37C30 12 90 12 90 37Q60 28 30 37Z" fill="#78c76c" stroke="#3a2416" stroke-width="3"/>
+    <path d="M60 19L40 7L38 25Z" fill="#e8454a" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M60 19L80 7L82 25Z" fill="#e8454a" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M47 10L45.5 22M73 10L74.5 22" stroke="#fdf6e6" stroke-width="2.8" fill="none"/>
+    <circle cx="60" cy="19" r="4.2" fill="#d03a40" stroke="#3a2416" stroke-width="2"/>
+    <path d="M60 -9l3.6 7.4 8 1.1-5.8 5.6 1.4 8-7.2-3.8-7.2 3.8 1.4-8-5.8-5.6 8-1.1z" fill="#ffd84d" stroke="#3a2416" stroke-width="2.4" transform="translate(0 4)"/>
+  </g>
+
+  <!-- TET: shared face (dash eyes, "I" nose, whisker marks) -->
+  <g class="kq ko kr" fill="none" stroke="#3a2416" stroke-width="3">
+    <path d="M30 52H40M80 52H90"/>
+    <path d="M53 48H67M60 48V62M54 65Q60 68.5 66 65" stroke-width="2.7"/>
+    <path d="M17 55H25M16 61H24.5M95 55H103M95.5 61H104" stroke-width="2.2"/>
+  </g>
+
+  <!-- TET 1: quan hat, "tien den" sign, red envelopes (li xi) -->
+  <g class="kq">
+    <path d="M36 27L22 19M84 27L98 19" stroke="#3a2416" stroke-width="3" fill="none"/>
+    <circle cx="19" cy="17" r="6.5" fill="#f5c33b" stroke="#3a2416" stroke-width="2.6"/>
+    <circle cx="101" cy="17" r="6.5" fill="#f5c33b" stroke="#3a2416" stroke-width="2.6"/>
+    <path d="M38 26C38 5 82 5 82 26Z" fill="#e24a3b" stroke="#3a2416" stroke-width="3"/>
+    <rect x="34" y="23" width="52" height="10" rx="5" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="24" r="3.4" fill="#4caf50" stroke="#3a2416" stroke-width="1.8"/>
+    <path d="M60 7V3" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="1" r="4" fill="#f5c33b" stroke="#3a2416" stroke-width="2.4"/>
+    <g transform="rotate(-8 18 92)">
+      <rect x="2" y="68" width="32" height="46" rx="4" fill="#f2b844" stroke="#3a2416" stroke-width="3"/>
+      <text x="18" y="92" text-anchor="middle" font-size="17" font-weight="700" fill="#d9761f" stroke="none" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif">钱</text>
+      <text x="18" y="110" text-anchor="middle" font-size="17" font-weight="700" fill="#d9761f" stroke="none" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif">来</text>
+    </g>
+    <ellipse cx="16" cy="66" rx="8" ry="6" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+    <g transform="translate(100 92)">
+      <rect x="-8" y="-16" width="16" height="30" rx="2" transform="rotate(-24)" fill="#c92f28" stroke="#3a2416" stroke-width="2.6"/>
+      <rect x="-8" y="-16" width="16" height="30" rx="2" transform="rotate(24)" fill="#e8453a" stroke="#3a2416" stroke-width="2.6"/>
+      <rect x="-8" y="-16" width="16" height="30" rx="2" fill="#f05a45" stroke="#3a2416" stroke-width="2.6"/>
+      <circle cx="0" cy="-3" r="3" fill="#f5c33b" stroke="#3a2416" stroke-width="1.6"/>
+    </g>
+    <ellipse cx="101" cy="112" rx="7" ry="6" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+
+  <!-- TET 2: tangerine on the head, white collar, sparkler -->
+  <g class="ko">
+    <path d="M28 88Q60 108 92 88L96 100Q60 120 24 100Z" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="16" r="9.5" fill="#ff9a2a" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="56.5" cy="12.5" r="2.4" fill="#ffd28a" stroke="none"/>
+    <path d="M61 7Q65 -3 75 0Q72 8 61 7Z" fill="#4caf50" stroke="#3a2416" stroke-width="2.2"/>
+    <path d="M17 90L25 56" stroke="#3a2416" stroke-width="3.4" fill="none"/>
+    <g transform="translate(26 50)"><g class="spark">
+      <path d="M0-14V14M-14 0H14M-10-10L10 10M10-10L-10 10" stroke="#ffe36b" stroke-width="2.8" fill="none"/>
+      <circle r="4.4" fill="#fff7c2" stroke="none"/>
+    </g></g>
+    <ellipse cx="14" cy="91" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+
+  <!-- TET 3: dragon paws -->
+  <g class="kr">
+    <ellipse cx="22" cy="106" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+    <ellipse cx="98" cy="106" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+</g>
+</g>
+</svg></div>
+      <div class="hcapy c-rong"><svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round">
+<g transform="translate(0 20)">
+<g class="waddle">
+  <!-- feet -->
+  <ellipse class="foot l" cx="34" cy="123" rx="12" ry="7" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+  <ellipse class="foot r" cx="86" cy="123" rx="12" ry="7" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+
+  <!-- REINDEER: antlers + fluffy hood (behind the face) -->
+  <g class="kd" fill="none">
+    <path d="M44 18C36 4 40 -6 32 -14M40 2C32 2 27 -3 25 -9" stroke="#3a2416" stroke-width="15"/>
+    <path d="M76 18C84 4 80 -6 88 -14M80 2C88 2 93 -3 95 -9" stroke="#3a2416" stroke-width="15"/>
+    <path d="M44 18C36 4 40 -6 32 -14M40 2C32 2 27 -3 25 -9" stroke="#f4b53c" stroke-width="9.5"/>
+    <path d="M76 18C84 4 80 -6 88 -14M80 2C88 2 93 -3 95 -9" stroke="#f4b53c" stroke-width="9.5"/>
+    <path d="M42 12C38 4 40 -2 36 -8M78 12C82 4 80 -2 84 -8" stroke="#ffe39a" stroke-width="2.6"/>
+  </g>
+  <g class="kd">
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="#3a2416"/>
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="none" stroke="#3a2416" stroke-width="13" stroke-dasharray="0.1 9"/>
+    <ellipse cx="60" cy="52" rx="49" ry="42" fill="#8b5a3c"/>
+    <ellipse cx="60" cy="52" rx="49" ry="42" fill="none" stroke="#8b5a3c" stroke-width="9.5" stroke-dasharray="0.1 9"/>
+    <ellipse cx="13" cy="36" rx="9" ry="14" fill="#8b5a3c" stroke="#3a2416" stroke-width="3" transform="rotate(-35 13 36)"/>
+    <ellipse cx="14" cy="37" rx="4.5" ry="9" fill="#f3c9a8" transform="rotate(-35 14 37)"/>
+    <ellipse cx="107" cy="36" rx="9" ry="14" fill="#8b5a3c" stroke="#3a2416" stroke-width="3" transform="rotate(35 107 36)"/>
+    <ellipse cx="106" cy="37" rx="4.5" ry="9" fill="#f3c9a8" transform="rotate(35 106 37)"/>
+  </g>
+
+  <!-- DRAGON hood (Tet): horns, red mane, ears (behind the face) -->
+  <g class="kr">
+    <path d="M34 22Q24 4 38 -6Q37 10 47 17Z" fill="#ffe3a8" stroke="#3a2416" stroke-width="3"/>
+    <path d="M86 22Q96 4 82 -6Q83 10 73 17Z" fill="#ffe3a8" stroke="#3a2416" stroke-width="3"/>
+    <path d="M12 40L0 32L10 50ZM9 62L-3 64L10 74ZM108 40L120 32L110 50ZM111 62L123 64L110 74ZM28 15L24 3L40 11ZM92 15L96 3L80 11Z" fill="#d8322f" stroke="#3a2416" stroke-width="2.8"/>
+    <ellipse cx="15" cy="30" rx="8" ry="12.5" fill="#d8322f" stroke="#3a2416" stroke-width="3" transform="rotate(-28 15 30)"/>
+    <ellipse cx="16" cy="31" rx="4" ry="8" fill="#ffb3b9" transform="rotate(-28 16 31)"/>
+    <ellipse cx="105" cy="30" rx="8" ry="12.5" fill="#d8322f" stroke="#3a2416" stroke-width="3" transform="rotate(28 105 30)"/>
+    <ellipse cx="104" cy="31" rx="4" ry="8" fill="#ffb3b9" transform="rotate(28 104 31)"/>
+    <ellipse cx="60" cy="52" rx="50" ry="43" fill="#e0402f" stroke="#3a2416" stroke-width="3"/>
+    <ellipse cx="60" cy="52" rx="46" ry="39" fill="none" stroke="#f5c33b" stroke-width="2.4" stroke-dasharray="5 5"/>
+  </g>
+
+  <!-- body: Santa, reindeer, and the bare Tet ones -->
+  <g class="ks kd kq ko kr"><ellipse class="cb" cx="60" cy="96" rx="39" ry="28" fill="#d9a45f" stroke="#3a2416" stroke-width="3"/></g>
+
+  <!-- TET: red jacket (orange-on-head capybara) -->
+  <g class="ko">
+    <path d="M22 94C22 78 42 82 60 82C78 82 98 78 98 94L102 124C82 130 38 130 18 124Z" fill="#c8392d" stroke="#3a2416" stroke-width="3"/>
+    <path d="M60 104V128" stroke="#3a2416" stroke-width="2.4" fill="none"/>
+    <path d="M60 110l5.5 5.5-5.5 5.5-5.5-5.5z" fill="#f0c060" stroke="#3a2416" stroke-width="2"/>
+  </g>
+
+  <!-- TREE: tiers instead of a body -->
+  <g class="kt">
+    <path d="M10 124C4 108 14 98 28 98L92 98C106 98 116 108 110 124C88 131 32 131 10 124Z" fill="#78c76c" stroke="#3a2416" stroke-width="3"/>
+    <path d="M20 102C16 88 26 80 40 80L80 80C94 80 104 88 100 102C80 108 40 108 20 102Z" fill="#69b95f" stroke="#3a2416" stroke-width="3"/>
+    <path d="M30 84C30 72 42 68 60 68C78 68 90 72 90 84C76 90 44 90 30 84Z" fill="#5eae58" stroke="#3a2416" stroke-width="3"/>
+    <g stroke="#3a2416" stroke-width="2"><circle cx="24" cy="113" r="5" fill="#e8454a"/><circle cx="46" cy="119" r="4.6" fill="#ffd84d"/><circle cx="74" cy="118" r="5" fill="#e8454a"/><circle cx="96" cy="111" r="4.6" fill="#ffd84d"/><circle cx="34" cy="93" r="4.4" fill="#ffd84d"/><circle cx="60" cy="100" r="4.8" fill="#e8454a"/><circle cx="86" cy="94" r="4.4" fill="#e8454a"/></g>
+  </g>
+
+  <!-- ears (Santa, tree, and the Tet ones without a hood) -->
+  <g class="ks kt kq ko">
+    <circle cx="26" cy="30" r="8.5" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="94" cy="30" r="8.5" fill="#c48a4c" stroke="#3a2416" stroke-width="3"/>
+  </g>
+
+  <!-- head + snout -->
+  <ellipse class="cb" cx="60" cy="56" rx="41" ry="34" fill="#d9a45f" stroke="#3a2416" stroke-width="3"/>
+  <ellipse class="ks kd kt" cx="30" cy="64" rx="7.5" ry="4.2" fill="#f28b8b" opacity=".7"/>
+  <ellipse class="ks kd kt" cx="90" cy="64" rx="7.5" ry="4.2" fill="#f28b8b" opacity=".7"/>
+  <path d="M44 58C44 49 51 45 60 45C69 45 76 49 76 58L78 70C78 79 70 84 60 84C50 84 42 79 42 70Z" fill="#8d6238" stroke="#3a2416" stroke-width="2.6"/>
+  <ellipse class="ks kd kt" cx="60" cy="52" rx="7" ry="4.2" fill="#3a2416"/>
+
+  <!-- SANTA face + scarf + hat + gift -->
+  <g class="ks" fill="none" stroke="#3a2416" stroke-width="3.2">
+    <path d="M26 53Q33 46 40 53M80 53Q87 46 94 53"/>
+    <path d="M51 69Q55.5 75 60 69Q64.5 75 69 69" stroke-width="2.4"/>
+  </g>
+  <g class="ks">
+    <g class="sway"><path d="M84 98L98 94L104 120L90 124Z" fill="#d93a35" stroke="#3a2416" stroke-width="2.8"/><path d="M92 97L98 121M97 95.5L103 119" stroke="#fdf6e6" stroke-width="3.4" fill="none"/></g>
+    <path d="M22 86Q60 108 98 86L102 100Q60 124 18 100Z" fill="#d93a35" stroke="#3a2416" stroke-width="3"/>
+    <path d="M30 91V103M54 97V109M78 95V107" stroke="#fdf6e6" stroke-width="4.6" fill="none"/>
+    <path d="M42 94.5V106.5M66 97V109M90 90V102" stroke="#2f9a54" stroke-width="4.6" fill="none"/>
+    <rect x="40" y="106" width="40" height="20" rx="3" fill="#6a5fd6" stroke="#3a2416" stroke-width="2.8"/>
+    <rect x="36" y="99" width="48" height="10" rx="3" fill="#7d72e6" stroke="#3a2416" stroke-width="2.8"/>
+    <rect x="56" y="99" width="8" height="27" fill="#ffd84d" stroke="#3a2416" stroke-width="2"/>
+    <path d="M60 99C50 86 40 94 48 100ZM60 99C70 86 80 94 72 100Z" fill="#ffd84d" stroke="#3a2416" stroke-width="2.2"/>
+    <ellipse cx="37" cy="113" rx="7" ry="6" fill="#7a5230" stroke="#3a2416" stroke-width="2.6"/>
+    <ellipse cx="83" cy="113" rx="7" ry="6" fill="#7a5230" stroke="#3a2416" stroke-width="2.6"/>
+    <path d="M26 34C28 6 66 -10 100 6C88 6 84 16 86 28Q56 18 26 34Z" fill="#d93a35" stroke="#3a2416" stroke-width="3"/>
+    <path d="M18 38Q60 8 102 34Q104 46 94 45Q60 26 28 46Q16 46 18 38Z" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="102" cy="8" r="9" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+  </g>
+
+  <!-- REINDEER face -->
+  <g class="kd">
+    <path d="M27 55L40 50M80 50L93 55" fill="none" stroke="#3a2416" stroke-width="3.2"/>
+    <path d="M51 69Q55.5 75 60 69Q64.5 75 69 69" fill="none" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M62 72Q62 84 70 80Q74 73 68 70Z" fill="#f08a96" stroke="#3a2416" stroke-width="2"/>
+    <circle cx="60" cy="14" r="5.6" fill="#e8353b" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M48 93Q43 104 45 114M72 93Q77 104 75 114" fill="none" stroke="#e03a3a" stroke-width="3.2"/>
+    <circle cx="45" cy="116" r="3.8" fill="#e03a3a" stroke="#3a2416" stroke-width="2"/><circle cx="75" cy="116" r="3.8" fill="#e03a3a" stroke="#3a2416" stroke-width="2"/>
+  </g>
+
+  <!-- TREE face + cap + bow + star -->
+  <g class="kt">
+    <path d="M31 53H40M80 53H89" fill="none" stroke="#3a2416" stroke-width="3.2"/>
+    <path d="M52 73Q60 67 68 73" fill="none" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M30 37C30 12 90 12 90 37Q60 28 30 37Z" fill="#78c76c" stroke="#3a2416" stroke-width="3"/>
+    <path d="M60 19L40 7L38 25Z" fill="#e8454a" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M60 19L80 7L82 25Z" fill="#e8454a" stroke="#3a2416" stroke-width="2.4"/>
+    <path d="M47 10L45.5 22M73 10L74.5 22" stroke="#fdf6e6" stroke-width="2.8" fill="none"/>
+    <circle cx="60" cy="19" r="4.2" fill="#d03a40" stroke="#3a2416" stroke-width="2"/>
+    <path d="M60 -9l3.6 7.4 8 1.1-5.8 5.6 1.4 8-7.2-3.8-7.2 3.8 1.4-8-5.8-5.6 8-1.1z" fill="#ffd84d" stroke="#3a2416" stroke-width="2.4" transform="translate(0 4)"/>
+  </g>
+
+  <!-- TET: shared face (dash eyes, "I" nose, whisker marks) -->
+  <g class="kq ko kr" fill="none" stroke="#3a2416" stroke-width="3">
+    <path d="M30 52H40M80 52H90"/>
+    <path d="M53 48H67M60 48V62M54 65Q60 68.5 66 65" stroke-width="2.7"/>
+    <path d="M17 55H25M16 61H24.5M95 55H103M95.5 61H104" stroke-width="2.2"/>
+  </g>
+
+  <!-- TET 1: quan hat, "tien den" sign, red envelopes (li xi) -->
+  <g class="kq">
+    <path d="M36 27L22 19M84 27L98 19" stroke="#3a2416" stroke-width="3" fill="none"/>
+    <circle cx="19" cy="17" r="6.5" fill="#f5c33b" stroke="#3a2416" stroke-width="2.6"/>
+    <circle cx="101" cy="17" r="6.5" fill="#f5c33b" stroke="#3a2416" stroke-width="2.6"/>
+    <path d="M38 26C38 5 82 5 82 26Z" fill="#e24a3b" stroke="#3a2416" stroke-width="3"/>
+    <rect x="34" y="23" width="52" height="10" rx="5" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="24" r="3.4" fill="#4caf50" stroke="#3a2416" stroke-width="1.8"/>
+    <path d="M60 7V3" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="1" r="4" fill="#f5c33b" stroke="#3a2416" stroke-width="2.4"/>
+    <g transform="rotate(-8 18 92)">
+      <rect x="2" y="68" width="32" height="46" rx="4" fill="#f2b844" stroke="#3a2416" stroke-width="3"/>
+      <text x="18" y="92" text-anchor="middle" font-size="17" font-weight="700" fill="#d9761f" stroke="none" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif">钱</text>
+      <text x="18" y="110" text-anchor="middle" font-size="17" font-weight="700" fill="#d9761f" stroke="none" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif">来</text>
+    </g>
+    <ellipse cx="16" cy="66" rx="8" ry="6" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+    <g transform="translate(100 92)">
+      <rect x="-8" y="-16" width="16" height="30" rx="2" transform="rotate(-24)" fill="#c92f28" stroke="#3a2416" stroke-width="2.6"/>
+      <rect x="-8" y="-16" width="16" height="30" rx="2" transform="rotate(24)" fill="#e8453a" stroke="#3a2416" stroke-width="2.6"/>
+      <rect x="-8" y="-16" width="16" height="30" rx="2" fill="#f05a45" stroke="#3a2416" stroke-width="2.6"/>
+      <circle cx="0" cy="-3" r="3" fill="#f5c33b" stroke="#3a2416" stroke-width="1.6"/>
+    </g>
+    <ellipse cx="101" cy="112" rx="7" ry="6" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+
+  <!-- TET 2: tangerine on the head, white collar, sparkler -->
+  <g class="ko">
+    <path d="M28 88Q60 108 92 88L96 100Q60 120 24 100Z" fill="#fdf6e6" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="60" cy="16" r="9.5" fill="#ff9a2a" stroke="#3a2416" stroke-width="3"/>
+    <circle cx="56.5" cy="12.5" r="2.4" fill="#ffd28a" stroke="none"/>
+    <path d="M61 7Q65 -3 75 0Q72 8 61 7Z" fill="#4caf50" stroke="#3a2416" stroke-width="2.2"/>
+    <path d="M17 90L25 56" stroke="#3a2416" stroke-width="3.4" fill="none"/>
+    <g transform="translate(26 50)"><g class="spark">
+      <path d="M0-14V14M-14 0H14M-10-10L10 10M10-10L-10 10" stroke="#ffe36b" stroke-width="2.8" fill="none"/>
+      <circle r="4.4" fill="#fff7c2" stroke="none"/>
+    </g></g>
+    <ellipse cx="14" cy="91" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+
+  <!-- TET 3: dragon paws -->
+  <g class="kr">
+    <ellipse cx="22" cy="106" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+    <ellipse cx="98" cy="106" rx="7.5" ry="6.5" fill="#b98a5a" stroke="#3a2416" stroke-width="2.6"/>
+  </g>
+</g>
+</g>
+</svg></div>
+    </div>
+    <div class="ground"></div>
+  </div>
+
+  <section id="games">
+    <h2>Trò chơi</h2>
+    <p class="lead">Chọn một trò chơi và bắt đầu thôi!</p>
+    <div class="grid">
+      <a class="card" href="/tic-tac-toe">
+        <div class="art">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <g stroke="#ffcf5a" stroke-width="4" stroke-linecap="round"><path d="M70 14V186M130 14V186M14 70H186M14 130H186"/></g>
+            <g stroke="#ffd24a" stroke-width="9" stroke-linecap="round" fill="none"><path d="M26 26L54 54M54 26L26 54"/><path d="M86 86L114 114M114 86L86 114"/><path d="M146 146L174 174M174 146L146 174"/></g>
+            <g stroke="#ff9db0" stroke-width="9" fill="none"><circle cx="100" cy="40" r="15"/><circle cx="40" cy="100" r="15"/><circle cx="160" cy="100" r="15"/></g>
+          </svg>
+        </div>
+        <div class="body">
+          <h3>Tic Tac Toe Ultimate</h3>
+          <p>Cờ caro nhiều cỡ bàn (7×7, 10×10, 20×20). Đấu với máy ba cấp độ hoặc chơi online cùng bạn bè.</p>
+          <div class="tags"><span class="on">Online</span><span>1–2 người</span><span>Miễn phí</span></div>
+          <span class="play">Chơi ngay</span>
+        </div>
+      </a>
+      <div class="card soon">
+        <div class="art"><b>?</b></div>
+        <div class="body"><h3>Sắp ra mắt</h3><p>Trò chơi mới đang được chuẩn bị. Hãy quay lại sau nhé!</p><span class="play">Đang chuẩn bị</span></div>
+      </div>
+      <div class="card soon">
+        <div class="art"><b>?</b></div>
+        <div class="body"><h3>Sắp ra mắt</h3><p>Trò chơi mới đang được chuẩn bị. Hãy quay lại sau nhé!</p><span class="play">Đang chuẩn bị</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="moi-ban">
+    <h2>Mời bạn bè chơi cùng</h2>
+    <p class="lead">Chỉ ba bước, không cần đăng ký tài khoản.</p>
+    <div class="steps">
+      <div class="step"><h4>Vào trò chơi</h4><p>Bấm <b>Chơi ngay</b> ở thẻ Tic Tac Toe Ultimate.</p></div>
+      <div class="step"><h4>Tạo phòng</h4><p>Chọn <b>Online</b> rồi bấm <b>Tạo phòng riêng</b>, hoặc <b>Tìm trận nhanh</b> để ghép với người lạ.</p></div>
+      <div class="step"><h4>Gửi liên kết</h4><p>Bấm <b>Sao chép liên kết</b> và gửi cho bạn. Bạn mở liên kết là vào thẳng phòng.</p></div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <b>Alex Games</b> · Trò chơi nhỏ cho những phút vui vẻ
+  <small>© 2026 Alex Games · Lần đầu mở trang có thể chờ vài chục giây để máy chủ thức dậy.</small>
+</footer>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var st = document.getElementById('stars'), pt = document.getElementById('petals'), i, e;
+  for (i = 0; i < 46; i++) {
+    e = document.createElement('b');
+    e.style.left = Math.random() * 100 + '%'; e.style.top = Math.random() * 62 + '%';
+    e.style.animationDelay = (-Math.random() * 3).toFixed(2) + 's'; e.style.animationDuration = (1.8 + Math.random() * 2.4).toFixed(2) + 's';
+    st.appendChild(e);
+  }
+  if (reduce) return;
+  var cols = ['#ff6f9a', '#ffffff', '#ffd23c', '#e53935'];
+  for (i = 0; i < 22; i++) {
+    e = document.createElement('i');
+    e.style.left = Math.random() * 100 + '%'; e.style.background = cols[i % cols.length];
+    e.style.animationDuration = (9 + Math.random() * 9).toFixed(1) + 's'; e.style.animationDelay = (-Math.random() * 14).toFixed(1) + 's';
+    e.style.transform = 'scale(' + (.7 + Math.random() * .9).toFixed(2) + ')';
+    pt.appendChild(e);
+  }
+})();
+</script>
+</body>
+</html>

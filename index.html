@@ -196,6 +196,9 @@ body.tet .capy{--cb:#c79b68}
 .xgift.lg{height:clamp(32px,5.8vh,56px)}
 .twinkle-star{animation:twinkle 1.4s ease-in-out infinite}
 .ttl{position:relative;display:inline-block}
+.homelink{display:inline-block;margin-bottom:8px;font-size:12px;font-weight:800;letter-spacing:.05em;color:var(--muted);text-decoration:none;opacity:.9;transition:.15s}
+.homelink:hover{color:#fff;opacity:1;text-shadow:0 0 10px var(--accent)}
+.homelink[hidden]{display:none}
 .hat{display:none;position:absolute;right:-14px;top:-18px;width:34px;height:auto;transform:rotate(16deg);filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
 body.xmas.noel .hat-noel,body.xmas.tet .hat-tet{display:block}
 .hat-tet{right:-12px;top:-17px;width:32px}
@@ -364,7 +367,7 @@ tr:nth-child(even) td{background:rgba(255,255,255,.04)}
 <body>
 <div class="app">
   <aside class="left">
-    <div class="logo"><h1><span class="ttl">TIC TAC TOE<svg class="hat hat-tet" viewBox="0 0 60 46" aria-hidden="true"><path d="M13 20L5 15M47 20L55 15" stroke="#3b1a14" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="4" cy="14" r="4.6" fill="#f5c33b" stroke="#3b1a14" stroke-width="2.4"/><circle cx="56" cy="14" r="4.6" fill="#f5c33b" stroke="#3b1a14" stroke-width="2.4"/><path d="M16 21C16 5 44 5 44 21Z" fill="#e24a3b" stroke="#3b1a14" stroke-width="2.8" stroke-linejoin="round"/><rect x="12" y="19" width="36" height="9" rx="4.5" fill="#fdf6e6" stroke="#3b1a14" stroke-width="2.8"/><circle cx="30" cy="20" r="2.6" fill="#4caf50" stroke="#3b1a14" stroke-width="1.6"/><circle cx="30" cy="3.5" r="3.4" fill="#f5c33b" stroke="#3b1a14" stroke-width="2.2"/></svg><svg class="hat hat-noel" viewBox="0 0 60 50" aria-hidden="true"><path d="M8 40C8 18 28 4 50 12C40 14 36 24 38 38Z" fill="#e23b36" stroke="#3b1a14" stroke-width="3" stroke-linejoin="round"/><rect x="3" y="34" width="44" height="13" rx="6.5" fill="#fdf6e6" stroke="#3b1a14" stroke-width="3"/><circle cx="52" cy="12" r="7" fill="#fdf6e6" stroke="#3b1a14" stroke-width="3"/></svg></span></h1><div class="badge">ULTIMATE</div><div class="merry" data-i="merry">Giáng sinh vui vẻ!</div></div>
+    <div class="logo"><a class="homelink" id="homeLink" href="/">← Alex Games</a><h1><span class="ttl">TIC TAC TOE<svg class="hat hat-tet" viewBox="0 0 60 46" aria-hidden="true"><path d="M13 20L5 15M47 20L55 15" stroke="#3b1a14" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="4" cy="14" r="4.6" fill="#f5c33b" stroke="#3b1a14" stroke-width="2.4"/><circle cx="56" cy="14" r="4.6" fill="#f5c33b" stroke="#3b1a14" stroke-width="2.4"/><path d="M16 21C16 5 44 5 44 21Z" fill="#e24a3b" stroke="#3b1a14" stroke-width="2.8" stroke-linejoin="round"/><rect x="12" y="19" width="36" height="9" rx="4.5" fill="#fdf6e6" stroke="#3b1a14" stroke-width="2.8"/><circle cx="30" cy="20" r="2.6" fill="#4caf50" stroke="#3b1a14" stroke-width="1.6"/><circle cx="30" cy="3.5" r="3.4" fill="#f5c33b" stroke="#3b1a14" stroke-width="2.2"/></svg><svg class="hat hat-noel" viewBox="0 0 60 50" aria-hidden="true"><path d="M8 40C8 18 28 4 50 12C40 14 36 24 38 38Z" fill="#e23b36" stroke="#3b1a14" stroke-width="3" stroke-linejoin="round"/><rect x="3" y="34" width="44" height="13" rx="6.5" fill="#fdf6e6" stroke="#3b1a14" stroke-width="3"/><circle cx="52" cy="12" r="7" fill="#fdf6e6" stroke="#3b1a14" stroke-width="3"/></svg></span></h1><div class="badge">ULTIMATE</div><div class="merry" data-i="merry">Giáng sinh vui vẻ!</div></div>
     <div class="toolbar">
       <button class="ibtn" id="bStats" data-tip="stats"><svg viewBox="0 0 24 24" fill="#fff"><rect x="3" y="12" width="4.5" height="9" rx="1"/><rect x="9.8" y="4" width="4.5" height="17" rx="1"/><rect x="16.5" y="9" width="4.5" height="12" rx="1"/></svg></button>
       <button class="ibtn" id="bSound" data-tip="sound"></button>
@@ -1783,6 +1786,7 @@ snowResize(); requestAnimationFrame(snowFrame);
 // test hooks
 window.__ttt = {get G() { return G; }, get net() { return net; }, aiMove, cfgOf, S, doMove, newRound, fw: {burst: fwBurst, launch: launchRocket, text: fwTextNow, get show() { return !!textShow; }, get points() { return textShow ? textShow.parts.length : 0; }, get sparks() { return sparks.length; }, get rockets() { return rockets.length; }}};
 
+if (location.protocol === 'file:') $('#homeLink').hidden = true;   // the link to the site home only makes sense online
 syncUI();
 newRound();
 (function initOnline() {
