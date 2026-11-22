@@ -43,7 +43,7 @@ function sendStatic(res, dir, rel) {
     res.end(data);
   });
 }
-const STATIC_GAMES = ['stickman-battle-2', 'stickman-battle', 'capybara-run'];
+const STATIC_GAMES = ['stickman-battle-2', 'stickman-battle', 'capybara-run', 'thief'];
 
 const server = http.createServer((req, res) => {
   const [url, query = ''] = req.url.split('?');

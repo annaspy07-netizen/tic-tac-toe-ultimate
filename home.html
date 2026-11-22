@@ -99,6 +99,7 @@ a.card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 20
 .art.blue{background:linear-gradient(160deg,#2f78e6,#14367a)}
 .art.blue svg{width:70%}
 .art.grey{background:linear-gradient(160deg,#6b6b6b,#2b2b2b)}
+.art.purple{background:linear-gradient(160deg,#6a3fa6,#241338)}
 .art.green{background:linear-gradient(160deg,#4f9a52,#1d4a2c)}
 .art img{width:44%;height:auto;max-height:86%;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.4))}
 .soon{opacity:.62}
@@ -712,6 +713,26 @@ footer small{display:block;margin-top:6px;opacity:.8}
           <span class="play" data-i="play">Chơi ngay</span>
         </div>
       </a>
+      <a class="card" href="/thief/">
+        <div class="art purple">
+          <svg viewBox="0 0 220 130" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 112H212" stroke="#4b3563" stroke-width="5"/>
+            <g stroke="#1b1519" stroke-width="3"><path d="M40 112V70Q40 46 58 46Q76 46 76 70V112Z" fill="#3a2b52"/><circle cx="58" cy="38" r="15" fill="#3a2b52"/></g>
+            <path d="M48 36H68" stroke="#ffd23f" stroke-width="5"/><path d="M76 78L96 70" stroke="#3a2b52" stroke-width="8"/>
+            <path d="M82 78H100" stroke="#ffd23f" stroke-width="3" stroke-dasharray="4 5"/>
+            <g stroke="#1b1519" stroke-width="3"><path d="M150 112V74Q150 52 166 52Q182 52 182 74V112Z" fill="#c9a24a"/><circle cx="166" cy="42" r="14" fill="#f0c9a0"/></g>
+            <path d="M159 40H173" stroke="#1b1519" stroke-width="3"/>
+            <g stroke="#1b1519" stroke-width="3"><path d="M188 96q-8-14 0-24q8 10 0 24z" fill="#6b8f3a"/><circle cx="188" cy="102" r="0"/></g>
+            <text x="108" y="30" font-size="26" fill="#ffd23f" stroke="none" font-weight="900" font-family="Georgia,serif" text-anchor="middle">?!</text>
+          </svg>
+        </div>
+        <div class="body">
+          <h3>Thief</h3>
+          <p data-i="thiefP">Chộp đồ đúng lúc! Giữ để lấy đà, thả để lao tới — nhưng khựng lại khi nạn nhân quay đầu. 6 mục tiêu, từ Nhà Vua đến Hoàng Đế.</p>
+          <div class="tags"><span data-i="tagPlayer1">1 người</span><span data-i="tagTouch">Cảm ứng</span><span data-i="tagFree">Miễn phí</span></div>
+          <span class="play" data-i="play">Chơi ngay</span>
+        </div>
+      </a>
       <div class="card soon">
         <div class="art"><b>?</b></div>
         <div class="body"><h3 data-i="soonH">Sắp ra mắt</h3><p data-i="soonP">Trò chơi mới đang được chuẩn bị. Hãy quay lại sau nhé!</p><span class="play" data-i="soonBtn">Đang chuẩn bị</span></div>
@@ -774,6 +795,7 @@ footer small{display:block;margin-top:6px;opacity:.8}
       play: 'Chơi ngay',
       sbP: 'Chú người que chiến đấu: vượt màn, hạ trùm, sinh tồn, đá bóng — và đấu tay đôi online với bạn bè. Mở rương để nhận vũ khí và trang phục mới.',
       sb1P: 'Võ đài người que kiểu ragdoll: 100 màn, 18 vũ khí, trang phục, đánh trùm — và đấu tay đôi online 1v1 với bạn bè.',
+      thiefP: 'Chộp đồ đúng lúc! Giữ để lấy đà, thả để lao tới — nhưng khựng lại khi nạn nhân quay đầu. 6 mục tiêu, từ Nhà Vua đến Hoàng Đế.',
       cbH: 'Capybara Chạy', cbP: 'Chạy vô tận cùng capybara cưỡi rùa: nhảy qua chướng ngại, cúi né vật bay, trời đổi từ ngày sang đêm. Phá kỷ lục điểm của chính bạn!',
       soonH: 'Sắp ra mắt', soonP: 'Trò chơi mới đang được chuẩn bị. Hãy quay lại sau nhé!', soonBtn: 'Đang chuẩn bị',
       inviteH: 'Mời bạn bè chơi cùng', inviteLead: 'Chỉ ba bước, không cần đăng ký tài khoản.',
@@ -797,6 +819,7 @@ footer small{display:block;margin-top:6px;opacity:.8}
       play: 'Play now',
       sbP: 'A stickman brawler: clear levels, beat bosses, survive the waves, play soccer — and duel your friends online. Open chests for new weapons and skins.',
       sb1P: 'A ragdoll stickman brawler: 100 levels, 18 weapons, skins, boss fights — and 1v1 online duels with friends.',
+      thiefP: 'Time your snatch! Hold to charge, release to lunge — but freeze when the mark turns around. Six targets, from the King to the Emperor.',
       cbH: 'Capybara Run', cbP: 'Run forever with a capybara riding a turtle: jump over obstacles, duck under flyers, and watch day turn to night. Beat your own high score!',
       soonH: 'Coming soon', soonP: 'New games are on the way. Check back soon!', soonBtn: 'In the works',
       inviteH: 'Invite friends to play', inviteLead: 'Just three steps, no account needed.',
