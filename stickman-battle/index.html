@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1f1f1f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Stickman Battle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-skull" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C7 2 4 5.5 4 10c0 2.6 1.2 4.4 3 5.4V19h2v-2h2v2h2v-2h2v2h2v-3.6c1.8-1 3-2.8 3-5.4 0-4.5-3-8-8-8zM9 8.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></symbol>
+  <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></symbol>
+  <symbol id="i-swords" viewBox="0 0 24 24"><path d="M5 4l15 15M19 4L4 19M3.5 8.5l5-5M20.5 8.5l-5-5M3.5 15.5l5 5M20.5 15.5l-5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-helmet" viewBox="0 0 24 24"><path fill="currentColor" d="M4 19v-7a8 8 0 0 1 16 0v7h-5v-5H9v5z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></g></symbol>
+  <symbol id="i-fwd" viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div id="stage">
+  <canvas id="cv" width="1034" height="580"></canvas>
+
+  <!-- HUD -->
+  <div id="hud-left">
+    <div id="skulls"><svg><use href="#i-skull"/></svg><span id="skull-n">0</span></div>
+    <div id="bonus"><svg><use href="#i-film"/></svg><span id="bonus-t">+100</span></div>
+  </div>
+  <div id="level-lbl"><span id="level-txt" data-it="selLevel" title="Select level">LEVEL 1</span></div>
+  <div id="hud-right">
+    <div class="ibtn" id="btn-home" data-it="home" title="Home">&#127968;</div>
+    <div class="ibtn" id="btn-lang" data-it="lang" title="Language" style="font-size:12px">EN</div>
+    <div class="ibtn" id="btn-shop" data-it="weapons" title="Weapons"><svg><use href="#i-swords"/></svg></div>
+    <div class="ibtn" id="btn-set" data-it="settings" title="Settings">&#9881;</div>
+    <div class="ibtn gold" id="btn-skip" data-it="skip" title="Skip level"><svg><use href="#i-fwd"/></svg></div>
+    <div class="ibtn red" id="btn-leave" data-it="leaveT" title="Leave match">&#10005;</div>
+  </div>
+
+  <!-- Shop -->
+  <div id="shop"></div>
+  <div id="skins-btn"><div class="sk-ic"><svg><use href="#i-helmet"/></svg></div><span data-i="skins">SKINS</span></div>
+  <div id="online-btn"><div class="sk-ic"><svg><use href="#i-globe"/></svg></div><span data-i="online">ONLINE</span></div>
+
+  <!-- Touch controls -->
+  <div id="touch">
+    <div class="tgrp tl">
+      <div class="tb" data-k="l">&#9664;</div>
+      <div class="tb" data-k="r">&#9654;</div>
+    </div>
+    <div class="tgrp tr">
+      <div class="tb sm" data-k="block" data-i="block">BLOCK</div>
+      <div class="tb" data-k="jump">&#9650;</div>
+      <div class="tb big" data-k="attack" data-i="hit">HIT</div>
+    </div>
+  </div>
+
+  <!-- Overlays -->
+  <div class="overlay" id="ov-main">
+    <div class="box">
+      <h2 id="ov-title">LEVEL COMPLETE</h2>
+      <div id="ov-stars"></div>
+      <p id="ov-sub"></p>
+      <div class="btn" id="ov-btn">NEXT LEVEL</div>
+      <div class="btn small alt" id="ov-lv-btn" data-i="levels">LEVELS</div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-levels">
+    <div class="box wide">
+      <h2 data-i="selectLevel">SELECT LEVEL</h2>
+      <p id="lv-sub"></p>
+      <div class="lgrid" id="lv-grid"></div>
+      <div class="btn small" id="lv-close" data-i="close">CLOSE</div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-skins">
+    <div class="box wide">
+      <h2 data-i="skins">SKINS</h2>
+      <div class="grid" id="skin-grid"></div>
+      <div class="btn small" id="skins-close" data-i="close">CLOSE</div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-online">
+    <div class="box wide" id="online-box">
+      <h2 data-i="online">ONLINE</h2>
+      <div class="orow"><label for="on-name" data-i="name">Name</label><input id="on-name" maxlength="12" autocomplete="off" spellcheck="false"></div>
+      <div class="olabel" data-i="pickWeapon">Choose your weapon (all weapons are free online)</div>
+      <div class="owp" id="on-weapons"></div>
+      <div class="orow small" id="row-server"><label for="on-server" data-i="server">Server</label><input id="on-server" autocomplete="off" spellcheck="false"></div>
+      <p id="on-status"></p>
+      <div class="obtns" id="on-actions">
+        <div class="btn small" id="on-quick" data-i="quick">QUICK MATCH</div>
+        <div class="btn small alt" id="on-create" data-i="create">CREATE ROOM</div>
+        <input id="on-code" maxlength="4" placeholder="CODE" data-ip="code" autocomplete="off" spellcheck="false">
+        <div class="btn small alt" id="on-join" data-i="join">JOIN</div>
+      </div>
+      <div class="obtns" id="on-busy"><div class="btn small danger" id="on-cancel" data-i="cancel">CANCEL</div></div>
+      <div class="btn small alt" id="on-close" data-i="close">CLOSE</div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-set">
+    <div class="box">
+      <h2 data-i="settingsH">SETTINGS</h2>
+      <div class="row"><span data-i="sound">Sound</span><div class="btn small" id="set-sound">ON</div></div>
+      <div class="row"><span data-i="progress">Progress</span><div class="btn small danger" id="set-reset" data-i="reset">RESET</div></div>
+      <div class="row" id="row-fs"><span data-i="fullscreen">Fullscreen</span><div class="btn small" id="set-fs">&#x26F6;</div></div>
+      <div class="help" data-ih="help">
+        <b>A / D</b> or arrows: move &nbsp; <b>W / Space</b>: jump<br>
+        <b>J / X / Click</b>: attack &nbsp; <b>S / K / Right-click</b>: block<br>
+        <b>P / Esc</b>: pause &nbsp; Knock enemies off the platform!
+      </div>
+      <div class="btn small" id="set-close" data-i="close">CLOSE</div>
+    </div>
+  </div>
+</div>
+
+<script src="js/i18n.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/weapons.js"></script>
+<script src="js/fighter.js"></script>
+<script src="js/game.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/net.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
