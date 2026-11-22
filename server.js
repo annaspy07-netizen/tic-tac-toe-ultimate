@@ -43,7 +43,7 @@ function sendStatic(res, dir, rel) {
     res.end(data);
   });
 }
-const STATIC_GAMES = ['stickman-battle-2', 'capybara-run'];
+const STATIC_GAMES = ['stickman-battle-2', 'stickman-battle', 'capybara-run'];
 
 const server = http.createServer((req, res) => {
   const [url, query = ''] = req.url.split('?');
@@ -114,6 +114,106 @@ function sbMessage(ws, m) {
   }
 }
 
+
+/* ---------- Stickman Battle (1): online 1v1, best of 3. Messages are namespaced 'sk_'. Each client simulates its own
+   fighter and streams its pose; the server only pairs players, relays and keeps the round score. ---------- */
+const SK_WIN = 2;
+const skRooms = new Map();    // code -> room
+let skQueue = [];             // sockets waiting for a quick match
+function skCode() {
+  const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ';     // letters only: the game's code box only accepts letters
+  let c;
+  do { c = Array.from({ length: 4 }, () => A[(Math.random() * A.length) | 0]).join(''); } while (skRooms.has(c));
+  return c;
+}
+function skProfile(ws, m) {
+  ws.skName = String(m.name || 'Player').replace(/[^\w \-.]/g, '').slice(0, 12) || 'Player';
+  ws.skWeapon = String(m.weapon || 'fists').replace(/[^a-z]/g, '').slice(0, 20) || 'fists';
+  ws.skSkin = String(m.skin || 'classic').replace(/[^a-z]/g, '').slice(0, 20) || 'classic';
+}
+function skBroadcast(room, obj) { room.players.forEach(p => send(p, obj)); }
+function skLeave(ws) {
+  skQueue = skQueue.filter(q => q !== ws);
+  const room = ws.skRoom;
+  if (!room) return;
+  ws.skRoom = null;
+  clearTimeout(room.timer);
+  const other = room.players.find(p => p !== ws);
+  if (other) { other.skRoom = null; send(other, { t: 'sk_oppleft' }); }
+  skRooms.delete(room.code);
+}
+function skNextRound(room) {
+  if (room.players.length < 2) return;
+  room.round++; room.state = 'playing';
+  skBroadcast(room, { t: 'sk_round', n: room.round, scores: room.scores });
+}
+function skStart(room) {
+  const [a, b] = room.players;
+  room.scores = [0, 0]; room.round = 0; room.state = 'starting'; room.rematch = new Set();
+  const info = p => ({ name: p.skName, weapon: p.skWeapon, skin: p.skSkin });
+  send(a, { t: 'sk_matched', idx: 0, code: room.code, opp: info(b) });
+  send(b, { t: 'sk_matched', idx: 1, code: room.code, opp: info(a) });
+  room.timer = setTimeout(() => skNextRound(room), 900);
+}
+function skAdd(room, ws) { ws.skRoom = room; ws.skIdx = room.players.length; room.players.push(ws); }
+function skDead(ws) {
+  const room = ws.skRoom;
+  if (!room || room.state !== 'playing' || room.players.length < 2) return;
+  room.state = 'between';
+  const winner = 1 - ws.skIdx;
+  room.scores[winner]++;
+  const over = room.scores[winner] >= SK_WIN;
+  skBroadcast(room, { t: 'sk_roundover', winner, scores: room.scores, over });
+  if (over) room.state = 'over'; else room.timer = setTimeout(() => skNextRound(room), 3400);
+}
+function skMessage(ws, m, raw) {
+  const t = m.t.slice(3);
+  if (t === 's' || t === 'hit' || t === 'hitres') {                 // relayed straight to the opponent
+    const room = ws.skRoom;
+    if (room && room.players.length === 2 && ws.readyState === 1) {
+      const other = room.players[1 - ws.skIdx];
+      if (other && other.readyState === 1) other.send(raw.toString());
+    }
+  } else if (t === 'quick') {
+    skProfile(ws, m); skLeave(ws);
+    const other = skQueue.find(q => q !== ws && q.readyState === 1);
+    if (other) {
+      skQueue = skQueue.filter(q => q !== other && q !== ws);
+      const room = { code: skCode(), players: [], scores: [0, 0], round: 0, state: 'lobby', rematch: new Set(), timer: null };
+      skRooms.set(room.code, room); skAdd(room, other); skAdd(room, ws); skStart(room);
+    } else { skQueue.push(ws); send(ws, { t: 'sk_wait' }); }
+  } else if (t === 'create') {
+    skProfile(ws, m); skLeave(ws);
+    const room = { code: skCode(), players: [], scores: [0, 0], round: 0, state: 'lobby', rematch: new Set(), timer: null };
+    skRooms.set(room.code, room); skAdd(room, ws);
+    send(ws, { t: 'sk_created', code: room.code });
+  } else if (t === 'join') {
+    skProfile(ws, m);
+    const code = String(m.code || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4);
+    const room = skRooms.get(code);
+    if (!room) return send(ws, { t: 'sk_error', code: 'notfound', room: code });
+    if (room.players.length >= 2) return send(ws, { t: 'sk_error', code: 'full', room: code });
+    if (room.players[0] === ws) return;
+    skLeave(ws); skAdd(room, ws); skStart(room);
+  } else if (t === 'leave') {
+    skLeave(ws);
+  } else if (t === 'dead') {
+    const room = ws.skRoom;
+    if (room && room.players.length === 2) send(room.players[1 - ws.skIdx], { t: 'sk_dead' });
+    skDead(ws);
+  } else if (t === 'rematch') {
+    const room = ws.skRoom;
+    if (!room || room.state !== 'over' || room.players.length < 2) return;
+    room.rematch.add(ws.skIdx);
+    if (room.rematch.size === 2) {
+      room.scores = [0, 0]; room.round = 0; room.rematch.clear();
+      skBroadcast(room, { t: 'sk_rematchgo' });
+      room.timer = setTimeout(() => skNextRound(room), 700);
+    } else send(room.players[1 - ws.skIdx], { t: 'sk_rematchreq' });
+  }
+  // 'ping' (keep-alive) needs no answer
+}
+
 const queues = {};            // mode -> ws waiting
 const rooms = new Map();      // code -> room (Tic Tac Toe)
 const sbRooms = new Map();    // code -> room (Stickman Battle 2 duels)
@@ -170,6 +270,7 @@ wss.on('connection', ws => {
     if (now - (ws.rlT || 0) > 1000) { ws.rlT = now; ws.rlN = 0; }
     if (++ws.rlN > 150) return;
     if (m.t.startsWith('sb_')) return sbMessage(ws, m);
+    if (m.t.startsWith('sk_')) return skMessage(ws, m, raw);
 
     if (m.t === 'quick' && MODES[m.mode]) {
       leaveAll(ws);
@@ -221,7 +322,7 @@ wss.on('connection', ws => {
     else if (m.t === 'leave') { leaveAll(ws); send(ws, { t: 'left' }); }
   });
 
-  ws.on('close', () => { leaveAll(ws); sbLeave(ws); broadcastCount(); });
+  ws.on('close', () => { leaveAll(ws); sbLeave(ws); skLeave(ws); broadcastCount(); });
   ws.on('error', () => {});
 });
 
